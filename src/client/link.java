@@ -1,5 +1,6 @@
 package client;
 /*
+ * imported readme.txt here
 This file was hosted at rscheatnet.com for educational purposes only.
 Rscheatnet is a community of likeminded people striving to learn and 
 develop their skills and thus should not use this code for anything 
@@ -25,42 +26,64 @@ Thank you, SeanWT
  */
 
 import java.applet.Applet;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.Socket;
 
 public class link
 {
 
-    public static final void gae(String s, byte abyte0[])
+    public static final void addFile(String fileName, byte fileData[])
     {
-        gac[gab] = s;
-        gad[gab] = abyte0;
-        gab++;
+        link.fileName[currentFile] = fileName;
+        link.fileData[currentFile] = fileData;
+        currentFile++;
+    }
+    
+    public static final boolean loadFile(String fileName) {
+        try {
+            File f = new File(".", "data/" + fileName);
+            if(f.exists()) {
+                FileInputStream fis = new FileInputStream(f);
+                byte buf[] = new byte[fis.available()];
+                fis.read(buf);
+                addFile(fileName, buf);
+                return true;
+            }
+            return false;
+        } catch(IOException ioe) {
+            ioe.printStackTrace();
+            return false;
+        }
     }
 
-    public static final byte[] getFile(String arg0)
+    public static final byte[] getFile(String fileName)
     {
-        for(int i = 0; i < gab; i++)
-            if(gac[i].equals(arg0))
-                return gad[i];
-
-        return null;
+        for(int i = 0; i < currentFile; i++)
+            if(link.fileName[i].equals(fileName))
+                return fileData[i];
+        if(loadFile(fileName))
+            return getFile(fileName);
+        else
+            return null;
     }
 
-    public static final Socket getSocket(int arg0)
+    public static final Socket getSocket(int port)
     {
-        for(fnk = arg0; fnk != 0;)
+        for(link.port = port; link.port != 0;)
             try
             {
                 Thread.sleep(100L);
             }
             catch(Exception _ex) { }
 
-        return fnl;
+        return socket;
     }
 
-    public static final void thread(Runnable arg0)
+    public static final void thread(Runnable runnable)
     {
-        for(fnm = arg0; fnm != null;)
+        for(thread = runnable; thread != null;)
             try
             {
                 Thread.sleep(100L);
@@ -69,16 +92,16 @@ public class link
 
     }
 
-    public static final String getAddress(String arg0)
+    public static final String getAddress(String ip)
     {
-        for(fnn = arg0; fnn != null;)
+        for(iplookup = ip; iplookup != null;)
             try
             {
                 Thread.sleep(100L);
             }
             catch(Exception _ex) { }
 
-        return gaa;
+        return address;
     }
 
     public link()
@@ -86,14 +109,14 @@ public class link
     }
 
     public static Applet gameApplet;
-    public static int fnj;
-    static int fnk;
-    static Socket fnl;
-    static Runnable fnm = null;
-    static String fnn = null;
-    static String gaa;
-    static int gab;
-    private static String gac[] = new String[50];
-    private static byte gad[][] = new byte[50][];
+    public static int uid;
+    static int port;
+    static Socket socket;
+    static Runnable thread = null;
+    static String iplookup = null;
+    static String address;
+    static int currentFile;
+    private static String fileName[] = new String[50];
+    private static byte fileData[][] = new byte[50][];
 
 }

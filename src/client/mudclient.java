@@ -16,8 +16,7 @@ public final class mudclient extends GameAppletMiddleMan
     {
         mudclient mud = new mudclient();
         mud.appletMode = false;
-        if(args.length > 0 && args[0].equals("members"))
-            mud.members = true;
+        mud.members = true;
         mud.server = "216.24.201.81";
         mud.port = 43595;
         mud.flc(mud.windowWidth, mud.windowHeight + 11, "Runescape by Andrew Gower", false);
@@ -2424,9 +2423,9 @@ public final class mudclient extends GameAppletMiddleMan
         int l = ((GameImage) (gameGraphics)).gameWidth - 199;
         char c1 = '\234';
         char c3 = '\230';
-        gameGraphics.drawPicture(l - 49, 3, baseInventoryPic + 2);// TODO does the heighlted map deal
+        gameGraphics.drawPicture(l - 49, 3, baseInventoryPic + 2);// TODO "does the heighlted map deal"
         l += 40;
-        // TODO clips the minimap to size, turning it off shows the whole loaded map area
+        // TODO "clips the minimap to size, turning it off shows the whole loaded map area"
         gameGraphics.drawBox(l, 36, c1, c3, 0);
         gameGraphics.setGameBoundaries(l, 36, l + c1, 36 + c3);
         int j1 = 192 + minimapRandomRotationY;
@@ -7861,7 +7860,7 @@ label0:
 
     protected final int adi()
     {
-        return link.fnj;
+        return link.uid;
     }
 
     public mudclient()

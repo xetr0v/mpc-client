@@ -28,7 +28,6 @@ public class GameFrame extends Frame
 
     public Graphics getGraphics()
     {
-        System.out.println("GameFrame.fej = " + fej);
         Graphics g = super.getGraphics();
         if(fej == 0)
             g.translate(0, 24);
