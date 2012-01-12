@@ -606,10 +606,10 @@ public class EngineHandle
             for(int k2 = 0; k2 < 95; k2++)
             {
                 int k3 = gle(i2, k2);
-                if(k3 > 0 && (Data.anc[k3 - 1] == 0 || ghh))
+                if(k3 > 0 && (Data.wallObjectUnknown[k3 - 1] == 0 || ghh))
                 {
                     gli(gia, k3 - 1, i2, k2, i2 + 1, k2);
-                    if(arg3 && Data.anb[k3 - 1] != 0)
+                    if(arg3 && Data.wallObjectType[k3 - 1] != 0)
                     {
                         tiles[i2][k2] |= 1;
                         if(k2 > 0)
@@ -619,10 +619,10 @@ public class EngineHandle
                         ghi.drawLineX(i2 * 3, k2 * 3, 3, j1);
                 }
                 k3 = gld(i2, k2);
-                if(k3 > 0 && (Data.anc[k3 - 1] == 0 || ghh))
+                if(k3 > 0 && (Data.wallObjectUnknown[k3 - 1] == 0 || ghh))
                 {
                     gli(gia, k3 - 1, i2, k2, i2, k2 + 1);
-                    if(arg3 && Data.anb[k3 - 1] != 0)
+                    if(arg3 && Data.wallObjectType[k3 - 1] != 0)
                     {
                         tiles[i2][k2] |= 2;
                         if(i2 > 0)
@@ -632,10 +632,10 @@ public class EngineHandle
                         ghi.drawLineY(i2 * 3, k2 * 3, 3, j1);
                 }
                 k3 = glf(i2, k2);
-                if(k3 > 0 && k3 < 12000 && (Data.anc[k3 - 1] == 0 || ghh))
+                if(k3 > 0 && k3 < 12000 && (Data.wallObjectUnknown[k3 - 1] == 0 || ghh))
                 {
                     gli(gia, k3 - 1, i2, k2, i2 + 1, k2 + 1);
-                    if(arg3 && Data.anb[k3 - 1] != 0)
+                    if(arg3 && Data.wallObjectType[k3 - 1] != 0)
                         tiles[i2][k2] |= 0x20;
                     if(arg3)
                     {
@@ -644,10 +644,10 @@ public class EngineHandle
                         ghi.drawMinimapPixel(i2 * 3 + 2, k2 * 3 + 2, j1);
                     }
                 }
-                if(k3 > 12000 && k3 < 24000 && (Data.anc[k3 - 12001] == 0 || ghh))
+                if(k3 > 12000 && k3 < 24000 && (Data.wallObjectUnknown[k3 - 12001] == 0 || ghh))
                 {
                     gli(gia, k3 - 12001, i2 + 1, k2, i2, k2 + 1);
-                    if(arg3 && Data.anb[k3 - 12001] != 0)
+                    if(arg3 && Data.wallObjectType[k3 - 12001] != 0)
                         tiles[i2][k2] |= 0x10;
                     if(arg3)
                     {
@@ -1152,7 +1152,7 @@ public class EngineHandle
     {
         if(arg0 < 0 || arg1 < 0 || arg0 >= 95 || arg1 >= 95)
             return;
-        if(Data.anb[arg3] == 1)
+        if(Data.wallObjectType[arg3] == 1)
         {
             if(arg2 == 0)
             {
@@ -1179,7 +1179,7 @@ public class EngineHandle
     {
         if(arg0 < 0 || arg1 < 0 || arg0 >= 95 || arg1 >= 95)
             return;
-        if(Data.anb[arg3] == 1)
+        if(Data.wallObjectType[arg3] == 1)
         {
             if(arg2 == 0)
             {
@@ -1234,14 +1234,20 @@ public class EngineHandle
         }
         return ghg[byte0][arg0 * 48 + arg1];
     }
+    
+    public void registerObjectDir(int x, int y, int dir) {
+        if(x < 0 || x >= 96 || y < 0 || y >= 96)
+            return;
+        objectDirs[x][y] = dir;
+    }
 
-    public void removeObject(int arg0, int arg1, int arg2)
+    public void removeObject(int arg0, int arg1, int arg2, int k)
     {
         if(arg0 < 0 || arg1 < 0 || arg0 >= 95 || arg1 >= 95)
             return;
         if(Data.objectType[arg2] == 1 || Data.objectType[arg2] == 2)
         {
-            int k = getTileRotation(arg0, arg1);
+            //int k = getTileRotation(arg0, arg1);
             int l;
             int i1;
             if(k == 0 || k == 4)
@@ -1417,6 +1423,8 @@ public class EngineHandle
 
         for(int j1 = 0; j1 < 64; j1++)
             ghm[j1 + 192] = Camera.bjm(96 - (int)((double)j1 * 1.5D), 48 + (int)((double)j1 * 1.5D), 0);
+        
+        objectDirs = new int[96][96];
 
     }
 
@@ -1449,13 +1457,13 @@ public class EngineHandle
         return (gig[byte0][arg0 * 48 + arg1] & 0xff) * 3;
     }
 
-    public void gla(int arg0, int arg1, int arg2)
+    public void gla(int arg0, int arg1, int arg2, int k)
     {
         if(arg0 < 0 || arg1 < 0 || arg0 >= 95 || arg1 >= 95)
             return;
         if(Data.objectType[arg2] == 1 || Data.objectType[arg2] == 2)
         {
-            int k = getTileRotation(arg0, arg1);
+            //int k = getTileRotation(arg0, arg1);
             int l;
             int i1;
             if(k == 0 || k == 4)
@@ -1632,7 +1640,7 @@ public class EngineHandle
                 if(glf(k, l) > 48000 && glf(k, l) < 60000)
                 {
                     int i1 = glf(k, l) - 48001;
-                    int j1 = getTileRotation(k, l);
+                    int j1 = objectDirs[k][l];//getTileRotation(k, l);
                     int k1;
                     int l1;
                     if(j1 == 0 || j1 == 4)
@@ -1644,12 +1652,13 @@ public class EngineHandle
                         l1 = Data.objectWidth[i1];
                         k1 = Data.objectHeight[i1];
                     }
-                    gla(k, l, i1);
+                    gla(k, l, i1, j1);
                     GameObject i2 = arg0[Data.objectModelNumber[i1]].cnk(false, true, false, false);
                     int j2 = ((k + k + k1) * 128) / 2;
                     int l2 = ((l + l + l1) * 128) / 2;
                     i2.cmk(j2, -getAveragedElevation(j2, l2), l2);
-                    i2.cmj(0, getTileRotation(k, l) * 32, 0);
+                    //i2.cmj(0, getTileRotation(k, l) * 32, 0);
+                    i2.cmj(0, j1 * 32, 0);
                     ghj.addModel(i2);
                     i2.cmf(48, 48, -50, -10, -50);
                     if(k1 > 1 || l1 > 1)
@@ -1721,7 +1730,7 @@ public class EngineHandle
             l3, i4, j4, k4
         };
         int l4 = k.cmb(4, ai, j2, k2);
-        if(Data.anc[l] == 5)
+        if(Data.wallObjectUnknown[l] == 5)
         {
             k.entityType[l4] = 30000 + l;
             return;
@@ -1764,4 +1773,6 @@ public class EngineHandle
     byte gja[][];
     boolean gjb;
     int gjc;
+    
+    int objectDirs[][];
 }

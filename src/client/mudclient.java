@@ -1275,7 +1275,7 @@ public final class mudclient extends GameAppletMiddleMan
                             } else
                             {
                                 gameCamera.removeModel(objectArray[object]);
-                                engineHandle.removeObject(objectX[object], objectY[object], objectID[object]);
+                                engineHandle.removeObject(objectX[object], objectY[object], objectID[object], objectType[object]);
                             }
                         }
 
@@ -1286,9 +1286,10 @@ public final class mudclient extends GameAppletMiddleMan
                         off += 2;
                         int newSectionX = sectionX + packetData[off++];
                         int newSectionY = sectionY + packetData[off++];
+                        int rotation = packetData[off++];
                         int newCount = 0;
                         for(int object = 0; object < objectCount; object++)
-                            if(objectX[object] != newSectionX || objectY[object] != newSectionY)
+                            if(objectX[object] != newSectionX || objectY[object] != newSectionY || objectID[object] != rotation)
                             {
                                 if(object != newCount)
                                 {
@@ -1303,13 +1304,14 @@ public final class mudclient extends GameAppletMiddleMan
                             } else
                             {
                                 gameCamera.removeModel(objectArray[object]);
-                                engineHandle.removeObject(objectX[object], objectY[object], objectID[object]);
+                                engineHandle.removeObject(objectX[object], objectY[object], objectID[object], objectType[object]);
                             }
 
                         objectCount = newCount;
                         if(index != 60000)
                         {
-                            int rotation = engineHandle.getTileRotation(newSectionX, newSectionY);
+                            //rotation = engineHandle.getTileRotation(newSectionX, newSectionY);
+                            engineHandle.getTileRotation(newSectionX, newSectionY);
                             int width;
                             int height;
                             if(rotation == 0 || rotation == 4)
@@ -1330,7 +1332,7 @@ public final class mudclient extends GameAppletMiddleMan
                             gameObject.cmi(0, rotation * 32, 0);
                             gameObject.cmk(l40, -engineHandle.getAveragedElevation(l40, k42), k42);
                             gameObject.cme(true, 48, 48, -50, -10, -50);
-                            engineHandle.gla(newSectionX, newSectionY, index);
+                            engineHandle.gla(newSectionX, newSectionY, index, rotation);
                             if(index == 74)
                                 gameObject.cmk(0, -480, 0);
                             objectX[objectCount] = newSectionX;
@@ -1829,7 +1831,7 @@ public final class mudclient extends GameAppletMiddleMan
                         } else
                         {
                             gameCamera.removeModel(objectArray[k33]);
-                            engineHandle.removeObject(objectX[k33], objectY[k33], objectID[k33]);
+                            engineHandle.removeObject(objectX[k33], objectY[k33], objectID[k33], objectType[k33]);
                         }
                     }
 
@@ -2401,6 +2403,10 @@ public final class mudclient extends GameAppletMiddleMan
                 System.out.println("RECEIVED PACKET 110 (SERVER INFO");
                 return;
             }
+            if(packetID == 230) {// TODO
+                System.out.println("RECEIVED PACKET 230 (\"showDrawPointsScreen\" etc)");
+                return;
+            }
             System.out.println("UNHANDLED PACKET " + packetID + " LEN:" + packetLength);
         }
         catch(RuntimeException runtimeexception)
@@ -2456,7 +2462,7 @@ public final class mudclient extends GameAppletMiddleMan
         for(int l = 0; l < objectCount; l++)
         {
             gameCamera.removeModel(objectArray[l]);
-            engineHandle.removeObject(objectX[l], objectY[l], objectID[l]);
+            engineHandle.removeObject(objectX[l], objectY[l], objectID[l], objectType[l]);
         }
 
         for(int i1 = 0; i1 < wallObjectCount; i1++)
@@ -7272,7 +7278,7 @@ label0:
                 {
                     gameCamera.addModel(object);
                     object.cml(i7, -engineHandle.getAveragedElevation(i7, j7), j7);
-                    engineHandle.gla(k2, i3, l3);
+                    engineHandle.gla(k2, i3, l3, j5);
                     if(l3 == 74)
                         object.cmk(0, -480, 0);
                 }
