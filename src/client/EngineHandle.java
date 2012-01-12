@@ -47,7 +47,7 @@ public class EngineHandle
         return ghl[byte0][arg0 * 48 + arg1] & 0xff;
     }
 
-    public int gjf(int arg0, int arg1)
+    public int getAveragedElevation(int arg0, int arg1)
     {
         int k = arg0 >> 7;
         int l = arg1 >> 7;
@@ -243,7 +243,7 @@ public class EngineHandle
             } else
             {
                 byte abyte1[] = new byte[20736];
-                DataOperations.fmg("../gamedata/maps/" + s + ".jm", abyte1, 20736);
+                DataOperations.readFully("../gamedata/maps/" + s + ".jm", abyte1, 20736);
                 int l1 = 0;
                 int k2 = 0;
                 for(int j3 = 0; j3 < 2304; j3++)
@@ -315,7 +315,7 @@ public class EngineHandle
         gjh(k, l, arg2, 3);
         gjk();
         if(gia == null)
-            gia = new i(18688, 18688, true, true, false, false, true);
+            gia = new GameObject(18688, 18688, true, true, false, false, true);
         if(arg3)
         {
             ghi.clearScreen();
@@ -326,7 +326,7 @@ public class EngineHandle
 
             }
 
-            i l1 = gia;
+            GameObject l1 = gia;
             l1.clk();
             for(int j2 = 0; j2 < 96; j2++)
             {
@@ -443,9 +443,9 @@ public class EngineHandle
                                 ai[1] = j4 + j3 * 96;
                                 ai[2] = j4 + j3 * 96 + 1;
                                 int l21 = l1.cmb(3, ai, 0xbc614e, k7);
-                                gin[l21] = j3;
-                                ghk[l21] = j4;
-                                l1.chl[l21] = 0x30d40 + l21;
+                                selectedX[l21] = j3;
+                                selectedY[l21] = j4;
+                                l1.entityType[l21] = 0x30d40 + l21;
                             }
                             if(i10 != 0xbc614e)
                             {
@@ -453,9 +453,9 @@ public class EngineHandle
                                 ai7[1] = j4 + j3 * 96 + 96 + 1;
                                 ai7[2] = j4 + j3 * 96 + 96;
                                 int i22 = l1.cmb(3, ai7, 0xbc614e, i10);
-                                gin[i22] = j3;
-                                ghk[i22] = j4;
-                                l1.chl[i22] = 0x30d40 + i22;
+                                selectedX[i22] = j3;
+                                selectedY[i22] = j4;
+                                l1.entityType[i22] = 0x30d40 + i22;
                             }
                         } else
                         {
@@ -465,9 +465,9 @@ public class EngineHandle
                                 ai[1] = j4 + j3 * 96 + 96 + 1;
                                 ai[2] = j4 + j3 * 96;
                                 int j22 = l1.cmb(3, ai, 0xbc614e, k7);
-                                gin[j22] = j3;
-                                ghk[j22] = j4;
-                                l1.chl[j22] = 0x30d40 + j22;
+                                selectedX[j22] = j3;
+                                selectedY[j22] = j4;
+                                l1.entityType[j22] = 0x30d40 + j22;
                             }
                             if(i10 != 0xbc614e)
                             {
@@ -475,9 +475,9 @@ public class EngineHandle
                                 ai7[1] = j4 + j3 * 96;
                                 ai7[2] = j4 + j3 * 96 + 96 + 1;
                                 int k22 = l1.cmb(3, ai7, 0xbc614e, i10);
-                                gin[k22] = j3;
-                                ghk[k22] = j4;
-                                l1.chl[k22] = 0x30d40 + k22;
+                                selectedX[k22] = j3;
+                                selectedY[k22] = j4;
+                                l1.entityType[k22] = 0x30d40 + k22;
                             }
                         }
                     } else
@@ -489,9 +489,9 @@ public class EngineHandle
                         ai1[2] = j4 + j3 * 96 + 1;
                         ai1[3] = j4 + j3 * 96 + 96 + 1;
                         int l19 = l1.cmb(4, ai1, 0xbc614e, k7);
-                        gin[l19] = j3;
-                        ghk[l19] = j4;
-                        l1.chl[l19] = 0x30d40 + l19;
+                        selectedX[l19] = j3;
+                        selectedY[l19] = j4;
+                        l1.entityType[l19] = 0x30d40 + l19;
                     }
                 }
 
@@ -511,9 +511,9 @@ public class EngineHandle
                             j10, l12, i15, j17
                         };
                         int i20 = l1.cmb(4, ai2, l7, 0xbc614e);
-                        gin[i20] = k4;
-                        ghk[i20] = i6;
-                        l1.chl[i20] = 0x30d40 + i20;
+                        selectedX[i20] = k4;
+                        selectedY[i20] = i6;
+                        l1.entityType[i20] = 0x30d40 + i20;
                         gkg(k4, i6, 0, l7, l7);
                     } else
                     if(gki(k4, i6, arg2) == 0 || Data.akh[gki(k4, i6, arg2) - 1] != 3)
@@ -529,9 +529,9 @@ public class EngineHandle
                                 k10, i13, j15, k17
                             };
                             int j20 = l1.cmb(4, ai3, i8, 0xbc614e);
-                            gin[j20] = k4;
-                            ghk[j20] = i6;
-                            l1.chl[j20] = 0x30d40 + j20;
+                            selectedX[j20] = k4;
+                            selectedY[j20] = i6;
+                            l1.entityType[j20] = 0x30d40 + j20;
                             gkg(k4, i6, 0, i8, i8);
                         }
                         if(gki(k4, i6 - 1, arg2) > 0 && Data.akh[gki(k4, i6 - 1, arg2) - 1] == 4)
@@ -545,9 +545,9 @@ public class EngineHandle
                                 l10, j13, k15, l17
                             };
                             int k20 = l1.cmb(4, ai4, j8, 0xbc614e);
-                            gin[k20] = k4;
-                            ghk[k20] = i6;
-                            l1.chl[k20] = 0x30d40 + k20;
+                            selectedX[k20] = k4;
+                            selectedY[k20] = i6;
+                            l1.entityType[k20] = 0x30d40 + k20;
                             gkg(k4, i6, 0, j8, j8);
                         }
                         if(gki(k4 + 1, i6, arg2) > 0 && Data.akh[gki(k4 + 1, i6, arg2) - 1] == 4)
@@ -561,9 +561,9 @@ public class EngineHandle
                                 i11, k13, l15, i18
                             };
                             int l20 = l1.cmb(4, ai5, k8, 0xbc614e);
-                            gin[l20] = k4;
-                            ghk[l20] = i6;
-                            l1.chl[l20] = 0x30d40 + l20;
+                            selectedX[l20] = k4;
+                            selectedY[l20] = i6;
+                            l1.entityType[l20] = 0x30d40 + l20;
                             gkg(k4, i6, 0, k8, k8);
                         }
                         if(gki(k4 - 1, i6, arg2) > 0 && Data.akh[gki(k4 - 1, i6, arg2) - 1] == 4)
@@ -577,9 +577,9 @@ public class EngineHandle
                                 j11, l13, i16, j18
                             };
                             int i21 = l1.cmb(4, ai6, l8, 0xbc614e);
-                            gin[i21] = k4;
-                            ghk[i21] = i6;
-                            l1.chl[i21] = 0x30d40 + i21;
+                            selectedX[i21] = k4;
+                            selectedY[i21] = i6;
+                            l1.entityType[i21] = 0x30d40 + i21;
                             gkg(k4, i6, 0, l8, l8);
                         }
                     }
@@ -589,7 +589,7 @@ public class EngineHandle
             l1.cme(true, 40, 48, -50, -10, -50);
             ghn = gia.cmc(0, 0, 1536, 1536, 8, 64, 233, false);
             for(int j6 = 0; j6 < 64; j6++)
-                ghj.bgm(ghn[j6]);
+                ghj.addModel(ghn[j6]);
 
             for(int i9 = 0; i9 < 96; i9++)
             {
@@ -639,9 +639,9 @@ public class EngineHandle
                         tiles[i2][k2] |= 0x20;
                     if(arg3)
                     {
-                        ghi.cbe(i2 * 3, k2 * 3, j1);
-                        ghi.cbe(i2 * 3 + 1, k2 * 3 + 1, j1);
-                        ghi.cbe(i2 * 3 + 2, k2 * 3 + 2, j1);
+                        ghi.drawMinimapPixel(i2 * 3, k2 * 3, j1);
+                        ghi.drawMinimapPixel(i2 * 3 + 1, k2 * 3 + 1, j1);
+                        ghi.drawMinimapPixel(i2 * 3 + 2, k2 * 3 + 2, j1);
                     }
                 }
                 if(k3 > 12000 && k3 < 24000 && (Data.anc[k3 - 12001] == 0 || ghh))
@@ -651,9 +651,9 @@ public class EngineHandle
                         tiles[i2][k2] |= 0x10;
                     if(arg3)
                     {
-                        ghi.cbe(i2 * 3 + 2, k2 * 3, j1);
-                        ghi.cbe(i2 * 3 + 1, k2 * 3 + 1, j1);
-                        ghi.cbe(i2 * 3, k2 * 3 + 2, j1);
+                        ghi.drawMinimapPixel(i2 * 3 + 2, k2 * 3, j1);
+                        ghi.drawMinimapPixel(i2 * 3 + 1, k2 * 3 + 1, j1);
+                        ghi.drawMinimapPixel(i2 * 3, k2 * 3 + 2, j1);
                     }
                 }
             }
@@ -665,7 +665,7 @@ public class EngineHandle
         gia.cme(false, 60, 24, -50, -10, -50);
         gim[arg2] = gia.cmc(0, 0, 1536, 1536, 8, 64, 338, true);
         for(int l2 = 0; l2 < 64; l2++)
-            ghj.bgm(gim[arg2][l2]);
+            ghj.addModel(gim[arg2][l2]);
 
         for(int l3 = 0; l3 < 95; l3++)
         {
@@ -930,7 +930,7 @@ public class EngineHandle
         gia.cme(true, 50, 50, -50, -10, -50);
         gih[arg2] = gia.cmc(0, 0, 1536, 1536, 8, 64, 169, true);
         for(int l9 = 0; l9 < 64; l9++)
-            ghj.bgm(gih[arg2][l9]);
+            ghj.addModel(gih[arg2][l9]);
 
         if(gih[arg2][0] == null)
             throw new RuntimeException("null roof!");
@@ -944,7 +944,7 @@ public class EngineHandle
 
     }
 
-    public void gjj(int k, int l, int i1)
+    public void loadSection(int k, int l, int i1)
     {
         gkk();
         int j1 = (k + 24) / 48;
@@ -1211,7 +1211,7 @@ public class EngineHandle
         return k1 != 2 ? 0 : 1;
     }
 
-    public int gke(int arg0, int arg1)
+    public int getTileRotation(int arg0, int arg1)
     {
         if(arg0 < 0 || arg0 >= 96 || arg1 < 0 || arg1 >= 96)
             return 0;
@@ -1241,7 +1241,7 @@ public class EngineHandle
             return;
         if(Data.objectType[arg2] == 1 || Data.objectType[arg2] == 2)
         {
-            int k = gke(arg0, arg1);
+            int k = getTileRotation(arg0, arg1);
             int l;
             int i1;
             if(k == 0 || k == 4)
@@ -1319,7 +1319,7 @@ public class EngineHandle
 
     public void gkh(int k, int l, int i1, int j1, int k1)
     {
-        int l1 = Data.amm[k];
+        int l1 = Data.wallObjectModelVar1[k];
         if(gib[l][i1] < 0x13880)
             gib[l][i1] += 0x13880 + l1;
         if(gib[j1][k1] < 0x13880)
@@ -1388,19 +1388,19 @@ public class EngineHandle
         ghf = new byte[4][2304];
         ghg = new byte[4][2304];
         ghh = false;
-        ghk = new int[18432];
+        selectedY = new int[18432];
         ghl = new byte[4][2304];
         ghm = new int[256];
-        ghn = new i[64];
+        ghn = new GameObject[64];
         gib = new int[96][96];
         gic = new byte[4][2304];
         gid = new int[96][96];
         gig = new byte[4][2304];
-        gih = new i[4][64];
-        gii = false;
+        gih = new GameObject[4][64];
+        playerIsAlive = false;
         tiles = new int[96][96];
-        gim = new i[4][64];
-        gin = new int[18432];
+        gim = new GameObject[4][64];
+        selectedX = new int[18432];
         gja = new byte[4][2304];
         gjb = true;
         gjc = 750;
@@ -1455,7 +1455,7 @@ public class EngineHandle
             return;
         if(Data.objectType[arg2] == 1 || Data.objectType[arg2] == 2)
         {
-            int k = gke(arg0, arg1);
+            int k = getTileRotation(arg0, arg1);
             int l;
             int i1;
             if(k == 0 || k == 4)
@@ -1624,7 +1624,7 @@ public class EngineHandle
         return ghe[byte0][arg0 * 48 + arg1];
     }
 
-    public void glg(i arg0[])
+    public void glg(GameObject arg0[])
     {
         for(int k = 0; k < 94; k++)
         {
@@ -1632,7 +1632,7 @@ public class EngineHandle
                 if(glf(k, l) > 48000 && glf(k, l) < 60000)
                 {
                     int i1 = glf(k, l) - 48001;
-                    int j1 = gke(k, l);
+                    int j1 = getTileRotation(k, l);
                     int k1;
                     int l1;
                     if(j1 == 0 || j1 == 4)
@@ -1645,12 +1645,12 @@ public class EngineHandle
                         k1 = Data.objectHeight[i1];
                     }
                     gla(k, l, i1);
-                    i i2 = arg0[Data.amg[i1]].cnk(false, true, false, false);
+                    GameObject i2 = arg0[Data.objectModelNumber[i1]].cnk(false, true, false, false);
                     int j2 = ((k + k + k1) * 128) / 2;
                     int l2 = ((l + l + l1) * 128) / 2;
-                    i2.cmk(j2, -gjf(j2, l2), l2);
-                    i2.cmj(0, gke(k, l) * 32, 0);
-                    ghj.bgm(i2);
+                    i2.cmk(j2, -getAveragedElevation(j2, l2), l2);
+                    i2.cmj(0, getTileRotation(k, l) * 32, 0);
+                    ghj.addModel(i2);
                     i2.cmf(48, 48, -50, -10, -50);
                     if(k1 > 1 || l1 > 1)
                     {
@@ -1692,7 +1692,7 @@ public class EngineHandle
 
     public void glh(int arg0, int arg1, int arg2, int arg3, int arg4)
     {
-        i k = ghn[arg0 + arg1 * 8];
+        GameObject k = ghn[arg0 + arg1 * 8];
         for(int l = 0; l < k.cfh; l++)
             if(k.cil[l] == arg2 * 128 && k.cin[l] == arg3 * 128)
             {
@@ -1702,13 +1702,13 @@ public class EngineHandle
 
     }
 
-    public void gli(i k, int l, int i1, int j1, int k1, int l1)
+    public void gli(GameObject k, int l, int i1, int j1, int k1, int l1)
     {
         gjd(i1, j1, 40);
         gjd(k1, l1, 40);
-        int i2 = Data.amm[l];
-        int j2 = Data.amn[l];
-        int k2 = Data.ana[l];
+        int i2 = Data.wallObjectModelVar1[l];
+        int j2 = Data.wallObjectModelVar2[l];
+        int k2 = Data.wallObjectModelVar3[l];
         int l2 = i1 * 128;
         int i3 = j1 * 128;
         int j3 = k1 * 128;
@@ -1723,11 +1723,11 @@ public class EngineHandle
         int l4 = k.cmb(4, ai, j2, k2);
         if(Data.anc[l] == 5)
         {
-            k.chl[l4] = 30000 + l;
+            k.entityType[l4] = 30000 + l;
             return;
         } else
         {
-            k.chl[l4] = 0;
+            k.entityType[l4] = 0;
             return;
         }
     }
@@ -1743,24 +1743,24 @@ public class EngineHandle
     boolean ghh;
     GameImage ghi;
     Camera ghj;
-    int ghk[];
+    int selectedY[];
     byte ghl[][];
     int ghm[];
-    i ghn[];
-    i gia;
+    GameObject ghn[];
+    GameObject gia;
     int gib[][];
     byte gic[][];
     int gid[][];
     byte landscapeFree[];
     byte mapsFree[];
     byte gig[][];
-    i gih[][];
-    boolean gii;
+    GameObject gih[][];
+    boolean playerIsAlive;
     int tiles[][];
     byte landscapeMembers[];
     byte mapsMembers[];
-    i gim[][];
-    int gin[];
+    GameObject gim[][];
+    int selectedX[];
     byte gja[][];
     boolean gjb;
     int gjc;

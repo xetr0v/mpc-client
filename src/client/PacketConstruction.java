@@ -8,55 +8,49 @@ import java.io.IOException;
 public class PacketConstruction
 {
 
-    public void hcm(int ai[])
-    {
-        hcc = new p(ai);
-        hcd = new p(ai);
-    }
-
     public void closeStream()
     {
     }
 
     public void createPacket(int i)
     {
-        if(han > (hcg * 4) / 5)
+        if(packetStart > (maxPacketLength * 4) / 5)
             try
             {
                 writePacket(0);
             }
             catch(IOException ioexception)
             {
-                hck = true;
-                hcj = ioexception.getMessage();
+                error = true;
+                errorText = ioexception.getMessage();
             }
         if(packetData == null)
-            packetData = new byte[hcg];
-        packetData[han + 2] = (byte)i;
-        packetData[han + 3] = 0;
-        packetOffset = han + 3;
-        hbb = 8;
+            packetData = new byte[maxPacketLength];
+        packetData[packetStart + 2] = (byte)i;
+        packetData[packetStart + 3] = 0;
+        packetOffset = packetStart + 3;
+        skipOffset = 8;
     }
 
     public void writePacket(int i)
         throws IOException
     {
-        if(hck)
+        if(error)
         {
-            han = 0;
+            packetStart = 0;
             packetOffset = 3;
-            hck = false;
-            throw new IOException(hcj);
+            error = false;
+            throw new IOException(errorText);
         }
-        hci++;
-        if(hci < i)
+        packetCount++;
+        if(packetCount < i)
             return;
-        if(han > 0)
+        if(packetStart > 0)
         {
-            hci = 0;
-            ban(packetData, 0, han);
+            packetCount = 0;
+            writeToBuffer(packetData, 0, packetStart);
         }
-        han = 0;
+        packetStart = 0;
         packetOffset = 3;
     }
 
@@ -77,39 +71,34 @@ public class PacketConstruction
         addInt((int)(l & -1L));
     }
 
-    public void ban(byte abyte0[], int i, int j)
+    public void writeToBuffer(byte abyte0[], int i, int j)
         throws IOException
     {
     }
 
-    public void bam(int i, int j, byte abyte0[])
+    public void readInputStream(int i, int j, byte abyte0[])
         throws IOException
     {
     }
 
-    public int hde()
+    public int readShort()
         throws IOException
     {
-        int i = heb();
-        int j = heb();
+        int i = readByte();
+        int j = readByte();
         return i * 256 + j;
     }
 
-    public int readInputStream()
+    public int read()
         throws IOException
     {
         return 0;
     }
 
-    public void hdf(int i, byte abyte0[])
+    public void read(int i, byte abyte0[])
         throws IOException
     {
-        bam(i, 0, abyte0);
-    }
-
-    public int hdg(int i)
-    {
-        return i - hcc.daf() & 0xff;
+        readInputStream(i, 0, abyte0);
     }
 
     public void addInt(int i)
@@ -127,9 +116,10 @@ public class PacketConstruction
         writePacket(0);
     }
 
-    public int bal()
+    public int available()
         throws IOException
     {
+        System.out.println("packetconstruction.available WRONG");
         return 0;
     }
 
@@ -142,40 +132,27 @@ public class PacketConstruction
     public long readLong()
         throws IOException
     {
-        long l = hde();
-        long l1 = hde();
-        long l2 = hde();
-        long l3 = hde();
+        long l = readShort();
+        long l1 = readShort();
+        long l2 = readShort();
+        long l3 = readShort();
         return (l << 48) + (l1 << 32) + (l2 << 16) + l3;
     }
 
     public void formatPacket()
     {
-        if(hcd != null)
-        {
-            int i = packetData[han + 2] & 0xff;
-            packetData[han + 2] = (byte)(i + hcd.daf());
-        }
-        if(hbb != 8)
+        if(skipOffset != 8)
             packetOffset++;
-        int j = packetOffset - han - 2;
-        if(j >= 160)
+        int j = packetOffset - packetStart - 2;
+        packetData[packetStart] = (byte) (j >> 8);
+        packetData[packetStart + 1] = (byte) j;
+        if(maxPacketLength <= 10000)
         {
-            packetData[han] = (byte)(160 + j / 256);
-            packetData[han + 1] = (byte)(j & 0xff);
-        } else
-        {
-            packetData[han] = (byte)j;
-            packetOffset--;
-            packetData[han + 1] = packetData[packetOffset];
+            int k = packetData[packetStart + 2] & 0xff;
+            packetCommandCount[k]++;
+            packetLengthCount[k] += packetOffset - packetStart;
         }
-        if(hcg <= 10000)
-        {
-            int k = packetData[han + 2] & 0xff;
-            hcf[k]++;
-            hch[k] += packetOffset - han;
-        }
-        han = packetOffset;
+        packetStart = packetOffset;
     }
 
     public void addBytes(byte data[], int off, int len)
@@ -187,80 +164,67 @@ public class PacketConstruction
 
     public boolean hasData()
     {
-        return han > 0;
+        return packetStart > 0;
     }
 
     public int readPacket(byte arg0[])
     {
         try
         {
-            hal++;
-            if(maxPacketReadCount > 0 && hal > maxPacketReadCount)
+            read++;
+            if(maxPacketReadCount > 0 && read > maxPacketReadCount)
             {
-                hck = true;
-                hcj = "time-out";
+                error = true;
+                errorText = "time-out";
                 maxPacketReadCount += maxPacketReadCount;
                 return 0;
             }
-            if(hak == 0 && bal() >= 2)
+            // TODO available = 0
+            if(length == 0 && available() >= 2)
             {
-                hak = readInputStream();
-                if(hak >= 160)
-                    hak = (hak - 160) * 256 + readInputStream();
+                byte buf[] = new byte[2];
+                readInputStream(2, 0, buf);
+                length = ((short) ((buf[0] & 0xff) << 8) | (short) (buf[1] & 0xff)) + 1;
             }
-            if(hak > 0 && bal() >= hak)
+            if(length > 0 && available() >= length)
             {
-                if(hak >= 160)
-                {
-                    hdf(hak, arg0);
-                } else
-                {
-                    arg0[hak - 1] = (byte)readInputStream();
-                    if(hak > 1)
-                        hdf(hak - 1, arg0);
-                }
-                int i = hak;
-                hak = 0;
-                hal = 0;
+                read(length, arg0);
+                int i = length;
+                length = 0;
+                read = 0;
                 return i;
             }
         }
         catch(IOException ioexception)
         {
-            hck = true;
-            hcj = ioexception.getMessage();
+            error = true;
+            errorText = ioexception.getMessage();
         }
         return 0;
     }
 
-    public int heb()
+    public int readByte()
         throws IOException
     {
-        return readInputStream();
+        return read();
     }
 
     public PacketConstruction()
     {
         packetOffset = 3;
-        hbb = 8;
-        hcg = 5000;
-        hcj = "";
-        hck = false;
+        skipOffset = 8;
+        maxPacketLength = 5000;
+        errorText = "";
+        error = false;
     }
 
-    protected int hak;
-    public int hal;
+    protected int length;
+    public int read;
     public int maxPacketReadCount;
-    public int han;
+    public int packetStart;
     private int packetOffset;
-    private int hbb;
+    private int skipOffset;
     public byte packetData[];
-    private static int hbd[] = {
-        0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 
-        1023, 2047, 4095, 8191, 16383, 32767, 65535, 0x1ffff, 0x3ffff, 0x7ffff, 
-        0xfffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff, 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 
-        0x3fffffff, 0x7fffffff, -1
-    };
     final int hbe = 61;
     final int hbf = 59;
     final int hbg = 42;
@@ -273,15 +237,13 @@ public class PacketConstruction
     final int hbn = 32;
     final int hca = 124;
     final int hcb = 34;
-    public p hcc;
-    public p hcd;
     static char hce[];
-    public static int hcf[] = new int[256];
-    protected int hcg;
-    public static int hch[] = new int[256];
-    protected int hci;
-    protected String hcj;
-    protected boolean hck;
+    public static int packetCommandCount[] = new int[256];
+    protected int maxPacketLength;
+    public static int packetLengthCount[] = new int[256];
+    protected int packetCount;
+    protected String errorText;
+    protected boolean error;
     public static int hcl;
 
     static 

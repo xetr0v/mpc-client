@@ -4,10 +4,10 @@ package client;
 // Decompiler options: packimports(3) 
 
 
-public class l
+public class CameraModel
 {
 
-    public l()
+    public CameraModel()
     {
         bld = false;
         blf = -1;
@@ -19,7 +19,7 @@ public class l
     protected int bkg;
     protected int bkh;
     protected int bki;
-    protected i bkj;
+    protected GameObject object;
     protected int bkk;
     protected int bkl;
     protected int bkm;

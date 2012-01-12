@@ -23,7 +23,7 @@ public class Camera
         bca = 1;
         bcb = false;
         bcf = 100;
-        bcg = new i[bcf];
+        bcg = new GameObject[bcf];
         bch = new int[bcf];
         bci = 512;
         bcj = 256;
@@ -45,15 +45,15 @@ public class Camera
         bfh = arg0.pixels;
         bdh = 0;
         bdi = arg1;
-        bdj = new i[bdi];
+        bdj = new GameObject[bdi];
         bdk = new int[bdi];
         bdl = 0;
-        bdm = new l[arg2];
+        bdm = new CameraModel[arg2];
         for(int k = 0; k < arg2; k++)
-            bdm[k] = new l();
+            bdm[k] = new CameraModel();
 
         bdn = 0;
-        beh = new i(arg3 * 2, arg3);
+        highlightedObject = new GameObject(arg3 * 2, arg3);
         bea = new int[arg3];
         bee = new int[arg3];
         bef = new int[arg3];
@@ -83,7 +83,7 @@ public class Camera
 
     }
 
-    public void bgm(i k)
+    public void addModel(GameObject k)
     {
         if(k == null)
             System.out.println("Warning tried to add null object!");
@@ -94,7 +94,7 @@ public class Camera
         }
     }
 
-    public void removeModel(i arg0)
+    public void removeModel(GameObject arg0)
     {
         for(int k = 0; k < bdh; k++)
             if(bdj[k] == arg0)
@@ -122,13 +122,13 @@ public class Camera
     public void bhb()
     {
         bdn = 0;
-        beh.clk();
+        highlightedObject.clk();
     }
 
-    public void bhc(int k)
+    public void removeLastUpdates(int k)
     {
         bdn -= k;
-        beh.cll(k, k * 2);
+        highlightedObject.cll(k, k * 2);
         if(bdn < 0)
             bdn = 0;
     }
@@ -142,20 +142,20 @@ public class Camera
         bee[bdn] = l1;
         bef[bdn] = i2;
         beg[bdn] = 0;
-        int k2 = beh.cma(i1, j1, k1);
-        int l2 = beh.cma(i1, j1 - i2, k1);
+        int k2 = highlightedObject.cma(i1, j1, k1);
+        int l2 = highlightedObject.cma(i1, j1 - i2, k1);
         int ai[] = {
             k2, l2
         };
-        beh.cmb(2, ai, 0, 0);
-        beh.chl[bdn] = j2;
-        beh.chm[bdn++] = 0;
+        highlightedObject.cmb(2, ai, 0, 0);
+        highlightedObject.entityType[bdn] = j2;
+        highlightedObject.chm[bdn++] = 0;
         return bdn - 1;
     }
 
     public void bhe(int k)
     {
-        beh.chm[k] = 1;
+        highlightedObject.chm[k] = 1;
     }
 
     public void bhf(int k, int i1)
@@ -163,7 +163,7 @@ public class Camera
         beg[k] = i1;
     }
 
-    public void bhg(int k, int i1)
+    public void setMousePosition(int k, int i1)
     {
         bcc = k - bcl;
         bcd = i1;
@@ -171,17 +171,17 @@ public class Camera
         bcb = true;
     }
 
-    public int bhh()
+    public int getOptionCount()
     {
         return bce;
     }
 
-    public int[] bhi()
+    public int[] getHighlightedPlayers()
     {
         return bch;
     }
 
-    public i[] bhj()
+    public GameObject[] getHighlightedObjects()
     {
         return bcg;
     }
@@ -194,20 +194,20 @@ public class Camera
         bcm = arg1;
         bci = arg4;
         bcn = arg5;
-        bfi = new m[arg3 + arg1];
+        bfi = new CameraVariable[arg3 + arg1];
         for(int k = 0; k < arg3 + arg1; k++)
-            bfi[k] = new m();
+            bfi[k] = new CameraVariable();
 
     }
 
-    private void bhl(l arg0[], int arg1, int arg2)
+    private void bhl(CameraModel arg0[], int arg1, int arg2)
     {
         if(arg1 < arg2)
         {
             int k = arg1 - 1;
             int i1 = arg2 + 1;
             int j1 = (arg1 + arg2) / 2;
-            l l1 = arg0[j1];
+            CameraModel l1 = arg0[j1];
             arg0[j1] = arg0[arg1];
             arg0[arg1] = l1;
             int k1 = l1.bkl;
@@ -221,7 +221,7 @@ public class Camera
                 while(arg0[k].bkl > k1);
                 if(k < i1)
                 {
-                    l l2 = arg0[k];
+                    CameraModel l2 = arg0[k];
                     arg0[k] = arg0[i1];
                     arg0[i1] = l2;
                 }
@@ -231,7 +231,7 @@ public class Camera
         }
     }
 
-    public void bhm(int arg0, l arg1[], int arg2)
+    public void bhm(int arg0, CameraModel arg1[], int arg2)
     {
         for(int k = 0; k <= arg2; k++)
         {
@@ -247,7 +247,7 @@ public class Camera
                 i1++;
             if(i1 == arg2)
                 return;
-            l l1 = arg1[i1];
+            CameraModel l1 = arg1[i1];
             l1.bld = true;
             int j1 = i1;
             int k1 = i1 + arg0;
@@ -255,7 +255,7 @@ public class Camera
                 k1 = arg2 - 1;
             for(int i2 = k1; i2 >= j1 + 1; i2--)
             {
-                l l2 = arg1[i2];
+                CameraModel l2 = arg1[i2];
                 if(l1.bkd < l2.bkf && l2.bkd < l1.bkf && l1.bke < l2.bkg && l2.bke < l1.bkg && l1.ble != l2.blf && !bjc(l1, l2) && bjd(l2, l1))
                 {
                     bhn(arg1, j1, i2);
@@ -269,14 +269,14 @@ public class Camera
         } while(true);
     }
 
-    public boolean bhn(l arg0[], int arg1, int arg2)
+    public boolean bhn(CameraModel arg0[], int arg1, int arg2)
     {
         do
         {
-            l l1 = arg0[arg1];
+            CameraModel l1 = arg0[arg1];
             for(int k = arg1 + 1; k <= arg2; k++)
             {
-                l l2 = arg0[k];
+                CameraModel l2 = arg0[k];
                 if(!bjc(l2, l1))
                     break;
                 arg0[arg1] = l2;
@@ -290,10 +290,10 @@ public class Camera
                 }
             }
 
-            l l3 = arg0[arg2];
+            CameraModel l3 = arg0[arg2];
             for(int i1 = arg2 - 1; i1 >= arg1; i1--)
             {
-                l l4 = arg0[i1];
+                CameraModel l4 = arg0[i1];
                 if(!bjc(l3, l4))
                     break;
                 arg0[arg2] = l4;
@@ -390,8 +390,8 @@ public class Camera
         bgh += bdc;
         bgi += bdd;
         bgj += bdd;
-        bdj[bdh] = beh;
-        beh.cgn = 2;
+        bdj[bdh] = highlightedObject;
+        highlightedObject.cgn = 2;
         for(int k1 = 0; k1 < bdh; k1++)
             bdj[k1].cnh(bdb, bdc, bdd, bde, bdf, bdg, bcn, bbf);
 
@@ -399,7 +399,7 @@ public class Camera
         bdl = 0;
         for(int i5 = 0; i5 < bdh; i5++)
         {
-            i k = bdj[i5];
+            GameObject k = bdj[i5];
             if(k.cha)
             {
                 for(int l1 = 0; l1 < k.cgb; l1++)
@@ -446,8 +446,8 @@ public class Camera
 
                             if(k3 == 3)
                             {
-                                l l9 = bdm[bdl];
-                                l9.bkj = k;
+                                CameraModel l9 = bdm[bdl];
+                                l9.object = k;
                                 l9.bkk = l1;
                                 bja(bdl);
                                 int l10;
@@ -474,7 +474,7 @@ public class Camera
             }
         }
 
-        i i1 = beh;
+        GameObject i1 = highlightedObject;
         if(i1.cha)
         {
             for(int i2 = 0; i2 < i1.cgb; i2++)
@@ -490,8 +490,8 @@ public class Camera
                     int i11 = (bef[i2] << bcn) / l8;
                     if(j6 - i10 / 2 <= bcj && j6 + i10 / 2 >= -bcj && k7 - i11 <= bck && k7 >= -bck)
                     {
-                        l l12 = bdm[bdl];
-                        l12.bkj = i1;
+                        CameraModel l12 = bdm[bdl];
+                        l12.object = i1;
                         l12.bkk = i2;
                         bjb(bdl);
                         l12.bkl = (l8 + i1.cfk[ai[1]]) / 2;
@@ -508,10 +508,10 @@ public class Camera
         bhm(100, bdm, bdl);
         for(int k5 = 0; k5 < bdl; k5++)
         {
-            l l6 = bdm[k5];
-            i j1 = l6.bkj;
+            CameraModel l6 = bdm[k5];
+            GameObject j1 = l6.object;
             int j2 = l6.bkk;
-            if(j1 == beh)
+            if(j1 == highlightedObject)
             {
                 int ai2[] = j1.cgd[j2];
                 int l7 = ai2[0];
@@ -624,7 +624,7 @@ public class Camera
     }
 
     private void bic(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5[], int arg6[], 
-            int arg7[], i arg8, int arg9)
+            int arg7[], GameObject arg8, int arg9)
     {
         if(arg4 == 3)
         {
@@ -788,7 +788,7 @@ public class Camera
                     i18 += k18;
                     i19 += k19;
                 }
-                m m7 = bfi[arg2];
+                CameraVariable m7 = bfi[arg2];
                 m7.flm = arg0;
                 m7.fln = arg1;
                 m7.fma = arg3;
@@ -1014,7 +1014,7 @@ public class Camera
                     i22 += j22;
                     k22 += l22;
                 }
-                m m8 = bfi[arg2];
+                CameraVariable m8 = bfi[arg2];
                 m8.flm = arg0;
                 m8.fln = arg1;
                 m8.fma = arg3;
@@ -1044,7 +1044,7 @@ public class Camera
                 return;
             for(arg2 = bfj; arg2 < bfk; arg2++)
             {
-                m m1 = bfi[arg2];
+                CameraVariable m1 = bfi[arg2];
                 m1.flm = 0xa0000;
                 m1.fln = 0xfff60000;
             }
@@ -1068,7 +1068,7 @@ public class Camera
                     j3 = bfk;
                 for(arg2 = j2; arg2 <= j3; arg2++)
                 {
-                    m m3 = bfi[arg2];
+                    CameraVariable m3 = bfi[arg2];
                     m3.flm = m3.fln = j4;
                     m3.fma = m3.fmb = i7;
                     j4 += k5;
@@ -1092,7 +1092,7 @@ public class Camera
                     j2 = bfk;
                 for(arg2 = j3; arg2 <= j2; arg2++)
                 {
-                    m m4 = bfi[arg2];
+                    CameraVariable m4 = bfi[arg2];
                     m4.flm = m4.fln = k4;
                     m4.fma = m4.fmb = j7;
                     k4 += l5;
@@ -1121,7 +1121,7 @@ public class Camera
                         k3 = bfk;
                     for(int i11 = k2; i11 <= k3; i11++)
                     {
-                        m m5 = bfi[i11];
+                        CameraVariable m5 = bfi[i11];
                         if(i6 < m5.flm)
                         {
                             m5.flm = i6;
@@ -1153,7 +1153,7 @@ public class Camera
                         k2 = bfk;
                     for(int j11 = k3; j11 <= k2; j11++)
                     {
-                        m m6 = bfi[j11];
+                        CameraVariable m6 = bfi[j11];
                         if(j6 < m6.flm)
                         {
                             m6.flm = j6;
@@ -1176,7 +1176,7 @@ public class Camera
         }
         if(bcb && bce < bcf && bcd >= bfj && bcd < bfk)
         {
-            m m2 = bfi[bcd];
+            CameraVariable m2 = bfi[bcd];
             if(bcc >= m2.flm >> 8 && bcc <= m2.fln >> 8 && m2.flm <= m2.fln && !arg8.cic && arg8.chm[arg9] == 0)
             {
                 bcg[bce] = arg8;
@@ -1187,7 +1187,7 @@ public class Camera
     }
 
     private void bid(int arg0, int arg1, int arg2, int arg3[], int arg4[], int arg5[], int arg6, 
-            i arg7)
+            GameObject arg7)
     {
         if(arg6 == -2)
             return;
@@ -1247,7 +1247,7 @@ public class Camera
                 {
                     for(arg0 = bfj; arg0 < bfk; arg0 += byte1)
                     {
-                        m m4 = bfi[arg0];
+                        CameraVariable m4 = bfi[arg0];
                         arg1 = m4.flm >> 8;
                         int j17 = m4.fln >> 8;
                         int j20 = j17 - arg1;
@@ -1286,7 +1286,7 @@ public class Camera
                 {
                     for(arg0 = bfj; arg0 < bfk; arg0 += byte1)
                     {
-                        m m5 = bfi[arg0];
+                        CameraVariable m5 = bfi[arg0];
                         arg1 = m5.flm >> 8;
                         int l17 = m5.fln >> 8;
                         int k20 = l17 - arg1;
@@ -1323,7 +1323,7 @@ public class Camera
                 }
                 for(arg0 = bfj; arg0 < bfk; arg0 += byte1)
                 {
-                    m m6 = bfi[arg0];
+                    CameraVariable m6 = bfi[arg0];
                     arg1 = m6.flm >> 8;
                     int j18 = m6.fln >> 8;
                     int l20 = j18 - arg1;
@@ -1397,7 +1397,7 @@ public class Camera
             {
                 for(arg0 = bfj; arg0 < bfk; arg0 += byte2)
                 {
-                    m m7 = bfi[arg0];
+                    CameraVariable m7 = bfi[arg0];
                     arg1 = m7.flm >> 8;
                     int l18 = m7.fln >> 8;
                     int i21 = l18 - arg1;
@@ -1436,7 +1436,7 @@ public class Camera
             {
                 for(arg0 = bfj; arg0 < bfk; arg0 += byte2)
                 {
-                    m m8 = bfi[arg0];
+                    CameraVariable m8 = bfi[arg0];
                     arg1 = m8.flm >> 8;
                     int j19 = m8.fln >> 8;
                     int j21 = j19 - arg1;
@@ -1473,7 +1473,7 @@ public class Camera
             }
             for(arg0 = bfj; arg0 < bfk; arg0 += byte2)
             {
-                m m9 = bfi[arg0];
+                CameraVariable m9 = bfi[arg0];
                 arg1 = m9.flm >> 8;
                 int l19 = m9.fln >> 8;
                 int k21 = l19 - arg1;
@@ -1549,11 +1549,11 @@ public class Camera
             l1 <<= 1;
             byte0 = 2;
         }
-        if(arg7.chj)
+        if(arg7.isGiantCrystal)
         {
             for(arg0 = bfj; arg0 < bfk; arg0 += byte0)
             {
-                m m1 = bfi[arg0];
+                CameraVariable m1 = bfi[arg0];
                 arg1 = m1.flm >> 8;
                 int j4 = m1.fln >> 8;
                 int j6 = j4 - arg1;
@@ -1586,7 +1586,7 @@ public class Camera
         {
             for(arg0 = bfj; arg0 < bfk; arg0 += byte0)
             {
-                m m2 = bfi[arg0];
+                CameraVariable m2 = bfi[arg0];
                 arg1 = m2.flm >> 8;
                 int l4 = m2.fln >> 8;
                 int k6 = l4 - arg1;
@@ -1617,7 +1617,7 @@ public class Camera
         }
         for(arg0 = bfj; arg0 < bfk; arg0 += byte0)
         {
-            m m3 = bfi[arg0];
+            CameraVariable m3 = bfi[arg0];
             arg1 = m3.flm >> 8;
             int j5 = m3.fln >> 8;
             int l6 = j5 - arg1;
@@ -2618,8 +2618,8 @@ public class Camera
 
     private void bja(int arg0)
     {
-        l l1 = bdm[arg0];
-        i k = l1.bkj;
+        CameraModel l1 = bdm[arg0];
+        GameObject k = l1.object;
         int i1 = l1.bkk;
         int ai[] = k.cgd[i1];
         int j1 = k.cgc[i1];
@@ -2696,8 +2696,8 @@ public class Camera
 
     private void bjb(int arg0)
     {
-        l l1 = bdm[arg0];
-        i k = l1.bkj;
+        CameraModel l1 = bdm[arg0];
+        GameObject k = l1.object;
         int i1 = l1.bkk;
         int ai[] = k.cgd[i1];
         int k1 = 0;
@@ -2748,7 +2748,7 @@ public class Camera
         l1.bkg = k4;
     }
 
-    private boolean bjc(l arg0, l arg1)
+    private boolean bjc(CameraModel arg0, CameraModel arg1)
     {
         if(arg0.bkd >= arg1.bkf)
             return true;
@@ -2762,8 +2762,8 @@ public class Camera
             return true;
         if(arg1.bkh > arg0.bki)
             return false;
-        i k = arg0.bkj;
-        i i1 = arg1.bkj;
+        GameObject k = arg0.object;
+        GameObject i1 = arg1.object;
         int j1 = arg0.bkk;
         int k1 = arg1.bkk;
         int ai[] = k.cgd[j1];
@@ -2867,10 +2867,10 @@ public class Camera
         return !bkc(ai2, ai3, ai4, ai5);
     }
 
-    private boolean bjd(l arg0, l arg1)
+    private boolean bjd(CameraModel arg0, CameraModel arg1)
     {
-        i k = arg0.bkj;
-        i i1 = arg1.bkj;
+        GameObject k = arg0.object;
+        GameObject i1 = arg1.object;
         int j1 = arg0.bkk;
         int k1 = arg1.bkk;
         int ai[] = k.cgd[j1];
@@ -2920,7 +2920,7 @@ public class Camera
         return !flag;
     }
 
-    public void bje(int k, int i1, int j1)
+    public void createPictures(int k, int i1, int j1)
     {
         bei = k;
         bej = new byte[k][];
@@ -3440,7 +3440,7 @@ public class Camera
     private int bcd;
     private int bce;
     private int bcf;
-    private i bcg[];
+    private GameObject bcg[];
     private int bch[];
     private int bci;
     private int bcj;
@@ -3457,10 +3457,10 @@ public class Camera
     private int bdg;
     public int bdh;
     public int bdi;
-    public i bdj[];
+    public GameObject bdj[];
     private int bdk[];
     private int bdl;
-    private l bdm[];
+    private CameraModel bdm[];
     private int bdn;
     private int bea[];
     private int beb[];
@@ -3469,7 +3469,7 @@ public class Camera
     private int bee[];
     private int bef[];
     private int beg[];
-    public i beh;
+    public GameObject highlightedObject;
     int bei;
     byte bej[][];
     int bek[][];
@@ -3484,7 +3484,7 @@ public class Camera
     private static int bff[] = new int[256];
     GameImage bfg;
     public int bfh[];
-    m bfi[];
+    CameraVariable bfi[];
     int bfj;
     int bfk;
     int bfl[];

@@ -4,7 +4,7 @@ package client;
 // Decompiler options: packimports(3) 
 
 
-public class v
+public class ChatMessage
 {
 
     public static String bytesToString(byte arg0[], int arg1, int arg2)
@@ -93,25 +93,25 @@ public class v
                 if(l < 13)
                     j = l;
                 else
-                    ceg[i++] = (byte)l;
+                    lastChat[i++] = (byte)l;
             } else
             if(l < 13)
             {
-                ceg[i++] = (byte)((j << 4) + l);
+                lastChat[i++] = (byte)((j << 4) + l);
                 j = -1;
             } else
             {
-                ceg[i++] = (byte)((j << 4) + (l >> 4));
+                lastChat[i++] = (byte)((j << 4) + (l >> 4));
                 j = l & 0xf;
             }
         }
 
         if(j != -1)
-            ceg[i++] = (byte)(j << 4);
+            lastChat[i++] = (byte)(j << 4);
         return i;
     }
 
-    public static byte ceg[] = new byte[100];
+    public static byte lastChat[] = new byte[100];
     public static char ceh[] = new char[100];
     private static char cei[] = {
         ' ', 'e', 't', 'a', 'o', 'i', 'h', 'n', 's', 'r', 

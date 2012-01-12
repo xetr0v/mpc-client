@@ -10,7 +10,7 @@ public class DataFileDecrypter
 
     public static int unpackData(byte abyte0[], int i, byte abyte1[], int j, int k)
     {
-        o o1 = new o();
+        DataFileVariables o1 = new DataFileVariables();
         o1.aee = abyte1;
         o1.aef = k;
         o1.aej = abyte0;
@@ -29,13 +29,13 @@ public class DataFileDecrypter
         return i;
     }
 
-    private static void glk(o arg0)
+    private static void glk(DataFileVariables arg0)
     {
         byte byte4 = arg0.afa;
         int i = arg0.afb;
         int j = arg0.afl;
         int k = arg0.afj;
-        int ai[] = o.aga;
+        int ai[] = DataFileVariables.aga;
         int l = arg0.afi;
         byte abyte0[] = arg0.aej;
         int i1 = arg0.aek;
@@ -149,14 +149,14 @@ label0:
         arg0.afb = i;
         arg0.afl = j;
         arg0.afj = k;
-        o.aga = ai;
+        DataFileVariables.aga = ai;
         arg0.afi = l;
         arg0.aej = abyte0;
         arg0.aek = i1;
         arg0.ael = j1;
     }
 
-    private static void gll(o arg0)
+    private static void gll(DataFileVariables arg0)
     {
         boolean flag = false;
         boolean flag1 = false;
@@ -182,8 +182,8 @@ label0:
         int ai1[] = null;
         int ai2[] = null;
         arg0.aff = 1;
-        if(o.aga == null)
-            o.aga = new int[arg0.aff * 0x186a0];
+        if(DataFileVariables.aga == null)
+            DataFileVariables.aga = new int[arg0.aff * 0x186a0];
         boolean flag19 = true;
         while(flag19) 
         {
@@ -387,7 +387,7 @@ label0:
                     arg0.afk[byte5 & 0xff] += j6;
                     for(; j6 > 0; j6--)
                     {
-                        o.aga[i6] = byte5 & 0xff;
+                        DataFileVariables.aga[i6] = byte5 & 0xff;
                         i6++;
                     }
 
@@ -447,7 +447,7 @@ label0:
                         }
                     }
                     arg0.afk[arg0.age[byte6 & 0xff] & 0xff]++;
-                    o.aga[i6] = arg0.age[byte6 & 0xff] & 0xff;
+                    DataFileVariables.aga[i6] = arg0.age[byte6 & 0xff] & 0xff;
                     i6++;
                     if(j5 == 0)
                     {
@@ -483,14 +483,14 @@ label0:
 
             for(int l2 = 0; l2 < i6; l2++)
             {
-                byte byte7 = (byte)(o.aga[l2] & 0xff);
-                o.aga[arg0.afm[byte7 & 0xff]] |= l2 << 8;
+                byte byte7 = (byte)(DataFileVariables.aga[l2] & 0xff);
+                DataFileVariables.aga[arg0.afm[byte7 & 0xff]] |= l2 << 8;
                 arg0.afm[byte7 & 0xff]++;
             }
 
-            arg0.afi = o.aga[arg0.afh] >> 8;
+            arg0.afi = DataFileVariables.aga[arg0.afh] >> 8;
             arg0.afl = 0;
-            arg0.afi = o.aga[arg0.afi];
+            arg0.afi = DataFileVariables.aga[arg0.afi];
             arg0.afj = (byte)(arg0.afi & 0xff);
             arg0.afi >>= 8;
             arg0.afl++;
@@ -503,17 +503,17 @@ label0:
         }
     }
 
-    private static byte glm(o o1)
+    private static byte glm(DataFileVariables o1)
     {
         return (byte)gma(8, o1);
     }
 
-    private static byte gln(o o1)
+    private static byte gln(DataFileVariables o1)
     {
         return (byte)gma(1, o1);
     }
 
-    private static int gma(int arg0, o arg1)
+    private static int gma(int arg0, DataFileVariables arg1)
     {
         int i;
         do
@@ -536,7 +536,7 @@ label0:
         return i;
     }
 
-    private static void gmb(o arg0)
+    private static void gmb(DataFileVariables arg0)
     {
         arg0.agb = 0;
         for(int i = 0; i < 256; i++)

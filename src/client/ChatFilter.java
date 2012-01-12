@@ -79,7 +79,7 @@ public class ChatFilter
 
     }
 
-    public static String fgd(String arg0)
+    public static String filterChat(String arg0)
     {
         char ac[] = arg0.toLowerCase().toCharArray();
         fgi(ac);

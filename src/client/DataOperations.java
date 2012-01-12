@@ -9,7 +9,7 @@ import java.net.URL;
 public class DataOperations
 {
 
-    public static InputStream getInputStream(String arg0)
+    public static InputStream openInputStream(String arg0)
         throws IOException
     {
         Object obj;
@@ -24,10 +24,10 @@ public class DataOperations
         return ((InputStream) (obj));
     }
 
-    public static void fmg(String s, byte abyte0[], int i)
+    public static void readFully(String s, byte abyte0[], int i)
         throws IOException
     {
-        InputStream inputstream = getInputStream(s);
+        InputStream inputstream = openInputStream(s);
         DataInputStream datainputstream = new DataInputStream(inputstream);
         try
         {
@@ -37,12 +37,12 @@ public class DataOperations
         datainputstream.close();
     }
 
-    public static int getUnsignedByte(byte byte0)
+    public static int getByte(byte byte0)
     {
         return byte0 & 0xff;
     }
 
-    public static int fmi(byte abyte0[], int i)
+    public static int getShort(byte abyte0[], int i)
     {
         return ((abyte0[i] & 0xff) << 8) + (abyte0[i + 1] & 0xff);
     }
@@ -57,15 +57,15 @@ public class DataOperations
         return (((long)getInt(abyte0, i) & 0xffffffffL) << 32) + ((long)getInt(abyte0, i + 4) & 0xffffffffL);
     }
 
-    public static int fml(byte abyte0[], int i)
+    public static int getShortSigned(byte abyte0[], int i)
     {
-        int j = getUnsignedByte(abyte0[i]) * 256 + getUnsignedByte(abyte0[i + 1]);
+        int j = getByte(abyte0[i]) * 256 + getByte(abyte0[i + 1]);
         if(j > 32767)
             j -= 0x10000;
         return j;
     }
 
-    public static int fmm(byte abyte0[], int i)
+    public static int getInt2(byte abyte0[], int i)
     {
         if((abyte0[i] & 0xff) < 128)
             return abyte0[i];
@@ -73,21 +73,21 @@ public class DataOperations
             return ((abyte0[i] & 0xff) - 128 << 24) + ((abyte0[i + 1] & 0xff) << 16) + ((abyte0[i + 2] & 0xff) << 8) + (abyte0[i + 3] & 0xff);
     }
 
-    public static int fmn(byte arg0[], int arg1, int arg2)
+    public static int getBits(byte arg0[], int arg1, int arg2)
     {
         int i = arg1 >> 3;
         int j = 8 - (arg1 & 7);
         int k = 0;
         for(; arg2 > j; j = 8)
         {
-            k += (arg0[i++] & fmd[j]) << arg2 - j;
+            k += (arg0[i++] & bitMask[j]) << arg2 - j;
             arg2 -= j;
         }
 
         if(arg2 == j)
-            k += arg0[i] & fmd[j];
+            k += arg0[i] & bitMask[j];
         else
-            k += arg0[i] >> j - arg2 & fmd[arg2];
+            k += arg0[i] >> j - arg2 & bitMask[arg2];
         return k;
     }
 
@@ -185,7 +185,7 @@ public class DataOperations
 
     public static int getSoundOffset(String arg0, byte arg1[])
     {
-        int i = fmi(arg1, 0);
+        int i = getShort(arg1, 0);
         int j = 0;
         arg0 = arg0.toUpperCase();
         for(int k = 0; k < arg0.length(); k++)
@@ -206,7 +206,7 @@ public class DataOperations
 
     public static int getSoundLength(String arg0, byte arg1[])
     {
-        int i = fmi(arg1, 0);
+        int i = getShort(arg1, 0);
         int j = 0;
         arg0 = arg0.toUpperCase();
         for(int k = 0; k < arg0.length(); k++)
@@ -228,10 +228,10 @@ public class DataOperations
 
     public static byte[] loadData(String s, int i, byte abyte0[])
     {
-        return fnh(s, i, abyte0, null);
+        return loadData(s, i, abyte0, null);
     }
 
-    public static byte[] fnh(String arg0, int arg1, byte arg2[], byte arg3[])
+    public static byte[] loadData(String arg0, int arg1, byte arg2[], byte arg3[])
     {
         int i = (arg2[0] & 0xff) * 256 + (arg2[1] & 0xff);
         int j = 0;
@@ -267,12 +267,11 @@ public class DataOperations
     }
 
     public static URL codeBase = null;
-    private static int fmd[] = {
+    private static int bitMask[] = {
         0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 
         1023, 2047, 4095, 8191, 16383, 32767, 65535, 0x1ffff, 0x3ffff, 0x7ffff, 
         0xfffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff, 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 
         0x3fffffff, 0x7fffffff, -1
     };
-    public static boolean fme;
 
 }

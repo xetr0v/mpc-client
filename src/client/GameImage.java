@@ -28,8 +28,8 @@ public class GameImage
         bme = new int[arg2][];
         bmf = new int[arg2];
         bmg = new int[arg2];
-        bmj = new int[arg2];
-        bmk = new int[arg2];
+        pictureWidth = new int[arg2];
+        pictureHeight = new int[arg2];
         bmh = new int[arg2];
         bmi = new int[arg2];
         if(arg0 > 1 && arg1 > 1 && arg3 != null)
@@ -359,7 +359,7 @@ public class GameImage
 
     }
 
-    public void cbe(int i, int k, int l)
+    public void drawMinimapPixel(int i, int k, int l)
     {
         if(i < bna || k < bmm || i >= bnb || k >= bmn)
         {
@@ -434,10 +434,10 @@ public class GameImage
 
     public void unpackImageData(int arg0, byte arg1[], byte arg2[], int arg3)
     {
-        int i = DataOperations.fmi(arg1, 0);
-        int k = DataOperations.fmi(arg2, i);
+        int i = DataOperations.getShort(arg1, 0);
+        int k = DataOperations.getShort(arg2, i);
         i += 2;
-        int l = DataOperations.fmi(arg2, i);
+        int l = DataOperations.getShort(arg2, i);
         i += 2;
         int i1 = arg2[i++] & 0xff;
         int ai[] = new int[i1];
@@ -453,16 +453,16 @@ public class GameImage
         {
             bmh[l1] = arg2[i++] & 0xff;
             bmi[l1] = arg2[i++] & 0xff;
-            bmf[l1] = DataOperations.fmi(arg2, i);
+            bmf[l1] = DataOperations.getShort(arg2, i);
             i += 2;
-            bmg[l1] = DataOperations.fmi(arg2, i);
+            bmg[l1] = DataOperations.getShort(arg2, i);
             i += 2;
             int i2 = arg2[i++] & 0xff;
             int j2 = bmf[l1] * bmg[l1];
             bmd[l1] = new byte[j2];
             bme[l1] = ai;
-            bmj[l1] = k;
-            bmk[l1] = l;
+            pictureWidth[l1] = k;
+            pictureHeight[l1] = l;
             bmc[l1] = null;
             bml[l1] = false;
             if(bmh[l1] != 0 || bmi[l1] != 0)
@@ -502,8 +502,8 @@ public class GameImage
         bmg[arg0] = 40;
         bmh[arg0] = 0;
         bmi[arg0] = 0;
-        bmj[arg0] = 255;
-        bmk[arg0] = 40;
+        pictureWidth[arg0] = 255;
+        pictureHeight[arg0] = 40;
         bml[arg0] = false;
         int i = 0;
         int k = 1;
@@ -646,8 +646,8 @@ public class GameImage
         bml[arg0] = false;
         bmh[arg0] = 0;
         bmi[arg0] = 0;
-        bmj[arg0] = arg3;
-        bmk[arg0] = arg4;
+        pictureWidth[arg0] = arg3;
+        pictureHeight[arg0] = arg4;
         int i = arg3 * arg4;
         int k = 0;
         bmc[arg0] = new int[i];
@@ -667,8 +667,8 @@ public class GameImage
         bml[arg0] = false;
         bmh[arg0] = 0;
         bmi[arg0] = 0;
-        bmj[arg0] = arg3;
-        bmk[arg0] = arg4;
+        pictureWidth[arg0] = arg3;
+        pictureHeight[arg0] = arg4;
         int i = arg3 * arg4;
         int k = 0;
         bmc[arg0] = new int[i];
@@ -758,8 +758,8 @@ public class GameImage
             int l2 = (l1 << 16) / i1;
             if(bml[j1])
             {
-                int i3 = bmj[j1];
-                int k3 = bmk[j1];
+                int i3 = pictureWidth[j1];
+                int k3 = pictureHeight[j1];
                 k2 = (i3 << 16) / l;
                 l2 = (k3 << 16) / i1;
                 i += ((bmh[j1] * l + i3) - 1) / i3;
@@ -884,7 +884,7 @@ public class GameImage
         }
     }
 
-    public void cce(int i, int k, int l, int i1, int j1, int k1)
+    public void drawTransparentImage(int i, int k, int l, int i1, int j1, int k1)
     {
         try
         {
@@ -896,8 +896,8 @@ public class GameImage
             int i3 = (i2 << 16) / i1;
             if(bml[j1])
             {
-                int j3 = bmj[j1];
-                int l3 = bmk[j1];
+                int j3 = pictureWidth[j1];
+                int l3 = pictureHeight[j1];
                 l2 = (j3 << 16) / l;
                 i3 = (l3 << 16) / i1;
                 i += ((bmh[j1] * l + j3) - 1) / j3;
@@ -957,7 +957,7 @@ public class GameImage
         }
     }
 
-    public void ccf(int i, int k, int l, int i1, int j1, int k1)
+    public void drawCharacterLegs(int i, int k, int l, int i1, int j1, int k1)
     {
         try
         {
@@ -969,8 +969,8 @@ public class GameImage
             int i3 = (i2 << 16) / i1;
             if(bml[j1])
             {
-                int j3 = bmj[j1];
-                int l3 = bmk[j1];
+                int j3 = pictureWidth[j1];
+                int l3 = pictureHeight[j1];
                 l2 = (j3 << 16) / l;
                 i3 = (l3 << 16) / i1;
                 i += ((bmh[j1] * l + j3) - 1) / j3;
@@ -1300,8 +1300,8 @@ public class GameImage
             }
 
         }
-        int i1 = -bmj[arg2] / 2;
-        int j1 = -bmk[arg2] / 2;
+        int i1 = -pictureWidth[arg2] / 2;
+        int j1 = -pictureHeight[arg2] / 2;
         if(bml[arg2])
         {
             i1 += bmh[arg2];
@@ -1642,8 +1642,8 @@ public class GameImage
             int i4 = -(i2 << 16) / i1;
             if(bml[j1])
             {
-                int j4 = bmj[j1];
-                int l4 = bmk[j1];
+                int j4 = pictureWidth[j1];
+                int l4 = pictureHeight[j1];
                 k3 = (j4 << 16) / l;
                 l3 = (l4 << 16) / i1;
                 int k5 = bmh[j1];
@@ -2166,7 +2166,7 @@ label3:
         drawString(s, i - textWidth(s, l) / 2, k, l, i1);
     }
 
-    public void cdm(String arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
+    public void drawFloatingText(String arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
     {
         try
         {
@@ -2197,7 +2197,7 @@ label3:
                     drawText(arg0.substring(k, l), arg1, arg2, arg3, arg4);
                     i = 0;
                     k = i1 = l + 1;
-                    arg2 += ced(arg3);
+                    arg2 += textHeightNumber(arg3);
                 }
             }
 
@@ -2433,7 +2433,7 @@ label3:
 
     }
 
-    public int ced(int i)
+    public int textHeightNumber(int i)
     {
         if(i == 0)
             return 12;
@@ -2501,8 +2501,8 @@ label3:
     public int bmg[];
     public int bmh[];
     public int bmi[];
-    public int bmj[];
-    public int bmk[];
+    public int pictureWidth[];
+    public int pictureHeight[];
     public boolean bml[];
     private int bmm;
     private int bmn;

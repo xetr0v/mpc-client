@@ -3,12 +3,15 @@ package client;
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-import java.applet.Applet;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.*;
 
+import javax.imageio.ImageIO;
+
+@SuppressWarnings("serial")
 public final class mudclient extends GameAppletMiddleMan
 {
 
@@ -19,6 +22,7 @@ public final class mudclient extends GameAppletMiddleMan
         mud.members = true;
         mud.server = "216.24.201.81";
         mud.port = 43595;
+        GameAppletMiddleMan.maxPacketReadCount = 500;
         mud.flc(mud.windowWidth, mud.windowHeight + 11, "Runescape by Andrew Gower", false);
         mud.gameMinThreadSleepTime = 10;
     }
@@ -520,7 +524,7 @@ public final class mudclient extends GameAppletMiddleMan
             engineHandle.landscapeMembers = unpackData("land" + Version.VERSION_MAP + ".mem", "members landscape", 85);
     }
 
-    private final void emj(int l, String s1)
+    private final void drawModel(int l, String s1)
     {
         int i1 = objectX[l];
         int j1 = objectY[l];
@@ -530,12 +534,12 @@ public final class mudclient extends GameAppletMiddleMan
         if(i1 >= 0 && j1 >= 0 && i1 < 96 && j1 < 96 && k1 > -byte0 && k1 < byte0 && l1 > -byte0 && l1 < byte0)
         {
             gameCamera.removeModel(objectArray[l]);
-            int i2 = Data.anj(s1);
-            i j2 = gameDataObjects[i2].cnj();
-            gameCamera.bgm(j2);
+            int i2 = Data.getModelNameIndex(s1);
+            GameObject j2 = gameDataObjects[i2].cnj();
+            gameCamera.addModel(j2);
             j2.cme(true, 48, 48, -50, -10, -50);
             j2.cnl(objectArray[l]);
-            j2.chk = l;
+            j2.index = l;
             objectArray[l] = j2;
         }
     }
@@ -543,7 +547,7 @@ public final class mudclient extends GameAppletMiddleMan
     final void emk(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6)
     {
         Mob f1 = playerArray[arg4];
-        if(f1.hab == 255)
+        if(f1.bottomColour == 255)
             return;
         int l = f1.currentSprite + (cameraRotation + 16) / 32 & 7;
         boolean flag = false;
@@ -563,14 +567,14 @@ public final class mudclient extends GameAppletMiddleMan
             i1 = 1;
             flag = true;
         }
-        int j1 = i1 * 3 + dhn[(f1.stepCount / 6) % 4];
+        int j1 = i1 * 3 + walkModel[(f1.stepCount / 6) % 4];
         if(f1.currentSprite == 8)
         {
             i1 = 5;
             l = 2;
             flag = false;
             arg0 -= (5 * arg6) / 100;
-            j1 = i1 * 3 + eme[(tick / 5) % 8];
+            j1 = i1 * 3 + combatModelArray1[(tick / 5) % 8];
         } else
         if(f1.currentSprite == 9)
         {
@@ -578,12 +582,12 @@ public final class mudclient extends GameAppletMiddleMan
             l = 2;
             flag = true;
             arg0 += (5 * arg6) / 100;
-            j1 = i1 * 3 + eab[(tick / 6) % 8];
+            j1 = i1 * 3 + combatModelArray2[(tick / 6) % 8];
         }
         for(int k1 = 0; k1 < 12; k1++)
         {
-            int l1 = dgl[l][k1];
-            int l2 = f1.gnd[l1] - 1;
+            int l1 = animationModelArray[l][k1];
+            int l2 = f1.appearanceItems[l1] - 1;
             if(l2 >= 0)
             {
                 int k3 = 0;
@@ -597,55 +601,55 @@ public final class mudclient extends GameAppletMiddleMan
                     {
                         k3 = -22;
                         i4 = -3;
-                        j4 = i1 * 3 + dhn[(2 + f1.stepCount / 6) % 4];
+                        j4 = i1 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
                     } else
                     if(l1 == 4 && i1 == 2)
                     {
                         k3 = 0;
                         i4 = -8;
-                        j4 = i1 * 3 + dhn[(2 + f1.stepCount / 6) % 4];
+                        j4 = i1 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
                     } else
                     if(l1 == 4 && i1 == 3)
                     {
                         k3 = 26;
                         i4 = -5;
-                        j4 = i1 * 3 + dhn[(2 + f1.stepCount / 6) % 4];
+                        j4 = i1 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
                     } else
                     if(l1 == 3 && i1 == 1)
                     {
                         k3 = 22;
                         i4 = 3;
-                        j4 = i1 * 3 + dhn[(2 + f1.stepCount / 6) % 4];
+                        j4 = i1 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
                     } else
                     if(l1 == 3 && i1 == 2)
                     {
                         k3 = 0;
                         i4 = 8;
-                        j4 = i1 * 3 + dhn[(2 + f1.stepCount / 6) % 4];
+                        j4 = i1 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
                     } else
                     if(l1 == 3 && i1 == 3)
                     {
                         k3 = -26;
                         i4 = 5;
-                        j4 = i1 * 3 + dhn[(2 + f1.stepCount / 6) % 4];
+                        j4 = i1 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
                     }
                 if(i1 != 5 || Data.animationHasA[l2] == 1)
                 {
                     int k4 = j4 + Data.animationNumber[l2];
-                    k3 = (k3 * arg2) / ((GameImage) (gameGraphics)).bmj[k4];
-                    i4 = (i4 * arg3) / ((GameImage) (gameGraphics)).bmk[k4];
-                    int l4 = (arg2 * ((GameImage) (gameGraphics)).bmj[k4]) / ((GameImage) (gameGraphics)).bmj[Data.animationNumber[l2]];
+                    k3 = (k3 * arg2) / ((GameImage) (gameGraphics)).pictureWidth[k4];
+                    i4 = (i4 * arg3) / ((GameImage) (gameGraphics)).pictureHeight[k4];
+                    int l4 = (arg2 * ((GameImage) (gameGraphics)).pictureWidth[k4]) / ((GameImage) (gameGraphics)).pictureWidth[Data.animationNumber[l2]];
                     k3 -= (l4 - arg2) / 2;
-                    int i5 = Data.alh[l2];
-                    int j5 = dki[f1.hac];
+                    int i5 = Data.animationCharacterColor[l2];
+                    int j5 = appearanceSkinColours[f1.skinColour];
                     if(i5 == 1)
-                        i5 = appearanceHairColours[f1.gnn];
+                        i5 = appearanceHairColours[f1.hairColour];
                     else
                     if(i5 == 2)
-                        i5 = appearanceTopBottomColours[f1.haa];
+                        i5 = appearanceTopBottomColours[f1.topColour];
                     else
                     if(i5 == 3)
-                        i5 = appearanceTopBottomColours[f1.hab];
+                        i5 = appearanceTopBottomColours[f1.bottomColour];
                     gameGraphics.drawImage(arg0 + k3, arg1 + i4, l4, arg3, k4, i5, j5, arg5, flag);
                 }
             }
@@ -653,20 +657,20 @@ public final class mudclient extends GameAppletMiddleMan
 
         if(f1.lastMessageTimeout > 0)
         {
-            eaf[egg] = gameGraphics.textWidth(f1.gne, 1) / 2;
-            if(eaf[egg] > 150)
-                eaf[egg] = 150;
-            eag[egg] = (gameGraphics.textWidth(f1.gne, 1) / 300) * gameGraphics.ced(1);
-            ead[egg] = arg0 + arg2 / 2;
-            eae[egg] = arg1;
-            egh[egg++] = f1.gne;
+            receivedMessageMidPoint[receivedMessagesCount] = gameGraphics.textWidth(f1.lastMessage, 1) / 2;
+            if(receivedMessageMidPoint[receivedMessagesCount] > 150)
+                receivedMessageMidPoint[receivedMessagesCount] = 150;
+            receivedMessageHeight[receivedMessagesCount] = (gameGraphics.textWidth(f1.lastMessage, 1) / 300) * gameGraphics.textHeightNumber(1);
+            receivedMessageX[receivedMessagesCount] = arg0 + arg2 / 2;
+            receivedMessageY[receivedMessagesCount] = arg1;
+            receivedMessages[receivedMessagesCount++] = f1.lastMessage;
         }
         if(f1.itemAboveHeadTimeout > 0)
         {
-            ebk[dib] = arg0 + arg2 / 2;
-            ebl[dib] = arg1;
-            dfi[dib] = arg6;
-            dfj[dib++] = f1.gng;
+            itemAboveHeadX[itemsAboveHeadCount] = arg0 + arg2 / 2;
+            itemAboveHeadY[itemsAboveHeadCount] = arg1;
+            itemAboveHeadScale[itemsAboveHeadCount] = arg6;
+            itemAboveHeadID[itemsAboveHeadCount++] = f1.itemAboveHeadID;
         }
         if(f1.currentSprite == 8 || f1.currentSprite == 9 || f1.combatTimer != 0)
         {
@@ -678,10 +682,10 @@ public final class mudclient extends GameAppletMiddleMan
                 else
                 if(f1.currentSprite == 9)
                     i2 += (20 * arg6) / 100;
-                int i3 = (f1.gnj * 30) / f1.gnk;
-                ekj[ejl] = i2 + arg2 / 2;
-                ekk[ejl] = arg1;
-                ekl[ejl++] = i3;
+                int i3 = (f1.currentHits * 30) / f1.baseHits;
+                healthBarX[healthBarVisibleCount] = i2 + arg2 / 2;
+                healthBarY[healthBarVisibleCount] = arg1;
+                healthBarMissing[healthBarVisibleCount++] = i3;
             }
             if(f1.combatTimer > 150)
             {
@@ -692,10 +696,10 @@ public final class mudclient extends GameAppletMiddleMan
                 if(f1.currentSprite == 9)
                     j2 += (10 * arg6) / 100;
                 gameGraphics.drawPicture((j2 + arg2 / 2) - 12, (arg1 + arg3 / 2) - 12, baseInventoryPic + 11);
-                gameGraphics.drawText(String.valueOf(f1.gni), (j2 + arg2 / 2) - 1, arg1 + arg3 / 2 + 5, 3, 0xffffff);
+                gameGraphics.drawText(String.valueOf(f1.lastDamageCount), (j2 + arg2 / 2) - 1, arg1 + arg3 / 2 + 5, 3, 0xffffff);
             }
         }
-        if(f1.haj == 1 && f1.itemAboveHeadTimeout == 0)
+        if(f1.itemAboveHeadVisible == 1 && f1.itemAboveHeadTimeout == 0)
         {
             int k2 = arg5 + arg0 + arg2 / 2;
             if(f1.currentSprite == 8)
@@ -749,8 +753,8 @@ public final class mudclient extends GameAppletMiddleMan
         gameGraphics.drawText("Your opponent's stake:", byte0 + 351, byte1 + 30, 1, 0xffff00);
         for(int j1 = 0; j1 < duelOpponentStakeCount; j1++)
         {
-            String s2 = Data.itemName[eff[j1]];
-            if(Data.itemStackable[eff[j1]] == 0)
+            String s2 = Data.itemName[duelOpponentStakeItem[j1]];
+            if(Data.itemStackable[duelOpponentStakeItem[j1]] == 0)
                 s2 = s2 + " x " + formatItemCount(duelOutStakeItemCount[j1]);
             gameGraphics.drawText(s2, byte0 + 351, byte1 + 42 + j1 * 12, 1, 0xffffff);
         }
@@ -885,7 +889,7 @@ public final class mudclient extends GameAppletMiddleMan
                 int l2 = inventoryItems[k2];
                 if(selectedSpell >= 0)
                 {
-                    if(Data.amd[selectedSpell] == 3)
+                    if(Data.spellType[selectedSpell] == 3)
                     {
                         menuText1[menuOptionsCount] = "Cast " + Data.spellName[selectedSpell] + " on";
                         menuText2[menuOptionsCount] = "@lre@" + Data.itemName[l2];
@@ -959,7 +963,7 @@ public final class mudclient extends GameAppletMiddleMan
         int l = 0;
         byte byte0 = 50;
         byte byte1 = 50;
-        engineHandle.gjj(byte0 * 48 + 23, byte1 * 48 + 23, l);
+        engineHandle.loadSection(byte0 * 48 + 23, byte1 * 48 + 23, l);
         engineHandle.glg(gameDataObjects);
         char c1 = '\u2600';
         char c2 = '\u1900';
@@ -969,7 +973,7 @@ public final class mudclient extends GameAppletMiddleMan
         gameCamera.zoom2 = 4100;
         gameCamera.zoom3 = 1;
         gameCamera.zoom4 = 4000;
-        gameCamera.setCamera(c1, -engineHandle.gjf(c1, c2), c2, 912, c4, 0, c3 * 2);
+        gameCamera.setCamera(c1, -engineHandle.getAveragedElevation(c1, c2), c2, 912, c4, 0, c3 * 2);
         gameCamera.finishCamera();
         gameGraphics.screenFadeToBlack();
         gameGraphics.screenFadeToBlack();
@@ -992,7 +996,7 @@ public final class mudclient extends GameAppletMiddleMan
         gameCamera.zoom2 = 4100;
         gameCamera.zoom3 = 1;
         gameCamera.zoom4 = 4000;
-        gameCamera.setCamera(c1, -engineHandle.gjf(c1, c2), c2, 912, c4, 0, c3 * 2);
+        gameCamera.setCamera(c1, -engineHandle.getAveragedElevation(c1, c2), c2, 912, c4, 0, c3 * 2);
         gameCamera.finishCamera();
         gameGraphics.screenFadeToBlack();
         gameGraphics.screenFadeToBlack();
@@ -1024,7 +1028,7 @@ public final class mudclient extends GameAppletMiddleMan
         gameCamera.zoom2 = 4100;
         gameCamera.zoom3 = 1;
         gameCamera.zoom4 = 4000;
-        gameCamera.setCamera(c1, -engineHandle.gjf(c1, c2), c2, 912, c4, 0, c3 * 2);
+        gameCamera.setCamera(c1, -engineHandle.getAveragedElevation(c1, c2), c2, 912, c4, 0, c3 * 2);
         gameCamera.finishCamera();
         gameGraphics.screenFadeToBlack();
         gameGraphics.screenFadeToBlack();
@@ -1041,187 +1045,200 @@ public final class mudclient extends GameAppletMiddleMan
         gameGraphics.cbl(baseInventoryPic + 10);
     }
 
-    protected final void adf(int arg0, int arg1, byte arg2[])
+    protected final void handlePacket(int packetID, int packetLength, byte packetData[])
     {
         try
         {
-            if(arg0 == 141)
+            if(packetID == 145)
             {
+                //if(!hasWorldInfo)// TODO
+                //    return;
                 lastPlayerCount = playerCount;
                 for(int l = 0; l < lastPlayerCount; l++)
                     lastPlayerArray[l] = playerArray[l];
 
-                int l7 = 8;
-                sectionX = DataOperations.fmn(arg2, l7, 11);
-                l7 += 11;
-                sectionY = DataOperations.fmn(arg2, l7, 13);
-                l7 += 13;
-                int i14 = DataOperations.fmn(arg2, l7, 4);
-                l7 += 4;
-                boolean flag1 = fdg(sectionX, sectionY);
+                int off = 8;
+                sectionX = DataOperations.getBits(packetData, off, 11);
+                off += 11;
+                sectionY = DataOperations.getBits(packetData, off, 13);
+                off += 13;
+                int sprite = DataOperations.getBits(packetData, off, 4);
+                off += 4;
+                boolean sectionLoaded = loadSection(sectionX, sectionY);
                 sectionX -= areaX;
                 sectionY -= areaY;
-                int i23 = sectionX * magicLoc + 64;
-                int i26 = sectionY * magicLoc + 64;
-                if(flag1)
+                int mapEnterX = sectionX * magicLoc + 64;
+                int mapEnterY = sectionY * magicLoc + 64;
+                if(sectionLoaded)
                 {
                     ourPlayer.waypointCurrent = 0;
                     ourPlayer.waypointsEndSprite = 0;
-                    ourPlayer.currentX = ourPlayer.waypointsX[0] = i23;
-                    ourPlayer.currentY = ourPlayer.waypointsY[0] = i26;
+                    ourPlayer.currentX = ourPlayer.waypointsX[0] = mapEnterX;
+                    ourPlayer.currentY = ourPlayer.waypointsY[0] = mapEnterY;
                 }
                 playerCount = 0;
-                ourPlayer = makePlayer(djf, i23, i26, i14);
-                int j29 = DataOperations.fmn(arg2, l7, 8);
-                l7 += 8;
-                for(int i34 = 0; i34 < j29; i34++)
+                ourPlayer = makePlayer(serverIndex, mapEnterX, mapEnterY, sprite);
+                int newPlayerCount = DataOperations.getBits(packetData, off, 8);
+                off += 8;
+                for(int currentNewPlayer = 0; currentNewPlayer < newPlayerCount; currentNewPlayer++)
                 {
-                    Mob f4 = lastPlayerArray[i34 + 1];
-                    int i40 = DataOperations.fmn(arg2, l7, 1);
-                    l7++;
-                    if(i40 != 0)
+                    //Mob mob = lastPlayerArray[currentNewPlayer + 1];
+                    Mob mob = getLastPlayer(DataOperations.getBits(packetData, off, 16));
+                    off += 16;
+                    int playerAtTile = DataOperations.getBits(packetData, off, 1);
+                    off++;
+                    if(playerAtTile != 0)
                     {
-                        int i42 = DataOperations.fmn(arg2, l7, 1);
-                        l7++;
-                        if(i42 == 0)
+                        int waypointsLeft = DataOperations.getBits(packetData, off, 1);
+                        off++;
+                        if(waypointsLeft == 0)
                         {
-                            int j43 = DataOperations.fmn(arg2, l7, 3);
-                            l7 += 3;
-                            int j44 = f4.waypointCurrent;
-                            int i45 = f4.waypointsX[j44];
-                            int j45 = f4.waypointsY[j44];
-                            if(j43 == 2 || j43 == 1 || j43 == 3)
-                                i45 += magicLoc;
-                            if(j43 == 6 || j43 == 5 || j43 == 7)
-                                i45 -= magicLoc;
-                            if(j43 == 4 || j43 == 3 || j43 == 5)
-                                j45 += magicLoc;
-                            if(j43 == 0 || j43 == 1 || j43 == 7)
-                                j45 -= magicLoc;
-                            f4.nextSprite = j43;
-                            f4.waypointCurrent = j44 = (j44 + 1) % 10;
-                            f4.waypointsX[j44] = i45;
-                            f4.waypointsY[j44] = j45;
+                            int currentNextSprite = DataOperations.getBits(packetData, off, 3);
+                            off += 3;
+                            int currentWaypoint = mob.waypointCurrent;
+                            int newWaypointX = mob.waypointsX[currentWaypoint];
+                            int newWaypointY = mob.waypointsY[currentWaypoint];
+                            if(currentNextSprite == 2 || currentNextSprite == 1 || currentNextSprite == 3)
+                                newWaypointX += magicLoc;
+                            if(currentNextSprite == 6 || currentNextSprite == 5 || currentNextSprite == 7)
+                                newWaypointX -= magicLoc;
+                            if(currentNextSprite == 4 || currentNextSprite == 3 || currentNextSprite == 5)
+                                newWaypointY += magicLoc;
+                            if(currentNextSprite == 0 || currentNextSprite == 1 || currentNextSprite == 7)
+                                newWaypointY -= magicLoc;
+                            mob.nextSprite = currentNextSprite;
+                            mob.waypointCurrent = currentWaypoint = (currentWaypoint + 1) % 10;
+                            mob.waypointsX[currentWaypoint] = newWaypointX;
+                            mob.waypointsY[currentWaypoint] = newWaypointY;
                         } else
                         {
-                            int k43 = DataOperations.fmn(arg2, l7, 4);
-                            if((k43 & 0xc) == 12)
+                            int needsNextSprite = DataOperations.getBits(packetData, off, 4);
+                            off += 4;
+                            if((needsNextSprite & 0xc) == 12)
                             {
-                                l7 += 2;
                                 continue;
                             }
-                            f4.nextSprite = DataOperations.fmn(arg2, l7, 4);
-                            l7 += 4;
+                            mob.nextSprite = needsNextSprite;
                         }
                     }
-                    playerArray[playerCount++] = f4;
+                    playerArray[playerCount++] = mob;
                 }
 
-                int k37 = 0;
-                while(l7 + 24 < arg1 * 8) 
+                int mobCount = 0;
+                while(off + 24 < packetLength * 8) 
                 {
-                    int j40 = DataOperations.fmn(arg2, l7, 11);
-                    l7 += 11;
-                    int j42 = DataOperations.fmn(arg2, l7, 5);
-                    l7 += 5;
-                    if(j42 > 15)
-                        j42 -= 32;
-                    int l43 = DataOperations.fmn(arg2, l7, 5);
-                    l7 += 5;
-                    if(l43 > 15)
-                        l43 -= 32;
-                    int j14 = DataOperations.fmn(arg2, l7, 4);
-                    l7 += 4;
-                    int k44 = DataOperations.fmn(arg2, l7, 1);
-                    l7++;
-                    int j23 = (sectionX + j42) * magicLoc + 64;
-                    int j26 = (sectionY + l43) * magicLoc + 64;
-                    makePlayer(j40, j23, j26, j14);
-                    if(k44 == 0)
-                        ece[k37++] = j40;
+                    int mobIndex = DataOperations.getBits(packetData, off, 16);
+                    off += 16;
+                    int areaMobX = DataOperations.getBits(packetData, off, 5);
+                    off += 5;
+                    if(areaMobX > 15)
+                        areaMobX -= 32;
+                    int areaMobY = DataOperations.getBits(packetData, off, 5);
+                    off += 5;
+                    if(areaMobY > 15)
+                        areaMobY -= 32;
+                    int mobSprite = DataOperations.getBits(packetData, off, 4);
+                    off += 4;
+                    int addIndex = DataOperations.getBits(packetData, off, 1);
+                    off++;
+                    int mobX = (sectionX + areaMobX) * magicLoc + 64;
+                    int mobY = (sectionY + areaMobY) * magicLoc + 64;
+                    makePlayer(mobIndex, mobX, mobY, mobSprite);
+                    if(addIndex == 0)
+                        playerBufferArrayIndexes[mobCount++] = mobIndex;
                 }
-                if(k37 > 0)
+                if(mobCount > 0)
                 {
-                    super.streamClass.createPacket(241);
-                    super.streamClass.addShort(k37);
-                    for(int k40 = 0; k40 < k37; k40++)
+                    super.streamClass.createPacket(83);
+                    super.streamClass.addShort(mobCount);
+                    for(int k40 = 0; k40 < mobCount; k40++)
                     {
-                        Mob f5 = playerBufferArray[ece[k40]];
+                        Mob f5 = playerBufferArray[playerBufferArrayIndexes[k40]];
                         super.streamClass.addShort(f5.serverIndex);
                         super.streamClass.addShort(f5.serverID);
                     }
 
                     super.streamClass.formatPacket();
-                    k37 = 0;
+                    mobCount = 0;
                 }
                 return;
             }
-            if(arg0 == 172)
+            if(packetID == 109)
             {
-                for(int i1 = 1; i1 < arg1;)
-                    if(DataOperations.getUnsignedByte(arg2[i1]) == 255)
+                /*if(needsClear) {// TODO
+                    for(int i = 0; i < groundItemID.length; i++) {
+                        groundItemX[i] = -1;
+                        groundItemY[i] = -1;
+                        groundItemID[i] = -1;
+                        groundItemObjectVar[i] = -1;
+                    }
+                    groundItemCount = 0;
+                    needsClear = false;
+                }*/
+                for(int off = 1; off < packetLength;)
+                    if(DataOperations.getByte(packetData[off]) == 255)
                     {
-                        int i8 = 0;
-                        int k14 = sectionX + arg2[i1 + 1] >> 3;
-                        int j19 = sectionY + arg2[i1 + 2] >> 3;
-                        i1 += 3;
-                        for(int k23 = 0; k23 < groundItemCount; k23++)
+                        int newCount = 0;
+                        int newSectionX = sectionX + packetData[off + 1] >> 3;
+                        int newSectionY = sectionY + packetData[off + 2] >> 3;
+                        off += 3;
+                        for(int groundItem = 0; groundItem < groundItemCount; groundItem++)
                         {
-                            int k26 = (dml[k23] >> 3) - k14;
-                            int k29 = (dmm[k23] >> 3) - j19;
-                            if(k26 != 0 || k29 != 0)
+                            int newX = (groundItemX[groundItem] >> 3) - newSectionX;
+                            int newY = (groundItemY[groundItem] >> 3) - newSectionY;
+                            if(newX != 0 || newY != 0)
                             {
-                                if(k23 != i8)
+                                if(groundItem != newCount)
                                 {
-                                    dml[i8] = dml[k23];
-                                    dmm[i8] = dmm[k23];
-                                    dmn[i8] = dmn[k23];
-                                    dna[i8] = dna[k23];
+                                    groundItemX[newCount] = groundItemX[groundItem];
+                                    groundItemY[newCount] = groundItemY[groundItem];
+                                    groundItemID[newCount] = groundItemID[groundItem];
+                                    groundItemObjectVar[newCount] = groundItemObjectVar[groundItem];
                                 }
-                                i8++;
+                                newCount++;
                             }
                         }
 
-                        groundItemCount = i8;
+                        groundItemCount = newCount;
                     } else
                     {
-                        int j8 = DataOperations.fmi(arg2, i1);
-                        i1 += 2;
-                        int l14 = sectionX + arg2[i1++];
-                        int k19 = sectionY + arg2[i1++];
-                        if((j8 & 0x8000) == 0)
+                        int newID = DataOperations.getShort(packetData, off);
+                        off += 2;
+                        int newX = sectionX + packetData[off++];
+                        int newY = sectionY + packetData[off++];
+                        if((newID & 0x8000) == 0)
                         {
-                            dml[groundItemCount] = l14;
-                            dmm[groundItemCount] = k19;
-                            dmn[groundItemCount] = j8;
-                            dna[groundItemCount] = 0;
+                            groundItemX[groundItemCount] = newX;
+                            groundItemY[groundItemCount] = newY;
+                            groundItemID[groundItemCount] = newID;
+                            groundItemObjectVar[groundItemCount] = 0;
                             for(int l23 = 0; l23 < objectCount; l23++)
                             {
-                                if(objectX[l23] != l14 || objectY[l23] != k19)
+                                if(objectX[l23] != newX || objectY[l23] != newY)
                                     continue;
-                                dna[groundItemCount] = Data.amk[objectID[l23]];
+                                groundItemObjectVar[groundItemCount] = Data.objectGroundItemVar[objectID[l23]];
                                 break;
                             }
 
                             groundItemCount++;
                         } else
                         {
-                            j8 &= 0x7fff;
+                            newID &= 0x7fff;
                             int i24 = 0;
                             for(int l26 = 0; l26 < groundItemCount; l26++)
-                                if(dml[l26] != l14 || dmm[l26] != k19 || dmn[l26] != j8)
+                                if(groundItemX[l26] != newX || groundItemY[l26] != newY || groundItemID[l26] != newID)
                                 {
                                     if(l26 != i24)
                                     {
-                                        dml[i24] = dml[l26];
-                                        dmm[i24] = dmm[l26];
-                                        dmn[i24] = dmn[l26];
-                                        dna[i24] = dna[l26];
+                                        groundItemX[i24] = groundItemX[l26];
+                                        groundItemY[i24] = groundItemY[l26];
+                                        groundItemID[i24] = groundItemID[l26];
+                                        groundItemObjectVar[i24] = groundItemObjectVar[l26];
                                     }
                                     i24++;
                                 } else
                                 {
-                                    j8 = -123;
+                                    newID = -123;
                                 }
 
                             groundItemCount = i24;
@@ -1230,552 +1247,562 @@ public final class mudclient extends GameAppletMiddleMan
 
                 return;
             }
-            if(arg0 == 158)
+            if(packetID == 27)
             {
-                for(int j1 = 1; j1 < arg1;)
-                    if(DataOperations.getUnsignedByte(arg2[j1]) == 255)
+                for(int off = 1; off < packetLength;)
+                    if(DataOperations.getByte(packetData[off]) == 255)
                     {
-                        int k8 = 0;
-                        int i15 = sectionX + arg2[j1 + 1] >> 3;
-                        int l19 = sectionY + arg2[j1 + 2] >> 3;
-                        j1 += 3;
-                        for(int j24 = 0; j24 < objectCount; j24++)
+                        int newCount = 0;
+                        int newSectionX = sectionX + packetData[off + 1] >> 3;
+                        int newSectionY = sectionY + packetData[off + 2] >> 3;
+                        off += 3;
+                        for(int object = 0; object < objectCount; object++)
                         {
-                            int i27 = (objectX[j24] >> 3) - i15;
-                            int l29 = (objectY[j24] >> 3) - l19;
-                            if(i27 != 0 || l29 != 0)
+                            int newX = (objectX[object] >> 3) - newSectionX;
+                            int newY = (objectY[object] >> 3) - newSectionY;
+                            if(newX != 0 || newY != 0)
                             {
-                                if(j24 != k8)
+                                if(object != newCount)
                                 {
-                                    objectArray[k8] = objectArray[j24];
-                                    objectArray[k8].chk = k8;
-                                    objectX[k8] = objectX[j24];
-                                    objectY[k8] = objectY[j24];
-                                    objectID[k8] = objectID[j24];
-                                    elb[k8] = elb[j24];
+                                    objectArray[newCount] = objectArray[object];
+                                    objectArray[newCount].index = newCount;
+                                    objectX[newCount] = objectX[object];
+                                    objectY[newCount] = objectY[object];
+                                    objectID[newCount] = objectID[object];
+                                    objectType[newCount] = objectType[object];
                                 }
-                                k8++;
+                                newCount++;
                             } else
                             {
-                                gameCamera.removeModel(objectArray[j24]);
-                                engineHandle.removeObject(objectX[j24], objectY[j24], objectID[j24]);
+                                gameCamera.removeModel(objectArray[object]);
+                                engineHandle.removeObject(objectX[object], objectY[object], objectID[object]);
                             }
                         }
 
-                        objectCount = k8;
+                        objectCount = newCount;
                     } else
                     {
-                        int l8 = DataOperations.fmi(arg2, j1);
-                        j1 += 2;
-                        int j15 = sectionX + arg2[j1++];
-                        int i20 = sectionY + arg2[j1++];
-                        int k24 = 0;
-                        for(int j27 = 0; j27 < objectCount; j27++)
-                            if(objectX[j27] != j15 || objectY[j27] != i20)
+                        int index = DataOperations.getShort(packetData, off);
+                        off += 2;
+                        int newSectionX = sectionX + packetData[off++];
+                        int newSectionY = sectionY + packetData[off++];
+                        int newCount = 0;
+                        for(int object = 0; object < objectCount; object++)
+                            if(objectX[object] != newSectionX || objectY[object] != newSectionY)
                             {
-                                if(j27 != k24)
+                                if(object != newCount)
                                 {
-                                    objectArray[k24] = objectArray[j27];
-                                    objectArray[k24].chk = k24;
-                                    objectX[k24] = objectX[j27];
-                                    objectY[k24] = objectY[j27];
-                                    objectID[k24] = objectID[j27];
-                                    elb[k24] = elb[j27];
+                                    objectArray[newCount] = objectArray[object];
+                                    objectArray[newCount].index = newCount;
+                                    objectX[newCount] = objectX[object];
+                                    objectY[newCount] = objectY[object];
+                                    objectID[newCount] = objectID[object];
+                                    objectType[newCount] = objectType[object];
                                 }
-                                k24++;
+                                newCount++;
                             } else
                             {
-                                gameCamera.removeModel(objectArray[j27]);
-                                engineHandle.removeObject(objectX[j27], objectY[j27], objectID[j27]);
+                                gameCamera.removeModel(objectArray[object]);
+                                engineHandle.removeObject(objectX[object], objectY[object], objectID[object]);
                             }
 
-                        objectCount = k24;
-                        if(l8 != 60000)
+                        objectCount = newCount;
+                        if(index != 60000)
                         {
-                            int i30 = engineHandle.gke(j15, i20);
-                            int j34;
-                            int l37;
-                            if(i30 == 0 || i30 == 4)
+                            int rotation = engineHandle.getTileRotation(newSectionX, newSectionY);
+                            int width;
+                            int height;
+                            if(rotation == 0 || rotation == 4)
                             {
-                                j34 = Data.objectWidth[l8];
-                                l37 = Data.objectHeight[l8];
+                                width = Data.objectWidth[index];
+                                height = Data.objectHeight[index];
                             } else
                             {
-                                l37 = Data.objectWidth[l8];
-                                j34 = Data.objectHeight[l8];
+                                height = Data.objectWidth[index];
+                                width = Data.objectHeight[index];
                             }
-                            int l40 = ((j15 + j15 + j34) * magicLoc) / 2;
-                            int k42 = ((i20 + i20 + l37) * magicLoc) / 2;
-                            int i44 = Data.amg[l8];
-                            i l44 = gameDataObjects[i44].cnj();
-                            gameCamera.bgm(l44);
-                            l44.chk = objectCount;
-                            l44.cmi(0, i30 * 32, 0);
-                            l44.cmk(l40, -engineHandle.gjf(l40, k42), k42);
-                            l44.cme(true, 48, 48, -50, -10, -50);
-                            engineHandle.gla(j15, i20, l8);
-                            if(l8 == 74)
-                                l44.cmk(0, -480, 0);
-                            objectX[objectCount] = j15;
-                            objectY[objectCount] = i20;
-                            objectID[objectCount] = l8;
-                            elb[objectCount] = i30;
-                            objectArray[objectCount++] = l44;
+                            int l40 = ((newSectionX + newSectionX + width) * magicLoc) / 2;
+                            int k42 = ((newSectionY + newSectionY + height) * magicLoc) / 2;
+                            int model = Data.objectModelNumber[index];
+                            GameObject gameObject = gameDataObjects[model].cnj();
+                            gameCamera.addModel(gameObject);
+                            gameObject.index = objectCount;
+                            gameObject.cmi(0, rotation * 32, 0);
+                            gameObject.cmk(l40, -engineHandle.getAveragedElevation(l40, k42), k42);
+                            gameObject.cme(true, 48, 48, -50, -10, -50);
+                            engineHandle.gla(newSectionX, newSectionY, index);
+                            if(index == 74)
+                                gameObject.cmk(0, -480, 0);
+                            objectX[objectCount] = newSectionX;
+                            objectY[objectCount] = newSectionY;
+                            objectID[objectCount] = index;
+                            objectType[objectCount] = rotation;
+                            objectArray[objectCount++] = gameObject;
                         }
                     }
 
                 return;
             }
-            if(arg0 == 37)
+            if(packetID == 114)
             {
-                int k1 = 1;
-                inventoryItemsCount = arg2[k1++] & 0xff;
-                for(int i9 = 0; i9 < inventoryItemsCount; i9++)
+                int off = 1;
+                inventoryItemsCount = packetData[off++] & 0xff;
+                for(int item = 0; item < inventoryItemsCount; item++)
                 {
-                    int k15 = DataOperations.fmi(arg2, k1);
-                    k1 += 2;
-                    inventoryItems[i9] = k15 & 0x7fff;
-                    inventoryItemEquipped[i9] = k15 / 32768;
-                    if(Data.itemStackable[k15 & 0x7fff] == 0)
+                    int data = DataOperations.getShort(packetData, off);
+                    off += 2;
+                    inventoryItems[item] = data & 0x7fff;
+                    inventoryItemEquipped[item] = data / 32768;
+                    if(Data.itemStackable[data & 0x7fff] == 0)
                     {
-                        inventoryItemCount[i9] = DataOperations.fmm(arg2, k1);
-                        if(inventoryItemCount[i9] >= 128)
-                            k1 += 4;
+                        inventoryItemCount[item] = DataOperations.getInt2(packetData, off);
+                        if(inventoryItemCount[item] >= 128)
+                            off += 4;
                         else
-                            k1++;
+                            off++;
                     } else
                     {
-                        inventoryItemCount[i9] = 1;
+                        inventoryItemCount[item] = 1;
                     }
                 }
 
                 return;
             }
-            if(arg0 == 183)
+            if(packetID == 53)
             {
-                int l1 = DataOperations.fmi(arg2, 1);
-                int j9 = 3;
-                for(int l15 = 0; l15 < l1; l15++)
+                int newMobCount = DataOperations.getShort(packetData, 1);
+                int off = 3;
+                for(int current = 0; current < newMobCount; current++)
                 {
-                    int j20 = DataOperations.fmi(arg2, j9);
-                    j9 += 2;
-                    Mob f1 = playerBufferArray[j20];
-                    byte byte6 = arg2[j9];
-                    j9++;
-                    if(byte6 == 0)
+                    int index = DataOperations.getShort(packetData, off);
+                    off += 2;
+                    //if(index < 0 || index > playerBufferArray.length)// TODO
+                    //    return;
+                    Mob mob = playerBufferArray[index];
+                    byte mobUpdateType = packetData[off];
+                    off++;
+                    if(mobUpdateType == 0)
                     {
-                        int j30 = DataOperations.fmi(arg2, j9);
-                        j9 += 2;
-                        if(f1 != null)
+                        int j30 = DataOperations.getShort(packetData, off);
+                        off += 2;
+                        if(mob != null)
                         {
-                            f1.itemAboveHeadTimeout = 150;
-                            f1.gng = j30;
+                            mob.itemAboveHeadTimeout = 150;
+                            mob.itemAboveHeadID = j30;
                         }
                     } else
-                    if(byte6 == 1)
+                    if(mobUpdateType == 1)
                     {
-                        byte byte7 = arg2[j9];
-                        j9++;
-                        if(f1 != null)
+                        byte byte7 = packetData[off];
+                        off++;
+                        if(mob != null)
                         {
-                            String s3 = ChatFilter.fgd(v.bytesToString(arg2, j9, byte7));
-                            boolean flag3 = false;
+                            String s3 = ChatFilter.filterChat(ChatMessage.bytesToString(packetData, off, byte7));// TODO
+                            boolean ignore = false;
                             for(int i41 = 0; i41 < super.ignoresCount; i41++)
-                                if(super.ignoresList[i41] == f1.gmd)
-                                    flag3 = true;
+                                if(super.ignoresList[i41] == mob.nameHash)
+                                    ignore = true;
 
-                            if(!flag3)
+                            if(!ignore)
                             {
-                                f1.lastMessageTimeout = 150;
-                                f1.gne = s3;
-                                displayMessage(f1.gme + ": " + f1.gne, 2);
+                                mob.lastMessageTimeout = 150;
+                                mob.lastMessage = s3;
+                                displayMessage(mob.username + ": " + mob.lastMessage, 2);
                             }
                         }
-                        j9 += byte7;
+                        off += byte7;
                     } else
-                    if(byte6 == 2)
+                    if(mobUpdateType == 2)
                     {
-                        int k30 = DataOperations.getUnsignedByte(arg2[j9]);
-                        j9++;
-                        int k34 = DataOperations.getUnsignedByte(arg2[j9]);
-                        j9++;
-                        int i38 = DataOperations.getUnsignedByte(arg2[j9]);
-                        j9++;
-                        if(f1 != null)
+                        int lastDamageCount = DataOperations.getByte(packetData[off]);
+                        off++;
+                        int currentHits = DataOperations.getByte(packetData[off]);
+                        off++;
+                        int baseHits = DataOperations.getByte(packetData[off]);
+                        off++;
+                        if(mob != null)
                         {
-                            f1.gni = k30;
-                            f1.gnj = k34;
-                            f1.gnk = i38;
-                            f1.combatTimer = 200;
-                            if(f1 == ourPlayer)
+                            mob.lastDamageCount = lastDamageCount;
+                            mob.currentHits = currentHits;
+                            mob.baseHits = baseHits;
+                            mob.combatTimer = 200;
+                            if(mob == ourPlayer)
                             {
-                                playerStatCurrent[3] = k34;
-                                playerStatBase[3] = i38;
+                                playerStatCurrent[3] = currentHits;
+                                playerStatBase[3] = baseHits;
                                 showWelcomeBox = false;
-                                ecc = false;
+                                showServerMessageBox = false;// TODO this is commented in rsca client
                             }
                         }
                     } else
-                    if(byte6 == 3)
+                    if(mobUpdateType == 3)
                     {
-                        int l30 = DataOperations.fmi(arg2, j9);
-                        j9 += 2;
-                        int l34 = DataOperations.fmi(arg2, j9);
-                        j9 += 2;
-                        if(f1 != null)
+                        int l30 = DataOperations.getShort(packetData, off);
+                        off += 2;
+                        int l34 = DataOperations.getShort(packetData, off);
+                        off += 2;
+                        if(mob != null)
                         {
-                            f1.had = l30;
-                            f1.haf = l34;
-                            f1.hae = -1;
-                            f1.projectileDistance = eic;
+                            mob.projectileType = l30;
+                            mob.attackingNpcIndex = l34;
+                            mob.attackingPlayerIndex = -1;
+                            mob.projectileDistance = projectileRange;
                         }
                     } else
-                    if(byte6 == 4)
+                    if(mobUpdateType == 4)
                     {
-                        int i31 = DataOperations.fmi(arg2, j9);
-                        j9 += 2;
-                        int i35 = DataOperations.fmi(arg2, j9);
-                        j9 += 2;
-                        if(f1 != null)
+                        int i31 = DataOperations.getShort(packetData, off);
+                        off += 2;
+                        int i35 = DataOperations.getShort(packetData, off);
+                        off += 2;
+                        if(mob != null)
                         {
-                            f1.had = i31;
-                            f1.hae = i35;
-                            f1.haf = -1;
-                            f1.projectileDistance = eic;
+                            mob.projectileType = i31;
+                            mob.attackingPlayerIndex = i35;
+                            mob.attackingNpcIndex = -1;
+                            mob.projectileDistance = projectileRange;
                         }
                     } else
-                    if(byte6 == 5)
+                    if(mobUpdateType == 5)
                     {
-                        if(f1 != null)
+                        if(mob != null)
                         {
-                            f1.serverID = DataOperations.fmi(arg2, j9);
-                            j9 += 2;
-                            f1.gmd = DataOperations.getLong(arg2, j9);
-                            j9 += 8;
-                            f1.gme = DataOperations.hashToName(f1.gmd);
-                            int j31 = DataOperations.getUnsignedByte(arg2[j9]);
-                            j9++;
-                            for(int j35 = 0; j35 < j31; j35++)
+                            mob.serverID = DataOperations.getShort(packetData, off);
+                            off += 2;
+                            mob.nameHash = DataOperations.getLong(packetData, off);
+                            off += 8;
+                            mob.username = DataOperations.hashToName(mob.nameHash);
+                            int appearanceCount = DataOperations.getByte(packetData[off]);
+                            off++;
+                            for(int j35 = 0; j35 < appearanceCount; j35++)
                             {
-                                f1.gnd[j35] = DataOperations.getUnsignedByte(arg2[j9]);
-                                j9++;
+                                mob.appearanceItems[j35] = DataOperations.getByte(packetData[off]);
+                                off++;
                             }
 
-                            for(int j38 = j31; j38 < 12; j38++)
-                                f1.gnd[j38] = 0;
+                            for(int j38 = appearanceCount; j38 < 12; j38++)
+                                mob.appearanceItems[j38] = 0;
 
-                            f1.gnn = arg2[j9++] & 0xff;
-                            f1.haa = arg2[j9++] & 0xff;
-                            f1.hab = arg2[j9++] & 0xff;
-                            f1.hac = arg2[j9++] & 0xff;
-                            f1.gnm = arg2[j9++] & 0xff;
-                            f1.haj = arg2[j9++] & 0xff;
+                            mob.hairColour = packetData[off++] & 0xff;
+                            mob.topColour = packetData[off++] & 0xff;
+                            mob.bottomColour = packetData[off++] & 0xff;
+                            mob.skinColour = packetData[off++] & 0xff;
+                            mob.level = packetData[off++] & 0xff;
+                            mob.itemAboveHeadVisible = packetData[off++] & 0xff;
+                            //mob.admin = packetData[off++] & 0xff;// TODO
                         } else
                         {
-                            j9 += 14;
-                            int k31 = DataOperations.getUnsignedByte(arg2[j9]);
-                            j9 += k31 + 1;
+                            off += 14;
+                            int k31 = DataOperations.getByte(packetData[off]);
+                            off += k31 + 1;
                         }
                     } else
-                    if(byte6 == 6)
+                    if(mobUpdateType == 6)
                     {
-                        byte byte8 = arg2[j9];
-                        j9++;
-                        if(f1 != null)
+                        byte byte8 = packetData[off];
+                        off++;
+                        if(mob != null)
                         {
-                            String s4 = v.bytesToString(arg2, j9, byte8);
-                            f1.lastMessageTimeout = 150;
-                            f1.gne = s4;
-                            if(f1 == ourPlayer)
-                                displayMessage(f1.gme + ": " + f1.gne, 5);
+                            String s4 = ChatMessage.bytesToString(packetData, off, byte8);
+                            mob.lastMessageTimeout = 150;
+                            mob.lastMessage = s4;
+                            if(mob == ourPlayer)
+                                displayMessage(mob.username + ": " + mob.lastMessage, 5);
                         }
-                        j9 += byte8;
+                        off += byte8;
                     }
                 }
 
                 return;
             }
-            if(arg0 == 29)
+            if(packetID == 95)
             {
-                for(int i2 = 1; i2 < arg1;)
-                    if(DataOperations.getUnsignedByte(arg2[i2]) == 255)
+                for(int off = 1; off < packetLength;)
+                    if(DataOperations.getByte(packetData[off]) == 255)
                     {
-                        int k9 = 0;
-                        int i16 = sectionX + arg2[i2 + 1] >> 3;
-                        int k20 = sectionY + arg2[i2 + 2] >> 3;
-                        i2 += 3;
-                        for(int l24 = 0; l24 < wallObjectCount; l24++)
+                        int newCount = 0;
+                        int newSectionX = sectionX + packetData[off + 1] >> 3;
+                        int newSectionY = sectionY + packetData[off + 2] >> 3;
+                        off += 3;
+                        for(int current = 0; current < wallObjectCount; current++)
                         {
-                            int k27 = (wallObjectX[l24] >> 3) - i16;
-                            int l31 = (wallObjectY[l24] >> 3) - k20;
-                            if(k27 != 0 || l31 != 0)
+                            int newX = (wallObjectX[current] >> 3) - newSectionX;
+                            int newY = (wallObjectY[current] >> 3) - newSectionY;
+                            if(newX != 0 || newY != 0)
                             {
-                                if(l24 != k9)
+                                if(current != newCount)
                                 {
-                                    wallObjectArray[k9] = wallObjectArray[l24];
-                                    wallObjectArray[k9].chk = k9 + 10000;
-                                    wallObjectX[k9] = wallObjectX[l24];
-                                    wallObjectY[k9] = wallObjectY[l24];
-                                    wallObjectDirection[k9] = wallObjectDirection[l24];
-                                    wallObjectID[k9] = wallObjectID[l24];
+                                    wallObjectArray[newCount] = wallObjectArray[current];
+                                    wallObjectArray[newCount].index = newCount + 10000;
+                                    wallObjectX[newCount] = wallObjectX[current];
+                                    wallObjectY[newCount] = wallObjectY[current];
+                                    wallObjectDirection[newCount] = wallObjectDirection[current];
+                                    wallObjectID[newCount] = wallObjectID[current];
                                 }
-                                k9++;
+                                newCount++;
                             } else
                             {
-                                gameCamera.removeModel(wallObjectArray[l24]);
-                                engineHandle.removeWallObject(wallObjectX[l24], wallObjectY[l24], wallObjectDirection[l24], wallObjectID[l24]);
+                                gameCamera.removeModel(wallObjectArray[current]);
+                                engineHandle.removeWallObject(wallObjectX[current], wallObjectY[current], wallObjectDirection[current], wallObjectID[current]);
                             }
                         }
 
-                        wallObjectCount = k9;
+                        wallObjectCount = newCount;
                     } else
                     {
-                        int l9 = DataOperations.fmi(arg2, i2);
-                        i2 += 2;
-                        int j16 = sectionX + arg2[i2++];
-                        int l20 = sectionY + arg2[i2++];
-                        byte byte5 = arg2[i2++];
-                        int l27 = 0;
-                        for(int i32 = 0; i32 < wallObjectCount; i32++)
-                            if(wallObjectX[i32] != j16 || wallObjectY[i32] != l20 || wallObjectDirection[i32] != byte5)
+                        int newID = DataOperations.getShort(packetData, off);
+                        off += 2;
+                        int newSectionX = sectionX + packetData[off++];
+                        int newSectionY = sectionY + packetData[off++];
+                        byte direction = packetData[off++];
+                        int newCount = 0;
+                        for(int current = 0; current < wallObjectCount; current++)
+                            if(wallObjectX[current] != newSectionX || wallObjectY[current] != newSectionY || wallObjectDirection[current] != direction)
                             {
-                                if(i32 != l27)
+                                if(current != newCount)
                                 {
-                                    wallObjectArray[l27] = wallObjectArray[i32];
-                                    wallObjectArray[l27].chk = l27 + 10000;
-                                    wallObjectX[l27] = wallObjectX[i32];
-                                    wallObjectY[l27] = wallObjectY[i32];
-                                    wallObjectDirection[l27] = wallObjectDirection[i32];
-                                    wallObjectID[l27] = wallObjectID[i32];
+                                    wallObjectArray[newCount] = wallObjectArray[current];
+                                    wallObjectArray[newCount].index = newCount + 10000;
+                                    wallObjectX[newCount] = wallObjectX[current];
+                                    wallObjectY[newCount] = wallObjectY[current];
+                                    wallObjectDirection[newCount] = wallObjectDirection[current];
+                                    wallObjectID[newCount] = wallObjectID[current];
                                 }
-                                l27++;
+                                newCount++;
                             } else
                             {
-                                gameCamera.removeModel(wallObjectArray[i32]);
-                                engineHandle.removeWallObject(wallObjectX[i32], wallObjectY[i32], wallObjectDirection[i32], wallObjectID[i32]);
+                                gameCamera.removeModel(wallObjectArray[current]);
+                                engineHandle.removeWallObject(wallObjectX[current], wallObjectY[current], wallObjectDirection[current], wallObjectID[current]);
                             }
 
-                        wallObjectCount = l27;
-                        if(l9 != 65535)
+                        wallObjectCount = newCount;
+                        if(newID != 60000)// TODO formerly 65535
                         {
-                            engineHandle.gkc(j16, l20, byte5, l9);
-                            i k35 = fdm(j16, l20, byte5, l9, wallObjectCount);
+                            engineHandle.gkc(newSectionX, newSectionY, direction, newID);
+                            GameObject k35 = makeWallObject(newSectionX, newSectionY, direction, newID, wallObjectCount);
                             wallObjectArray[wallObjectCount] = k35;
-                            wallObjectX[wallObjectCount] = j16;
-                            wallObjectY[wallObjectCount] = l20;
-                            wallObjectID[wallObjectCount] = l9;
-                            wallObjectDirection[wallObjectCount++] = byte5;
+                            wallObjectX[wallObjectCount] = newSectionX;
+                            wallObjectY[wallObjectCount] = newSectionY;
+                            wallObjectID[wallObjectCount] = newID;
+                            wallObjectDirection[wallObjectCount++] = direction;
                         }
                     }
 
                 return;
             }
-            if(arg0 == 41)
+            if(packetID == 77)
             {
-                ebc = npcCount;
+                lastNpcCount = npcCount;
                 npcCount = 0;
-                for(int j2 = 0; j2 < ebc; j2++)
-                    edc[j2] = npcArray[j2];
+                for(int j2 = 0; j2 < lastNpcCount; j2++)
+                    lastNpcArray[j2] = npcArray[j2];
 
-                int i10 = 8;
-                int k16 = DataOperations.fmn(arg2, i10, 8);
-                i10 += 8;
-                for(int i21 = 0; i21 < k16; i21++)
+                int off = 8;
+                int newCount = DataOperations.getBits(packetData, off, 8);
+                off += 8;
+                for(int current = 0; current < newCount; current++)
                 {
-                    Mob f2 = edc[i21];
-                    int i28 = DataOperations.fmn(arg2, i10, 1);
-                    i10++;
-                    if(i28 != 0)
+                    //Mob f2 = lastNpcArray[current];
+                    Mob newNpc = getLastNpc(DataOperations.getBits(packetData, off, 16));
+                    off += 16;
+                    int needsUpdate = DataOperations.getBits(packetData, off, 1);
+                    off++;
+                    if(needsUpdate != 0)
                     {
-                        int j32 = DataOperations.fmn(arg2, i10, 1);
-                        i10++;
+                        int j32 = DataOperations.getBits(packetData, off, 1);
+                        off++;
                         if(j32 == 0)
                         {
-                            int l35 = DataOperations.fmn(arg2, i10, 3);
-                            i10 += 3;
-                            int k38 = f2.waypointCurrent;
-                            int j41 = f2.waypointsX[k38];
-                            int l42 = f2.waypointsY[k38];
-                            if(l35 == 2 || l35 == 1 || l35 == 3)
-                                j41 += magicLoc;
-                            if(l35 == 6 || l35 == 5 || l35 == 7)
-                                j41 -= magicLoc;
-                            if(l35 == 4 || l35 == 3 || l35 == 5)
-                                l42 += magicLoc;
-                            if(l35 == 0 || l35 == 1 || l35 == 7)
-                                l42 -= magicLoc;
-                            f2.nextSprite = l35;
-                            f2.waypointCurrent = k38 = (k38 + 1) % 10;
-                            f2.waypointsX[k38] = j41;
-                            f2.waypointsY[k38] = l42;
+                            int nextSprite = DataOperations.getBits(packetData, off, 3);
+                            off += 3;
+                            int waypointCurrent = newNpc.waypointCurrent;
+                            int waypointX = newNpc.waypointsX[waypointCurrent];
+                            int waypointY = newNpc.waypointsY[waypointCurrent];
+                            if(nextSprite == 2 || nextSprite == 1 || nextSprite == 3)
+                                waypointX += magicLoc;
+                            if(nextSprite == 6 || nextSprite == 5 || nextSprite == 7)
+                                waypointX -= magicLoc;
+                            if(nextSprite == 4 || nextSprite == 3 || nextSprite == 5)
+                                waypointY += magicLoc;
+                            if(nextSprite == 0 || nextSprite == 1 || nextSprite == 7)
+                                waypointY -= magicLoc;
+                            newNpc.nextSprite = nextSprite;
+                            newNpc.waypointCurrent = waypointCurrent = (waypointCurrent + 1) % 10;
+                            newNpc.waypointsX[waypointCurrent] = waypointX;
+                            newNpc.waypointsY[waypointCurrent] = waypointY;
                         } else
                         {
-                            int i36 = DataOperations.fmn(arg2, i10, 4);
-                            if((i36 & 0xc) == 12)
+                            int nextSprite = DataOperations.getBits(packetData, off, 4);
+                            off += 4;
+                            if((nextSprite & 0xc) == 12)
                             {
-                                i10 += 2;
                                 continue;
                             }
-                            f2.nextSprite = DataOperations.fmn(arg2, i10, 4);
-                            i10 += 4;
+                            newNpc.nextSprite = nextSprite;
                         }
                     }
-                    npcArray[npcCount++] = f2;
+                    npcArray[npcCount++] = newNpc;
                 }
 
-                while(i10 + 34 < arg1 * 8) 
+                while(off + 34 < packetLength * 8) 
                 {
-                    int i25 = DataOperations.fmn(arg2, i10, 12);
-                    i10 += 12;
-                    int j28 = DataOperations.fmn(arg2, i10, 5);
-                    i10 += 5;
-                    if(j28 > 15)
-                        j28 -= 32;
-                    int k32 = DataOperations.fmn(arg2, i10, 5);
-                    i10 += 5;
-                    if(k32 > 15)
-                        k32 -= 32;
-                    int j36 = DataOperations.fmn(arg2, i10, 4);
-                    i10 += 4;
-                    int l38 = (sectionX + j28) * magicLoc + 64;
-                    int k41 = (sectionY + k32) * magicLoc + 64;
-                    int i43 = DataOperations.fmn(arg2, i10, 10);
-                    i10 += 10;
-                    if(i43 >= Data.alg)
-                        i43 = 24;
-                    fea(i25, l38, k41, j36, i43);
+                    int mobIndex = DataOperations.getBits(packetData, off, 16);
+                    off += 16;
+                    int areaMobX = DataOperations.getBits(packetData, off, 5);
+                    off += 5;
+                    if(areaMobX > 15)
+                        areaMobX -= 32;
+                    int areaMobY = DataOperations.getBits(packetData, off, 5);
+                    off += 5;
+                    if(areaMobY > 15)
+                        areaMobY -= 32;
+                    int mobSprite = DataOperations.getBits(packetData, off, 4);
+                    off += 4;
+                    int mobX = (sectionX + areaMobX) * magicLoc + 64;
+                    int mobY = (sectionY + areaMobY) * magicLoc + 64;
+                    int addIndex = DataOperations.getBits(packetData, off, 10);
+                    off += 10;
+                    if(addIndex >= Data.npcCount)
+                        addIndex = 24;
+                    makeNPC(mobIndex, mobX, mobY, mobSprite, addIndex);
                 }
                 return;
             }
-            if(arg0 == 47)
+            if(packetID == 190)
             {
-                int k2 = DataOperations.fmi(arg2, 1);
-                int j10 = 3;
-                for(int l16 = 0; l16 < k2; l16++)
+                int newCount = DataOperations.getShort(packetData, 1);
+                int off = 3;
+                for(int l16 = 0; l16 < newCount; l16++)
                 {
-                    int j21 = DataOperations.fmi(arg2, j10);
-                    j10 += 2;
-                    Mob f3 = npcAttackingArray[j21];
-                    int k28 = DataOperations.getUnsignedByte(arg2[j10]);
-                    j10++;
-                    if(k28 == 1)
+                    int npcIndex = DataOperations.getShort(packetData, off);
+                    off += 2;
+                    Mob mob = npcAttackingArray[npcIndex];
+                    int updateType = DataOperations.getByte(packetData[off]);
+                    off++;
+                    if(updateType == 1)
                     {
-                        int l32 = DataOperations.fmi(arg2, j10);
-                        j10 += 2;
-                        byte byte9 = arg2[j10];
-                        j10++;
-                        if(f3 != null)
+                        int playerIndex = DataOperations.getShort(packetData, off);
+                        off += 2;
+                        byte messageLength = packetData[off];
+                        off++;
+                        if(mob != null)
                         {
-                            String s5 = v.bytesToString(arg2, j10, byte9);
-                            f3.lastMessageTimeout = 150;
-                            f3.gne = s5;
-                            if(l32 == ourPlayer.serverIndex)
-                                displayMessage("@yel@" + Data.ahd[f3.gmj] + ": " + f3.gne, 5);
+                            String s5 = ChatMessage.bytesToString(packetData, off, messageLength);
+                            mob.lastMessageTimeout = 150;
+                            mob.lastMessage = s5;
+                            if(playerIndex == ourPlayer.serverIndex)
+                                displayMessage("@yel@" + Data.npcName[mob.npcId] + ": " + mob.lastMessage, 5);
                         }
-                        j10 += byte9;
+                        off += messageLength;
                     } else
-                    if(k28 == 2)
+                    if(updateType == 2)
                     {
-                        int i33 = DataOperations.getUnsignedByte(arg2[j10]);
-                        j10++;
-                        int k36 = DataOperations.getUnsignedByte(arg2[j10]);
-                        j10++;
-                        int i39 = DataOperations.getUnsignedByte(arg2[j10]);
-                        j10++;
-                        if(f3 != null)
+                        int lastDamageCount = DataOperations.getByte(packetData[off]);
+                        off++;
+                        int currentHits = DataOperations.getByte(packetData[off]);
+                        off++;
+                        int baseHits = DataOperations.getByte(packetData[off]);
+                        off++;
+                        if(mob != null)
                         {
-                            f3.gni = i33;
-                            f3.gnj = k36;
-                            f3.gnk = i39;
-                            f3.combatTimer = 200;
+                            mob.lastDamageCount = lastDamageCount;
+                            mob.currentHits = currentHits;
+                            mob.baseHits = baseHits;
+                            mob.combatTimer = 200;
                         }
                     }
                 }
 
                 return;
             }
-            if(arg0 == 117)
+            if(packetID == 223)
             {
                 showQuestionMenu = true;
-                int l2 = DataOperations.getUnsignedByte(arg2[1]);
-                questionMenuCount = l2;
-                int k10 = 2;
-                for(int i17 = 0; i17 < l2; i17++)
+                int count = DataOperations.getByte(packetData[1]);
+                questionMenuCount = count;
+                int off = 2;
+                for(int index = 0; index < count; index++)
                 {
-                    int k21 = DataOperations.getUnsignedByte(arg2[k10]);
-                    k10++;
-                    questionMenuAnswer[i17] = new String(arg2, k10, k21);
-                    k10 += k21;
+                    int optionLength = DataOperations.getByte(packetData[off]);
+                    off++;
+                    questionMenuAnswer[index] = new String(packetData, off, optionLength);
+                    off += optionLength;
                 }
 
                 return;
             }
-            if(arg0 == 208)
+            if(packetID == 127)
             {
                 showQuestionMenu = false;
                 return;
             }
-            if(arg0 == 249)
+            if(packetID == 131)
             {
-                elk = true;
-                djf = DataOperations.fmi(arg2, 1);
-                eai = DataOperations.fmi(arg2, 3);
-                eaj = DataOperations.fmi(arg2, 5);
-                dnk = DataOperations.fmi(arg2, 7);
-                eak = DataOperations.fmi(arg2, 9);
-                eaj -= dnk * eak;
+                loadArea = true;
+                serverIndex = DataOperations.getShort(packetData, 1);
+                wildX = DataOperations.getShort(packetData, 3);
+                wildY = DataOperations.getShort(packetData, 5);
+                layerIndex = DataOperations.getShort(packetData, 7);
+                layerModifier = DataOperations.getShort(packetData, 9);
+                wildY -= layerIndex * layerModifier;
+                //needsClear = true;// TODO
+                //hasWorldInfo = true;// TODO
                 return;
             }
-            if(arg0 == 16)
+            if(packetID == 180)
             {
-                int i3 = 1;
-                for(int l10 = 0; l10 < 18; l10++)
-                    playerStatCurrent[l10] = DataOperations.getUnsignedByte(arg2[i3++]);
+                int off = 1;
+                for(int stat = 0; stat < 18; stat++)
+                    playerStatCurrent[stat] = DataOperations.getByte(packetData[off++]);
 
-                for(int j17 = 0; j17 < 18; j17++)
-                    playerStatBase[j17] = DataOperations.getUnsignedByte(arg2[i3++]);
+                for(int stat = 0; stat < 18; stat++)
+                    playerStatBase[stat] = DataOperations.getByte(packetData[off++]);
 
-                for(int l21 = 0; l21 < 18; l21++)
+                for(int stat = 0; stat < 18; stat++)
                 {
-                    edn[l21] = DataOperations.getInt(arg2, i3);
-                    i3 += 4;
+                    playerStatExp[stat] = DataOperations.getInt(packetData, off);
+                    off += 4;
                 }
 
-                ema = DataOperations.getUnsignedByte(arg2[i3++]);
+                //questPoints = DataOperations.getUnsignedByte(packetData[i3++]);
+                //expGained = 0;// TODO
                 return;
             }
-            if(arg0 == 33)
+            if(packetID == 177)
             {
-                for(int j3 = 0; j3 < 5; j3++)
-                    ege[j3] = DataOperations.getUnsignedByte(arg2[1 + j3]);
-
+                int off = 1;
+                for(int j3 = 0; j3 < 5; j3++) {
+                    equipmentStatus[j3] = DataOperations.getShortSigned(packetData, off);
+                    off += 2;
+                }
+                //equipmentStatus[j3] = DataOperations.getUnsignedByte(packetData[1 + j3]);
                 return;
             }
-            if(arg0 == 109)
+            if(packetID == 165)
             {
                 playerAliveTimeout = 250;
                 return;
             }
-            if(arg0 == 76)
+            if(packetID == 115)
             {
-                int k3 = (arg1 - 1) / 4;
+                int k3 = (packetLength - 1) / 4;
                 for(int i11 = 0; i11 < k3; i11++)
                 {
-                    int k17 = sectionX + DataOperations.fml(arg2, 1 + i11 * 4) >> 3;
-                    int i22 = sectionY + DataOperations.fml(arg2, 3 + i11 * 4) >> 3;
+                    int k17 = sectionX + DataOperations.getShortSigned(packetData, 1 + i11 * 4) >> 3;
+                    int i22 = sectionY + DataOperations.getShortSigned(packetData, 3 + i11 * 4) >> 3;
                     int j25 = 0;
                     for(int l28 = 0; l28 < groundItemCount; l28++)
                     {
-                        int j33 = (dml[l28] >> 3) - k17;
-                        int l36 = (dmm[l28] >> 3) - i22;
+                        int j33 = (groundItemX[l28] >> 3) - k17;
+                        int l36 = (groundItemY[l28] >> 3) - i22;
                         if(j33 != 0 || l36 != 0)
                         {
                             if(l28 != j25)
                             {
-                                dml[j25] = dml[l28];
-                                dmm[j25] = dmm[l28];
-                                dmn[j25] = dmn[l28];
-                                dna[j25] = dna[l28];
+                                groundItemX[j25] = groundItemX[l28];
+                                groundItemY[j25] = groundItemY[l28];
+                                groundItemID[j25] = groundItemID[l28];
+                                groundItemObjectVar[j25] = groundItemObjectVar[l28];
                             }
                             j25++;
                         }
@@ -1792,11 +1819,11 @@ public final class mudclient extends GameAppletMiddleMan
                             if(k33 != j25)
                             {
                                 objectArray[j25] = objectArray[k33];
-                                objectArray[j25].chk = j25;
+                                objectArray[j25].index = j25;
                                 objectX[j25] = objectX[k33];
                                 objectY[j25] = objectY[k33];
                                 objectID[j25] = objectID[k33];
-                                elb[j25] = elb[k33];
+                                objectType[j25] = objectType[k33];
                             }
                             j25++;
                         } else
@@ -1817,7 +1844,7 @@ public final class mudclient extends GameAppletMiddleMan
                             if(j37 != j25)
                             {
                                 wallObjectArray[j25] = wallObjectArray[j37];
-                                wallObjectArray[j25].chk = j25 + 10000;
+                                wallObjectArray[j25].index = j25 + 10000;
                                 wallObjectX[j25] = wallObjectX[j37];
                                 wallObjectY[j25] = wallObjectY[j37];
                                 wallObjectDirection[j25] = wallObjectDirection[j37];
@@ -1836,16 +1863,16 @@ public final class mudclient extends GameAppletMiddleMan
 
                 return;
             }
-            if(arg0 == 7)
+            if(packetID == 207)
             {
                 showAppearanceWindow = true;
                 return;
             }
-            if(arg0 == 108)
+            if(packetID == 4)
             {
-                int l3 = DataOperations.fmi(arg2, 1);
-                if(playerBufferArray[l3] != null)
-                    tradeOtherName = playerBufferArray[l3].gme;
+                int tradeOther = DataOperations.getShort(packetData, 1);
+                if(playerBufferArray[tradeOther] != null)
+                    tradeOtherName = playerBufferArray[tradeOther].username;
                 showTradeBox = true;
                 tradeOtherAccepted = false;
                 tradeWeAccepted = false;
@@ -1853,21 +1880,21 @@ public final class mudclient extends GameAppletMiddleMan
                 tradeItemsOtherCount = 0;
                 return;
             }
-            if(arg0 == 113)
+            if(packetID == 187)
             {
                 showTradeBox = false;
                 showTradeConfirmBox = false;
                 return;
             }
-            if(arg0 == 155)
+            if(packetID == 250)
             {
-                tradeItemsOtherCount = arg2[1] & 0xff;
+                tradeItemsOtherCount = packetData[1] & 0xff;
                 int i4 = 2;
                 for(int j11 = 0; j11 < tradeItemsOtherCount; j11++)
                 {
-                    tradeItemsOther[j11] = DataOperations.fmi(arg2, i4);
+                    tradeItemsOther[j11] = DataOperations.getShort(packetData, i4);
                     i4 += 2;
-                    dff[j11] = DataOperations.getInt(arg2, i4);
+                    tradeItemOtherCount[j11] = DataOperations.getInt(packetData, i4);
                     i4 += 4;
                 }
 
@@ -1875,9 +1902,9 @@ public final class mudclient extends GameAppletMiddleMan
                 tradeWeAccepted = false;
                 return;
             }
-            if(arg0 == 185)
+            if(packetID == 92)
             {
-                byte byte0 = arg2[1];
+                byte byte0 = packetData[1];
                 if(byte0 == 1)
                 {
                     tradeOtherAccepted = true;
@@ -1888,37 +1915,41 @@ public final class mudclient extends GameAppletMiddleMan
                     return;
                 }
             }
-            if(arg0 == 24)
+            if(packetID == 253)
             {
                 showShopBox = true;
-                int j4 = 1;
-                int k11 = arg2[j4++] & 0xff;
-                byte byte4 = arg2[j4++];
-                dmc = arg2[j4++] & 0xff;
-                dmd = arg2[j4++] & 0xff;
+                int off = 1;
+                int newShopItemCount = packetData[off++] & 0xff;
+                byte isGeneralShop = packetData[off++];
+                shopItemSellPriceModifier = packetData[off++] & 0xff;
+                shopItemBuyPriceModifier = packetData[off++] & 0xff;
                 for(int j22 = 0; j22 < 40; j22++)
-                    efa[j22] = -1;
+                    shopItems[j22] = -1;
 
-                for(int k25 = 0; k25 < k11; k25++)
+                for(int item = 0; item < newShopItemCount; item++)
                 {
-                    efa[k25] = DataOperations.fmi(arg2, j4);
-                    j4 += 2;
-                    efb[k25] = DataOperations.fmi(arg2, j4);
-                    j4 += 2;
-                    efc[k25] = arg2[j4++];
+                    shopItems[item] = DataOperations.getShort(packetData, off);
+                    off += 2;
+                    shopItemCount[item] = DataOperations.getShort(packetData, off);
+                    off += 2;
+                    shopItemBuyPrice[item] = DataOperations.getInt2(packetData, off);
+                    off += 4;
+                    shopItemSellPrice[item] = DataOperations.getInt2(packetData, off);
+                    off += 4;
+                    //shopItemBasePriceModifier[item] = packetData[off++];
                 }
 
-                if(byte4 == 1)
+                if(isGeneralShop == 1)
                 {
                     int i29 = 39;
                     for(int l33 = 0; l33 < inventoryItemsCount; l33++)
                     {
-                        if(i29 < k11)
+                        if(i29 < newShopItemCount)
                             break;
                         boolean flag2 = false;
                         for(int l39 = 0; l39 < 40; l39++)
                         {
-                            if(efa[l39] != inventoryItems[l33])
+                            if(shopItems[l39] != inventoryItems[l33])
                                 continue;
                             flag2 = true;
                             break;
@@ -1928,29 +1959,31 @@ public final class mudclient extends GameAppletMiddleMan
                             flag2 = true;
                         if(!flag2)
                         {
-                            efa[i29] = inventoryItems[l33] & 0x7fff;
-                            efb[i29] = 0;
-                            efc[i29] = 0;
+                            shopItems[i29] = inventoryItems[l33] & 0x7fff;
+                            shopItemCount[i29] = 0;
+                            shopItemSellPrice[i29] = Data.itemBasePrice[shopItems[i29]] - (int)(Data.itemBasePrice[shopItems[i29]] / 2.5);
+                            shopItemSellPrice[i29] -= shopItemSellPrice[i29] * 0.10;
+                            //shopItemBasePriceModifier[i29] = 0;
                             i29--;
                         }
                     }
 
                 }
-                if(dej >= 0 && dej < 40 && efa[dej] != dek)
+                if(selectedShopItemIndex >= 0 && selectedShopItemIndex < 40 && shopItems[selectedShopItemIndex] != selectedShopItemType)
                 {
-                    dej = -1;
-                    dek = -2;
+                    selectedShopItemIndex = -1;
+                    selectedShopItemType = -2;
                 }
                 return;
             }
-            if(arg0 == 42)
+            if(packetID == 220)
             {
                 showShopBox = false;
                 return;
             }
-            if(arg0 == 170)
+            if(packetID == 18)
             {
-                byte byte1 = arg2[1];
+                byte byte1 = packetData[1];
                 if(byte1 == 1)
                 {
                     tradeWeAccepted = true;
@@ -1961,18 +1994,21 @@ public final class mudclient extends GameAppletMiddleMan
                     return;
                 }
             }
-            if(arg0 == 161)
+            if(packetID == 152)
             {
-                configCmeraAutoAngle = DataOperations.getUnsignedByte(arg2[1]) == 1;
-                configOneMouseButton = DataOperations.getUnsignedByte(arg2[2]) == 1;
-                configSoundOff = DataOperations.getUnsignedByte(arg2[3]) == 1;
+                configCmeraAutoAngle = DataOperations.getByte(packetData[1]) == 1;
+                configOneMouseButton = DataOperations.getByte(packetData[2]) == 1;
+                configSoundOff = DataOperations.getByte(packetData[3]) == 1;
+                showRoofs = DataOperations.getByte(packetData[4]) == 1;
+                autoScreenshot = DataOperations.getByte(packetData[5]) == 1;
+                combatWindow = DataOperations.getByte(packetData[6]) == 1;
                 return;
             }
-            if(arg0 == 222)
+            if(packetID == 209)
             {
-                for(int k4 = 0; k4 < arg1 - 1; k4++)
+                for(int k4 = 0; k4 < packetLength - 1; k4++)
                 {
-                    boolean flag = arg2[k4 + 1] == 1;
+                    boolean flag = packetData[k4 + 1] == 1;
                     if(!prayerOn[k4] && flag)
                         playSound("prayeron");
                     if(prayerOn[k4] && !flag)
@@ -1982,187 +2018,174 @@ public final class mudclient extends GameAppletMiddleMan
 
                 return;
             }
-            if(arg0 == 26)
-            {
-                for(int l4 = 0; l4 < 50; l4++)
-                    ehf[l4] = arg2[l4 + 1] == 1;
-
-                return;
-            }
-            if(arg0 == 188)
+            if(packetID == 93)
             {
                 showBankBox = true;
-                int i5 = 1;
-                elg = arg2[i5++] & 0xff;
-                dnc = arg2[i5++] & 0xff;
-                for(int l11 = 0; l11 < elg; l11++)
+                int off = 1;
+                serverBankItemsCount = packetData[off++] & 0xff;
+                maxBankItems = packetData[off++] & 0xff;
+                for(int l11 = 0; l11 < serverBankItemsCount; l11++)
                 {
-                    dmi[l11] = DataOperations.fmi(arg2, i5);
-                    i5 += 2;
-                    dmj[l11] = DataOperations.fmm(arg2, i5);
-                    if(dmj[l11] >= 128)
-                        i5 += 4;
-                    else
-                        i5++;
+                    serverBankItems[l11] = DataOperations.getShort(packetData, off);
+                    off += 2;
+                    serverBankItemCount[l11] = DataOperations.getInt2(packetData, off);
+                    off += 4;
                 }
 
-                feb();
+                updateBankItems();
                 return;
             }
-            if(arg0 == 130)
+            if(packetID == 171)
             {
                 showBankBox = false;
                 return;
             }
-            if(arg0 == 69)
+            if(packetID == 211)
             {
-                int j5 = arg2[1] & 0xff;
-                edn[j5] = DataOperations.getInt(arg2, 2);
+                int j5 = packetData[1] & 0xff;
+                playerStatExp[j5] = DataOperations.getInt(packetData, 2);
                 return;
             }
-            if(arg0 == 240)
+            if(packetID == 229)
             {
-                int k5 = DataOperations.fmi(arg2, 1);
+                int k5 = DataOperations.getShort(packetData, 1);
                 if(playerBufferArray[k5] != null)
-                    eke = playerBufferArray[k5].gme;
-                eld = true;
-                ded = 0;
-                dkl = 0;
-                dhe = false;
-                dhf = false;
-                dgg = false;
-                dgh = false;
-                dgi = false;
-                dgj = false;
+                    duelOpponent = playerBufferArray[k5].username;
+                showDuelBox = true;
+                duelMyItemCount = 0;
+                duelOpponentItemCount = 0;
+                duelOpponentAccepted = false;
+                duelMyAccepted = false;
+                duelNoRetreating = false;
+                duelNoMagic = false;
+                duelNoPrayer = false;
+                duelNoWeapons = false;
                 return;
             }
-            if(arg0 == 198)
+            if(packetID == 160)
             {
-                eld = false;
+                showDuelBox = false;
                 showDuelConfirmBox = false;
                 return;
             }
-            if(arg0 == 128)
+            if(packetID == 251)
             {
                 showTradeConfirmBox = true;
                 tradeConfirmAccepted = false;
                 showTradeBox = false;
-                int l5 = 1;
-                tradeConfirmOtherNameLong = DataOperations.getLong(arg2, l5);
-                l5 += 8;
-                tradeConfirmOtherItemCount = arg2[l5++] & 0xff;
+                int off = 1;
+                tradeConfirmOtherNameLong = DataOperations.getLong(packetData, off);
+                off += 8;
+                tradeConfirmOtherItemCount = packetData[off++] & 0xff;
                 for(int i12 = 0; i12 < tradeConfirmOtherItemCount; i12++)
                 {
-                    tradeConfirmOtherItems[i12] = DataOperations.fmi(arg2, l5);
-                    l5 += 2;
-                    tradeConfirmOtherItemsCount[i12] = DataOperations.getInt(arg2, l5);
-                    l5 += 4;
+                    tradeConfirmOtherItems[i12] = DataOperations.getShort(packetData, off);
+                    off += 2;
+                    tradeConfirmOtherItemsCount[i12] = DataOperations.getInt(packetData, off);
+                    off += 4;
                 }
 
-                tradeConfigItemCount = arg2[l5++] & 0xff;
+                tradeConfigItemCount = packetData[off++] & 0xff;
                 for(int l17 = 0; l17 < tradeConfigItemCount; l17++)
                 {
-                    tradeConfirmItems[l17] = DataOperations.fmi(arg2, l5);
-                    l5 += 2;
-                    tradeConfigItemsCount[l17] = DataOperations.getInt(arg2, l5);
-                    l5 += 4;
+                    tradeConfirmItems[l17] = DataOperations.getShort(packetData, off);
+                    off += 2;
+                    tradeConfigItemsCount[l17] = DataOperations.getInt(packetData, off);
+                    off += 4;
                 }
 
                 return;
             }
-            if(arg0 == 229)
+            if(packetID == 63)
             {
-                dkl = arg2[1] & 0xff;
-                int i6 = 2;
-                for(int j12 = 0; j12 < dkl; j12++)
+                duelOpponentItemCount = packetData[1] & 0xff;
+                int off = 2;
+                for(int j12 = 0; j12 < duelOpponentItemCount; j12++)
                 {
-                    dkm[j12] = DataOperations.fmi(arg2, i6);
-                    i6 += 2;
-                    dkn[j12] = DataOperations.getInt(arg2, i6);
-                    i6 += 4;
+                    duelOpponentItems[j12] = DataOperations.getShort(packetData, off);
+                    off += 2;
+                    duelOpponentItemsCount[j12] = DataOperations.getInt(packetData, off);
+                    off += 4;
                 }
 
-                dhe = false;
-                dhf = false;
+                duelOpponentAccepted = false;
+                duelMyAccepted = false;
                 return;
             }
-            if(arg0 == 211)
+            if(packetID == 198)
             {
-                if(arg2[1] == 1)
-                    dgg = true;
+                if(packetData[1] == 1)
+                    duelNoRetreating = true;
                 else
-                    dgg = false;
-                if(arg2[2] == 1)
-                    dgh = true;
+                    duelNoRetreating = false;
+                if(packetData[2] == 1)
+                    duelNoMagic = true;
                 else
-                    dgh = false;
-                if(arg2[3] == 1)
-                    dgi = true;
+                    duelNoMagic = false;
+                if(packetData[3] == 1)
+                    duelNoPrayer = true;
                 else
-                    dgi = false;
-                if(arg2[4] == 1)
-                    dgj = true;
+                    duelNoPrayer = false;
+                if(packetData[4] == 1)
+                    duelNoWeapons = true;
                 else
-                    dgj = false;
-                dhe = false;
-                dhf = false;
+                    duelNoWeapons = false;
+                duelOpponentAccepted = false;
+                duelMyAccepted = false;
                 return;
             }
-            if(arg0 == 81)
+            if(packetID == 139)
             {
-                int j6 = 1;
-                int k12 = arg2[j6++] & 0xff;
-                int i18 = DataOperations.fmi(arg2, j6);
-                j6 += 2;
-                int k22 = DataOperations.fmm(arg2, j6);
-                if(k22 >= 128)
-                    j6 += 4;
+                int off = 1;
+                int itemSlot = packetData[off++] & 0xff;
+                int itemID = DataOperations.getShort(packetData, off);
+                off += 2;
+                int itemCount = DataOperations.getInt2(packetData, off);
+                if(itemCount >= 128)
+                    off += 4;
                 else
-                    j6++;
-                if(k22 == 0)
+                    off++;
+                if(itemCount == 0)
                 {
-                    elg--;
-                    for(int l25 = k12; l25 < elg; l25++)
+                    serverBankItemsCount--;
+                    for(int l25 = itemSlot; l25 < serverBankItemsCount; l25++)
                     {
-                        dmi[l25] = dmi[l25 + 1];
-                        dmj[l25] = dmj[l25 + 1];
+                        serverBankItems[l25] = serverBankItems[l25 + 1];
+                        serverBankItemCount[l25] = serverBankItemCount[l25 + 1];
                     }
 
                 } else
                 {
-                    dmi[k12] = i18;
-                    dmj[k12] = k22;
-                    if(k12 >= elg)
-                        elg = k12 + 1;
+                    serverBankItems[itemSlot] = itemID;
+                    serverBankItemCount[itemSlot] = itemCount;
+                    if(itemSlot >= serverBankItemsCount)
+                        serverBankItemsCount = itemSlot + 1;
                 }
-                feb();
+                updateBankItems();
                 return;
             }
-            if(arg0 == 210)
+            if(packetID == 228)
             {
-                int k6 = 1;
-                int l12 = 1;
-                int j18 = arg2[k6++] & 0xff;
-                int l22 = DataOperations.fmi(arg2, k6);
-                k6 += 2;
-                if(Data.itemStackable[l22 & 0x7fff] == 0)
+                int off = 1;
+                int count = 1;
+                int newCount = packetData[off++] & 0xff;
+                int data = DataOperations.getShort(packetData, off);
+                off += 2;
+                if(Data.itemStackable[data & 0x7fff] == 0)
                 {
-                    l12 = DataOperations.fmm(arg2, k6);
-                    if(l12 >= 128)
-                        k6 += 4;
-                    else
-                        k6++;
+                    count = DataOperations.getInt(packetData, off);// TODO getInt2
+                    off += 4;
                 }
-                inventoryItems[j18] = l22 & 0x7fff;
-                inventoryItemEquipped[j18] = l22 / 32768;
-                inventoryItemCount[j18] = l12;
-                if(j18 >= inventoryItemsCount)
-                    inventoryItemsCount = j18 + 1;
+                inventoryItems[newCount] = data & 0x7fff;
+                inventoryItemEquipped[newCount] = data / 32768;
+                inventoryItemCount[newCount] = count;
+                if(newCount >= inventoryItemsCount)
+                    inventoryItemsCount = newCount + 1;
                 return;
             }
-            if(arg0 == 44)
+            if(packetID == 191)
             {
-                int l6 = arg2[1] & 0xff;
+                int l6 = packetData[1] & 0xff;
                 inventoryItemsCount--;
                 for(int i13 = l6; i13 < inventoryItemsCount; i13++)
                 {
@@ -2173,181 +2196,234 @@ public final class mudclient extends GameAppletMiddleMan
 
                 return;
             }
-            if(arg0 == 23)
+            if(packetID == 208)
             {
-                int i7 = 1;
-                int j13 = arg2[i7++] & 0xff;
-                playerStatCurrent[j13] = DataOperations.getUnsignedByte(arg2[i7++]);
-                playerStatBase[j13] = DataOperations.getUnsignedByte(arg2[i7++]);
-                edn[j13] = DataOperations.getInt(arg2, i7);
-                i7 += 4;
+                int off = 1;
+                int stat = packetData[off++] & 0xff;
+                playerStatCurrent[stat] = DataOperations.getByte(packetData[off++]);
+                playerStatBase[stat] = DataOperations.getByte(packetData[off++]);
+                playerStatExp[stat] = DataOperations.getInt(packetData, off);
+                off += 4;
                 return;
             }
-            if(arg0 == 73)
+            if(packetID == 65)
             {
-                byte byte2 = arg2[1];
+                byte byte2 = packetData[1];
                 if(byte2 == 1)
                 {
-                    dhe = true;
+                    duelOpponentAccepted = true;
                     return;
                 } else
                 {
-                    dhe = false;
+                    duelOpponentAccepted = false;
                     return;
                 }
             }
-            if(arg0 == 131)
+            if(packetID == 197)
             {
-                byte byte3 = arg2[1];
+                byte byte3 = packetData[1];
                 if(byte3 == 1)
                 {
-                    dhf = true;
+                    duelMyAccepted = true;
                     return;
                 } else
                 {
-                    dhf = false;
+                    duelMyAccepted = false;
                     return;
                 }
             }
-            if(arg0 == 10)
+            if(packetID == 147)
             {
                 showDuelConfirmBox = true;
                 duelConfirmOurAccepted = false;
-                eld = false;
-                int j7 = 1;
-                duelOpponentHash = DataOperations.getLong(arg2, j7);
-                j7 += 8;
-                duelOpponentStakeCount = arg2[j7++] & 0xff;
+                showDuelBox = false;
+                int off = 1;
+                duelOpponentHash = DataOperations.getLong(packetData, off);
+                off += 8;
+                duelOpponentStakeCount = packetData[off++] & 0xff;
                 for(int k13 = 0; k13 < duelOpponentStakeCount; k13++)
                 {
-                    eff[k13] = DataOperations.fmi(arg2, j7);
-                    j7 += 2;
-                    duelOutStakeItemCount[k13] = DataOperations.getInt(arg2, j7);
-                    j7 += 4;
+                    duelOpponentStakeItem[k13] = DataOperations.getShort(packetData, off);
+                    off += 2;
+                    duelOutStakeItemCount[k13] = DataOperations.getInt(packetData, off);
+                    off += 4;
                 }
 
-                duelOurStakeCount = arg2[j7++] & 0xff;
+                duelOurStakeCount = packetData[off++] & 0xff;
                 for(int k18 = 0; k18 < duelOurStakeCount; k18++)
                 {
-                    duelOurStakeItem[k18] = DataOperations.fmi(arg2, j7);
-                    j7 += 2;
-                    duelOurStakeItemCount[k18] = DataOperations.getInt(arg2, j7);
-                    j7 += 4;
+                    duelOurStakeItem[k18] = DataOperations.getShort(packetData, off);
+                    off += 2;
+                    duelOurStakeItemCount[k18] = DataOperations.getInt(packetData, off);
+                    off += 4;
                 }
 
-                duelRetreat = arg2[j7++] & 0xff;
-                duelMagic = arg2[j7++] & 0xff;
-                duelPrayer = arg2[j7++] & 0xff;
-                duelWeapons = arg2[j7++] & 0xff;
+                duelRetreat = packetData[off++] & 0xff;
+                duelMagic = packetData[off++] & 0xff;
+                duelPrayer = packetData[off++] & 0xff;
+                duelWeapons = packetData[off++] & 0xff;
                 return;
             }
-            if(arg0 == 238)
+            if(packetID == 11)
             {
-                String s1 = new String(arg2, 1, arg1 - 1);
+                String s1 = new String(packetData, 1, packetLength - 1);
                 playSound(s1);
                 return;
             }
-            if(arg0 == 253)
+            if(packetID == 23)
             {
-                if(eig < 50)
+                if(teleBubbleCount < 50)
                 {
-                    int k7 = arg2[1] & 0xff;
-                    int l13 = arg2[2] + sectionX;
-                    int l18 = arg2[3] + sectionY;
-                    teleBubbleType[eig] = k7;
-                    teleBubbleTime[eig] = 0;
-                    ell[eig] = l13;
-                    elh[eig] = l18;
-                    eig++;
+                    int type = packetData[1] & 0xff;
+                    int x = packetData[2] + sectionX;
+                    int y = packetData[3] + sectionY;
+                    teleBubbleType[teleBubbleCount] = type;
+                    teleBubbleTime[teleBubbleCount] = 0;
+                    teleBubbleX[teleBubbleCount] = x;
+                    teleBubbleY[teleBubbleCount] = y;
+                    teleBubbleCount++;
                 }
                 return;
             }
-            if(arg0 == 126)
+            if(packetID == 248)// TODO remove?
             {
                 if(!loginScreenShown)
                 {
-                    lastLoginIPInt = DataOperations.getInt(arg2, 1);
-                    lastLoginDays = DataOperations.fmi(arg2, 5);
-                    lastChangedRecoveryDays = arg2[7] & 0xff;
-                    unreadMessages = DataOperations.fmi(arg2, 8);
+                    lastLoginDays = DataOperations.getShort(packetData, 1);
+                    subDaysLeft = DataOperations.getShort(packetData, 3);
+                    lastLoginAddress = new String(packetData, 5, packetLength - 5); 
+                    /*lastLoginIPInt = DataOperations.getInt(packetData, 1);
+                    lastLoginDays = DataOperations.getShort(packetData, 5);
+                    lastChangedRecoveryDays = packetData[7] & 0xff;
+                    unreadMessages = DataOperations.getShort(packetData, 8);*/
                     showWelcomeBox = true;
                     loginScreenShown = true;
-                    lastLoginAddress = null;
                 }
                 return;
             }
-            if(arg0 == 112)
+            if(packetID == 148)
             {
-                dhc = new String(arg2, 1, arg1 - 1);
-                ecc = true;
-                dhi = false;
+                serverMessage = new String(packetData, 1, packetLength - 1);
+                showServerMessageBox = true;
+                serverMessageBoxTop = false;
                 return;
             }
-            if(arg0 == 49)
+            if(packetID == 64)
             {
-                dhc = new String(arg2, 1, arg1 - 1);
-                ecc = true;
-                dhi = true;
+                serverMessage = new String(packetData, 1, packetLength - 1);
+                showServerMessageBox = true;
+                serverMessageBoxTop = true;
                 return;
             }
-            if(arg0 == 60)
+            if(packetID == 126)
             {
-                dhj = DataOperations.fmi(arg2, 1);
+                fatigue = DataOperations.getShort(packetData, 1);
                 return;
             }
-            if(arg0 == 15)
+            if(packetID == 206)
             {
                 if(!isSleeping)
-                    dhk = dhj;
+                    fatigueSleeping = fatigue;
                 isSleeping = true;
                 super.inputText = "";
                 super.enteredInputText = "";
-                gameGraphics.cbk(baseTexturePic + 1, arg2);
-                del = null;
+                gameGraphics.cbk(baseTexturePic + 1, packetData);// TODO no
+                sleepingStatusText = null;
                 return;
             }
-            if(arg0 == 174)
+            if(packetID == 174)// TODO remove???
             {
-                dhk = DataOperations.fmi(arg2, 1);
+                fatigueSleeping = DataOperations.getShort(packetData, 1);
                 return;
             }
-            if(arg0 == 206)
+            if(packetID == 224)
             {
                 isSleeping = false;
                 return;
             }
-            if(arg0 == 20)
+            if(packetID == 225)
             {
-                del = "Incorrect - Please wait...";
+                sleepingStatusText = "Incorrect - Please wait...";
                 return;
             }
-            if(arg0 == 28)
+            if(packetID == 172)
             {
-                systemUpdate = DataOperations.fmi(arg2, 1) * 32;
+                systemUpdate = DataOperations.getShort(packetData, 1) * 32;
                 return;
             }
+            if(packetID == 181) {// TODO
+                if(autoScreenshot)
+                    takeScreenshot(false);
+                return;
+            }
+            if(packetID == 182)
+            {
+                int off = 1;
+                questPoints = DataOperations.getShort(packetData, off);
+                off += 2;
+                for(int l4 = 0; l4 < questName.length; l4++)
+                    questStage[l4] = packetData[l4 + 1];
+
+                return;
+            }
+            if(packetID == 233) {
+                questPoints = DataOperations.getByte(packetData[1]);
+                int count = DataOperations.getByte(packetData[2]);
+                int off = 3;
+                String newQuestNames[] = new String[count];
+                int newQuestStage[] = new int[count];
+                for(int i = 0; i < count; i++) {
+                    newQuestNames[i] = questName[DataOperations.getByte(packetData[off++])];
+                    newQuestStage[i] = DataOperations.getByte(packetData[off++]);
+                }
+                usedQuestName = newQuestNames;
+                questStage = newQuestStage;
+                return;
+            }
+            if(packetID == 129) {
+                combatStyle = DataOperations.getByte(packetData[1]);
+                return;
+            }
+            if(packetID == 174) {// TODO
+                System.out.println("RECEIVED PACKET 174 (UNUSED CLIENT-SIDE)");
+                return;
+            }
+            if(packetID == 254) {// TODO
+                int bar = DataOperations.getInt(packetData, 1);
+                System.out.println("RECEIVED SMITHING SCREEN FOR BAR " + bar);
+                return;
+            }
+            if(packetID == 231) {// TODO
+                System.out.println("RECEIVED PACKET 231 (UNUSED IN CLIENT)");
+                return;
+            }
+            if(packetID == 110) {// TODO
+                System.out.println("RECEIVED PACKET 110 (SERVER INFO");
+                return;
+            }
+            System.out.println("UNHANDLED PACKET " + packetID + " LEN:" + packetLength);
         }
         catch(RuntimeException runtimeexception)
         {
-            if(deb < 3)
+            if(packetErrorCount < 3)
             {
-                super.streamClass.createPacket(7);
+                /*super.streamClass.createPacket(7);
                 super.streamClass.addString(runtimeexception.toString());
                 super.streamClass.formatPacket();
                 super.streamClass.createPacket(7);
-                super.streamClass.addString("p-type:" + arg0 + " p-size:" + arg1);
+                super.streamClass.addString("p-type:" + packetID + " p-size:" + packetLength);
                 super.streamClass.formatPacket();
                 super.streamClass.createPacket(7);
                 super.streamClass.addString("rx:" + sectionX + " ry:" + sectionY + " num3l:" + objectCount);
                 super.streamClass.formatPacket();
                 String s2 = "";
-                for(int i19 = 0; i19 < 80 && i19 < arg1; i19++)
-                    s2 = s2 + arg2[i19] + " ";
+                for(int i19 = 0; i19 < 80 && i19 < packetLength; i19++)
+                    s2 = s2 + packetData[i19] + " ";
 
                 super.streamClass.createPacket(7);
                 super.streamClass.addString(s2);
-                super.streamClass.formatPacket();
-                deb++;
+                super.streamClass.formatPacket();*/
+                packetErrorCount++;
             }
         }
     }
@@ -2450,8 +2526,8 @@ public final class mudclient extends GameAppletMiddleMan
 
         for(int i8 = 0; i8 < groundItemCount; i8++)
         {
-            int l2 = (((dml[i8] * magicLoc + 64) - ourPlayer.currentX) * 3 * j1) / 2048;
-            int j4 = (((dmm[i8] * magicLoc + 64) - ourPlayer.currentY) * 3 * j1) / 2048;
+            int l2 = (((groundItemX[i8] * magicLoc + 64) - ourPlayer.currentX) * 3 * j1) / 2048;
+            int j4 = (((groundItemY[i8] * magicLoc + 64) - ourPlayer.currentY) * 3 * j1) / 2048;
             int l6 = j4 * j5 + l2 * l5 >> 18;
             j4 = j4 * l5 - l2 * j5 >> 18;
             l2 = l6;
@@ -2480,7 +2556,7 @@ public final class mudclient extends GameAppletMiddleMan
             int i9 = 0xffffff;
             for(int j9 = 0; j9 < super.friendsCount; j9++)
             {
-                if(f2.gmd != super.friendsList[j9] || super.friendsWorld[j9] != 99)
+                if(f2.nameHash != super.friendsList[j9] || super.friendsWorld[j9] != 99)
                     continue;
                 i9 = 65280;
                 break;
@@ -2571,15 +2647,6 @@ public final class mudclient extends GameAppletMiddleMan
 
     protected final void loadGame()
     {
-        if(appletMode)
-        {
-            String s1 = getDocumentBase().getHost().toLowerCase();
-            if(!s1.endsWith("jagex.com") && !s1.endsWith("jagex.co.uk") && !s1.endsWith("runescape.com") && !s1.endsWith("runescape.co.uk") && !s1.endsWith("runescape.net") && !s1.endsWith("runescape.org") && !s1.endsWith("penguin") && !s1.endsWith("puffin"))
-            {
-                codebaseError = true;
-                return;
-            }
-        }
         int l = 0;
         for(int i1 = 0; i1 < 99; i1++)
         {
@@ -2588,34 +2655,7 @@ public final class mudclient extends GameAppletMiddleMan
             l += l1;
             experienceList[i1] = l & 0xffffffc;
         }
-
-        try
-        {
-            String s2 = getParameter("referid");
-            referId = Integer.parseInt(s2);
-        }
-        catch(Exception _ex) { }
-        try
-        {
-            String s3 = getParameter("member");
-            int i2 = Integer.parseInt(s3);
-            if(i2 == 1)
-                members = true;
-        }
-        catch(Exception _ex) { }
-        if(appletMode)
-            super.port = 43594;
         super.mouseYOffset = 0;
-        GameAppletMiddleMan.maxPacketReadCount = 1000;
-        GameAppletMiddleMan.VERSION_CLIENT = Version.VERSION_CLIENT;
-        try
-        {
-            String s4 = getParameter("poff");
-            int j2 = Integer.parseInt(s4);
-            super.port += j2;
-            System.out.println("Offset: " + j2);
-        }
-        catch(Exception _ex) { }
         loadChatFilter();
         if(errorLoading)
             return;
@@ -2648,7 +2688,7 @@ public final class mudclient extends GameAppletMiddleMan
         if(errorLoading)
             return;
         gameCamera = new Camera(gameGraphics, 15000, 15000, 1000);
-        gameCamera.setCameraSize(windowWidth / 2, windowHeight / 2, windowWidth / 2, windowHeight / 2, windowWidth, dcj);
+        gameCamera.setCameraSize(windowWidth / 2, windowHeight / 2, windowWidth / 2, windowHeight / 2, windowWidth, cameraFieldOfView);
         gameCamera.zoom1 = 2400;
         gameCamera.zoom2 = 2400;
         gameCamera.zoom3 = 1;
@@ -2885,8 +2925,7 @@ public final class mudclient extends GameAppletMiddleMan
             abyte3 = DataOperations.loadData("index.dat", 0, abyte2);
         }
         int l = 0;
-        //ebi = 0;
-        animationNumber = ebi;
+        animationNumber = 0;
 label0:
         for(int i1 = 0; i1 < Data.animationCount; i1++)
         {
@@ -2973,9 +3012,9 @@ label0:
         if(appearanceMenu.isClicked(appearanceTopRightArrow))
             appearanceTopColour = (appearanceTopColour + 1) % appearanceTopBottomColours.length;
         if(appearanceMenu.isClicked(appearanceSkinLeftArrow))
-            appearanceSkinColour = ((appearanceSkinColour - 1) + dki.length) % dki.length;
+            appearanceSkinColour = ((appearanceSkinColour - 1) + appearanceSkinColours.length) % appearanceSkinColours.length;
         if(appearanceMenu.isClicked(appearanceSkingRightArrow))
-            appearanceSkinColour = (appearanceSkinColour + 1) % dki.length;
+            appearanceSkinColour = (appearanceSkinColour + 1) % appearanceSkinColours.length;
         if(appearanceMenu.isClicked(appearanceBottomLeftArrow))
             appearanceBottomColour = ((appearanceBottomColour - 1) + appearanceTopBottomColours.length) % appearanceTopBottomColours.length;
         if(appearanceMenu.isClicked(appearanceBottomRightArrow))
@@ -3000,12 +3039,12 @@ label0:
     private final void drawWelcomeBox()
     {
         int l = 65;
-        if(lastChangedRecoveryDays != 201)
-            l += 60;
-        if(unreadMessages > 0)
-            l += 60;
-        if(lastLoginIPInt != 0)
-            l += 45;
+        if(!lastLoginAddress.equals("0.0.0.0"))
+            l += 30;
+        if(subDaysLeft > 0)
+            l += 15;
+        if(lastLoginDays >= 0)
+            l += 15;
         int i1 = 167 - l / 2;
         gameGraphics.drawBox(56, 167 - l / 2, 400, l, 0);
         gameGraphics.drawBoxEdge(56, 167 - l / 2, 400, l, 0xffffff);
@@ -3013,6 +3052,7 @@ label0:
         gameGraphics.drawText("Welcome to RuneScape " + loginUsername, 256, i1, 4, 0xffff00);
         i1 += 30;
         String s1;
+        // lastLoginDays    subDaysLeft    lastLoginAddress
         if(lastLoginDays == 0)
             s1 = "earlier today";
         else
@@ -3020,17 +3060,18 @@ label0:
             s1 = "yesterday";
         else
             s1 = lastLoginDays + " days ago";
-        if(lastLoginIPInt != 0)
+        if(!lastLoginAddress.equals("0.0.0.0"))
         {
             gameGraphics.drawText("You last logged in " + s1, 256, i1, 1, 0xffffff);
             i1 += 15;
-            if(lastLoginAddress == null)
-                lastLoginAddress = resolveIP(lastLoginIPInt);
             gameGraphics.drawText("from: " + lastLoginAddress, 256, i1, 1, 0xffffff);
             i1 += 15;
+        }
+        if(subDaysLeft > 0) {
+            gameGraphics.drawText("Subscription left: " + subDaysLeft + " days", 256, i1, 1, 0xffffff);
             i1 += 15;
         }
-        if(unreadMessages > 0)
+        /*if(unreadMessages > 0)
         {
             int j1 = 0xffffff;
             gameGraphics.drawText("Jagex staff will NEVER email you. We use the", 256, i1, 1, j1);
@@ -3072,7 +3113,7 @@ label0:
                 i1 += 15;
             }
             i1 += 15;
-        }
+        }*/
         int k1 = 0xffffff;
         if(super.mouseY > i1 - 12 && super.mouseY <= i1 && super.mouseX > 106 && super.mouseX < 406)
             k1 = 0xff0000;
@@ -3640,7 +3681,7 @@ label0:
             int k7 = 156 + byte1 + (l6 / 4) * 34;
             gameGraphics.drawImage(j7, k7, 48, 32, baseItemPicture + Data.itemInventoryPicture[tradeItemsOther[l6]], Data.itemPictureMask[tradeItemsOther[l6]], 0, 0, false);
             if(Data.itemStackable[tradeItemsOther[l6]] == 0)
-                gameGraphics.drawString(String.valueOf(dff[l6]), j7 + 1, k7 + 10, 1, 0xffff00);
+                gameGraphics.drawString(String.valueOf(tradeItemOtherCount[l6]), j7 + 1, k7 + 10, 1, 0xffff00);
             if(super.mouseX > j7 && super.mouseX < j7 + 48 && super.mouseY > k7 && super.mouseY < k7 + 32)
                 gameGraphics.drawString(Data.itemName[tradeItemsOther[l6]] + ": @whi@" + Data.itemDescription[tradeItemsOther[l6]], byte0 + 8, byte1 + 273, 1, 0xffff00);
         }
@@ -4498,25 +4539,25 @@ label0:
     {
         gameGraphics.drawPicture(0, windowHeight - 4, baseInventoryPic + 23);
         int l = GameImage.rgbToInt(200, 200, 255);
-        if(dea == 0)
+        if(messagesTab == 0)
             l = GameImage.rgbToInt(255, 200, 50);
         if(chatTabAllMsgFlash % 30 > 15)
             l = GameImage.rgbToInt(255, 50, 50);
         gameGraphics.drawText("All messages", 54, windowHeight + 6, 0, l);
         l = GameImage.rgbToInt(200, 200, 255);
-        if(dea == 1)
+        if(messagesTab == 1)
             l = GameImage.rgbToInt(255, 200, 50);
         if(chatTabHistoryFlash % 30 > 15)
             l = GameImage.rgbToInt(255, 50, 50);
         gameGraphics.drawText("Chat history", 155, windowHeight + 6, 0, l);
         l = GameImage.rgbToInt(200, 200, 255);
-        if(dea == 2)
+        if(messagesTab == 2)
             l = GameImage.rgbToInt(255, 200, 50);
         if(chatTabQuestFlash % 30 > 15)
             l = GameImage.rgbToInt(255, 50, 50);
         gameGraphics.drawText("Quest history", 255, windowHeight + 6, 0, l);
         l = GameImage.rgbToInt(200, 200, 255);
-        if(dea == 3)
+        if(messagesTab == 3)
             l = GameImage.rgbToInt(255, 200, 50);
         if(chatTabPrivateFlash % 30 > 15)
             l = GameImage.rgbToInt(255, 50, 50);
@@ -4711,7 +4752,7 @@ label0:
             } else
             {
                 f2.currentSprite = f2.nextSprite;
-                if(f2.gmj == 43)
+                if(f2.npcId == 43)
                     f2.stepCount++;
             }
             if(f2.lastMessageTimeout > 0)
@@ -4816,7 +4857,7 @@ label0:
                     super.streamClass.formatPacket();
                     super.inputText = "";
                     super.enteredInputText = "";
-                    del = "Please wait...";
+                    sleepingStatusText = "Please wait...";
                 }
             if(super.lastMouseButton == 1 && super.mouseY > 275 && super.mouseY < 310 && super.mouseX > 56 && super.mouseX < 456)
             {
@@ -4830,7 +4871,7 @@ label0:
                 super.streamClass.formatPacket();
                 super.inputText = "";
                 super.enteredInputText = "";
-                del = "Please wait...";
+                sleepingStatusText = "Please wait...";
             }
             super.lastMouseButton = 0;
             return;
@@ -4838,20 +4879,20 @@ label0:
         if(super.mouseY > windowHeight - 4)
         {
             if(super.mouseX > 15 && super.mouseX < 96 && super.lastMouseButton == 1)
-                dea = 0;
+                messagesTab = 0;
             if(super.mouseX > 110 && super.mouseX < 194 && super.lastMouseButton == 1)
             {
-                dea = 1;
+                messagesTab = 1;
                 chatInputMenu.gbc[messagesHandleType2] = 0xf423f;
             }
             if(super.mouseX > 215 && super.mouseX < 295 && super.lastMouseButton == 1)
             {
-                dea = 2;
+                messagesTab = 2;
                 chatInputMenu.gbc[messagesHandleType5] = 0xf423f;
             }
             if(super.mouseX > 315 && super.mouseX < 395 && super.lastMouseButton == 1)
             {
-                dea = 3;
+                messagesTab = 3;
                 chatInputMenu.gbc[messagesHandleType6] = 0xf423f;
             }
             if(super.mouseX > 417 && super.mouseX < 497 && super.lastMouseButton == 1)
@@ -4865,7 +4906,7 @@ label0:
             super.mouseButton = 0;
         }
         chatInputMenu.mouseClick(super.mouseX, super.mouseY, super.lastMouseButton, super.mouseButton);
-        if(dea > 0 && super.mouseX >= 494 && super.mouseY >= windowHeight - 66)
+        if(messagesTab > 0 && super.mouseX >= 494 && super.mouseY >= windowHeight - 66)
             super.lastMouseButton = 0;
         if(chatInputMenu.isClicked(chatInputBox))
         {
@@ -4885,31 +4926,31 @@ label0:
                     sendCommand(s1.substring(2));
             } else
             {
-                int j4 = v.stringToBytes(s1);
-                sendChatMessage(v.ceg, j4);
-                s1 = v.bytesToString(v.ceg, 0, j4);
-                s1 = ChatFilter.fgd(s1);
+                int len = ChatMessage.stringToBytes(s1);// TODO "assimilate"
+                sendChatMessage(ChatMessage.lastChat, len);
+                s1 = ChatMessage.bytesToString(ChatMessage.lastChat, 0, len);
+                s1 = ChatFilter.filterChat(s1);
                 ourPlayer.lastMessageTimeout = 150;
-                ourPlayer.gne = s1;
-                displayMessage(ourPlayer.gme + ": " + s1, 2);
+                ourPlayer.lastMessage = s1;
+                displayMessage(ourPlayer.username + ": " + s1, 2);
             }
         }
-        if(dea == 0)
+        if(messagesTab == 0)
         {
             for(int k2 = 0; k2 < 5; k2++)
-                if(eib[k2] > 0)
-                    eib[k2]--;
+                if(messagesTimeout[k2] > 0)
+                    messagesTimeout[k2]--;
 
         }
         if(playerAliveTimeout != 0)
             super.lastMouseButton = 0;
-        if(showTradeBox || eld)
+        if(showTradeBox || showDuelBox)
         {
             if(super.mouseButton != 0)
                 mouseButtonHeldTime++;
             else
                 mouseButtonHeldTime = 0;
-            if(mouseButtonHeldTime > 600)
+            if(mouseButtonHeldTime > 600)// TODO fix these for MoparClassic
                 mouseClickedHeldInTradeDuelBox += 5000;
             else
             if(mouseButtonHeldTime > 450)
@@ -4936,7 +4977,7 @@ label0:
         else
         if(super.lastMouseButton == 2)
             mouseButtonClick = 2;
-        gameCamera.bhg(super.mouseX, super.mouseY);
+        gameCamera.setMousePosition(super.mouseX, super.mouseY);
         super.lastMouseButton = 0;
         if(configCmeraAutoAngle)
         {
@@ -4946,7 +4987,7 @@ label0:
                 {
                     cameraAutoAngle = cameraAutoAngle + 1 & 7;
                     super.keyLeftDown = false;
-                    if(!ebg)
+                    if(!cameraZoom)
                     {
                         if((cameraAutoAngle & 1) == 0)
                             cameraAutoAngle = cameraAutoAngle + 1 & 7;
@@ -4963,7 +5004,7 @@ label0:
                 {
                     cameraAutoAngle = cameraAutoAngle + 7 & 7;
                     super.keyRightDown = false;
-                    if(!ebg)
+                    if(!cameraZoom)
                     {
                         if((cameraAutoAngle & 1) == 0)
                             cameraAutoAngle = cameraAutoAngle + 7 & 7;
@@ -4983,10 +5024,10 @@ label0:
         else
         if(super.keyRightDown)
             cameraRotation = cameraRotation - 2 & 0xff;
-        if(ebg && cameraDistance > 550)
+        if(cameraZoom && cameraDistance > 550)
             cameraDistance -= 4;
         else
-        if(!ebg && cameraDistance < 750)
+        if(!cameraZoom && cameraDistance < 750)
             cameraDistance += 4;
         if(actionPictureType > 0)
             actionPictureType--;
@@ -4994,13 +5035,13 @@ label0:
         if(actionPictureType < 0)
             actionPictureType++;
         gameCamera.bji(17);
-        edd++;
-        if(edd > 5)
+        modelUpdatingTimer++;
+        if(modelUpdatingTimer > 5)
         {
-            edd = 0;
-            dfa = (dfa + 1) % 3;
-            dfb = (dfb + 1) % 4;
-            dfc = (dfc + 1) % 5;
+            modelUpdatingTimer = 0;
+            modelFireLightningSpellNumber = (modelFireLightningSpellNumber + 1) % 3;
+            modelTorchNumber = (modelTorchNumber + 1) % 4;
+            modelClawSpellNumber = (modelClawSpellNumber + 1) % 5;
         }
         for(int j3 = 0; j3 < objectCount; j3++)
         {
@@ -5010,16 +5051,16 @@ label0:
                 objectArray[j3].cmi(1, 0, 0);
         }
 
-        for(int l4 = 0; l4 < eig; l4++)
+        for(int l4 = 0; l4 < teleBubbleCount; l4++)
         {
             teleBubbleTime[l4]++;
             if(teleBubbleTime[l4] > 50)
             {
-                eig--;
-                for(int l5 = l4; l5 < eig; l5++)
+                teleBubbleCount--;
+                for(int l5 = l4; l5 < teleBubbleCount; l5++)
                 {
-                    ell[l5] = ell[l5 + 1];
-                    elh[l5] = elh[l5 + 1];
+                    teleBubbleX[l5] = teleBubbleX[l5 + 1];
+                    teleBubbleY[l5] = teleBubbleY[l5 + 1];
                     teleBubbleTime[l5] = teleBubbleTime[l5 + 1];
                     teleBubbleType[l5] = teleBubbleType[l5 + 1];
                 }
@@ -5042,48 +5083,48 @@ label0:
         appearanceMenu.drawText(l + 55, i1 + 110, "Back", 3, true);
         byte byte0 = 54;
         i1 += 145;
-        appearanceMenu.gff(l - byte0, i1, 53, 41);
+        appearanceMenu.drawCurvedBox(l - byte0, i1, 53, 41);
         appearanceMenu.drawText(l - byte0, i1 - 8, "Head", 1, true);
         appearanceMenu.drawText(l - byte0, i1 + 8, "Type", 1, true);
-        appearanceMenu.gfg(l - byte0 - 40, i1, Menu.gdi + 7);
+        appearanceMenu.drawArrow(l - byte0 - 40, i1, Menu.gdi + 7);
         appearanceHeadLeftArrow = appearanceMenu.createButton(l - byte0 - 40, i1, 20, 20);
-        appearanceMenu.gfg((l - byte0) + 40, i1, Menu.gdi + 6);
+        appearanceMenu.drawArrow((l - byte0) + 40, i1, Menu.gdi + 6);
         appearanceHeadRightArrow = appearanceMenu.createButton((l - byte0) + 40, i1, 20, 20);
-        appearanceMenu.gff(l + byte0, i1, 53, 41);
+        appearanceMenu.drawCurvedBox(l + byte0, i1, 53, 41);
         appearanceMenu.drawText(l + byte0, i1 - 8, "Hair", 1, true);
         appearanceMenu.drawText(l + byte0, i1 + 8, "Color", 1, true);
-        appearanceMenu.gfg((l + byte0) - 40, i1, Menu.gdi + 7);
+        appearanceMenu.drawArrow((l + byte0) - 40, i1, Menu.gdi + 7);
         appearanceHairLeftArrow = appearanceMenu.createButton((l + byte0) - 40, i1, 20, 20);
-        appearanceMenu.gfg(l + byte0 + 40, i1, Menu.gdi + 6);
+        appearanceMenu.drawArrow(l + byte0 + 40, i1, Menu.gdi + 6);
         appearanceHairRightArrow = appearanceMenu.createButton(l + byte0 + 40, i1, 20, 20);
         i1 += 50;
-        appearanceMenu.gff(l - byte0, i1, 53, 41);
+        appearanceMenu.drawCurvedBox(l - byte0, i1, 53, 41);
         appearanceMenu.drawText(l - byte0, i1, "Gender", 1, true);
-        appearanceMenu.gfg(l - byte0 - 40, i1, Menu.gdi + 7);
+        appearanceMenu.drawArrow(l - byte0 - 40, i1, Menu.gdi + 7);
         appearanceGenderLeftArrow = appearanceMenu.createButton(l - byte0 - 40, i1, 20, 20);
-        appearanceMenu.gfg((l - byte0) + 40, i1, Menu.gdi + 6);
+        appearanceMenu.drawArrow((l - byte0) + 40, i1, Menu.gdi + 6);
         appearanceGenderRightArrow = appearanceMenu.createButton((l - byte0) + 40, i1, 20, 20);
-        appearanceMenu.gff(l + byte0, i1, 53, 41);
+        appearanceMenu.drawCurvedBox(l + byte0, i1, 53, 41);
         appearanceMenu.drawText(l + byte0, i1 - 8, "Top", 1, true);
         appearanceMenu.drawText(l + byte0, i1 + 8, "Color", 1, true);
-        appearanceMenu.gfg((l + byte0) - 40, i1, Menu.gdi + 7);
+        appearanceMenu.drawArrow((l + byte0) - 40, i1, Menu.gdi + 7);
         appearanceTopLeftArrow = appearanceMenu.createButton((l + byte0) - 40, i1, 20, 20);
-        appearanceMenu.gfg(l + byte0 + 40, i1, Menu.gdi + 6);
+        appearanceMenu.drawArrow(l + byte0 + 40, i1, Menu.gdi + 6);
         appearanceTopRightArrow = appearanceMenu.createButton(l + byte0 + 40, i1, 20, 20);
         i1 += 50;
-        appearanceMenu.gff(l - byte0, i1, 53, 41);
+        appearanceMenu.drawCurvedBox(l - byte0, i1, 53, 41);
         appearanceMenu.drawText(l - byte0, i1 - 8, "Skin", 1, true);
         appearanceMenu.drawText(l - byte0, i1 + 8, "Color", 1, true);
-        appearanceMenu.gfg(l - byte0 - 40, i1, Menu.gdi + 7);
+        appearanceMenu.drawArrow(l - byte0 - 40, i1, Menu.gdi + 7);
         appearanceSkinLeftArrow = appearanceMenu.createButton(l - byte0 - 40, i1, 20, 20);
-        appearanceMenu.gfg((l - byte0) + 40, i1, Menu.gdi + 6);
+        appearanceMenu.drawArrow((l - byte0) + 40, i1, Menu.gdi + 6);
         appearanceSkingRightArrow = appearanceMenu.createButton((l - byte0) + 40, i1, 20, 20);
-        appearanceMenu.gff(l + byte0, i1, 53, 41);
+        appearanceMenu.drawCurvedBox(l + byte0, i1, 53, 41);
         appearanceMenu.drawText(l + byte0, i1 - 8, "Bottom", 1, true);
         appearanceMenu.drawText(l + byte0, i1 + 8, "Color", 1, true);
-        appearanceMenu.gfg((l + byte0) - 40, i1, Menu.gdi + 7);
+        appearanceMenu.drawArrow((l + byte0) - 40, i1, Menu.gdi + 7);
         appearanceBottomLeftArrow = appearanceMenu.createButton((l + byte0) - 40, i1, 20, 20);
-        appearanceMenu.gfg(l + byte0 + 40, i1, Menu.gdi + 6);
+        appearanceMenu.drawArrow(l + byte0 + 40, i1, Menu.gdi + 6);
         appearanceBottomRightArrow = appearanceMenu.createButton(l + byte0 + 40, i1, 20, 20);
         i1 += 82;
         i1 -= 35;
@@ -5097,56 +5138,56 @@ label0:
         if(loggedIn == 0)
         {
             if(loginScreen == 0)
-                loginMenuFirst.gec(l);
+                loginMenuFirst.keyPress(l);
             if(loginScreen == 1)
-                loginNewUser.gec(l);
+                loginNewUser.keyPress(l);
             if(loginScreen == 2)
-                loginMenuLogin.gec(l);
+                loginMenuLogin.keyPress(l);
         }
         if(loggedIn == 1)
         {
             if(showAppearanceWindow)
             {
-                appearanceMenu.gec(l);
+                appearanceMenu.keyPress(l);
                 return;
             }
             if(showFriendsBox == 0 && showAbuseBox == 0 && !isSleeping)
-                chatInputMenu.gec(l);
+                chatInputMenu.keyPress(l);
         }
     }
 
-    private final void fcg()
+    private final void generateWorldRightClickMenu()
     {
-        int l = 2203 - (sectionY + eaj + areaY);
-        if(sectionX + eai + areaX >= 2640)
+        int l = 2203 - (sectionY + wildY + areaY);
+        if(sectionX + wildX + areaX >= 2640)
             l = -50;
-        int i1 = -1;
+        int ground = -1;
         for(int j1 = 0; j1 < objectCount; j1++)
-            dij[j1] = false;
+            objectAlreadyInMenu[j1] = false;
 
         for(int k1 = 0; k1 < wallObjectCount; k1++)
-            eah[k1] = false;
+            wallObjectAlreadyInMenu[k1] = false;
 
-        int l1 = gameCamera.bhh();
-        i ai[] = gameCamera.bhj();
-        int ai1[] = gameCamera.bhi();
-        for(int i2 = 0; i2 < l1; i2++)
+        int optionCount = gameCamera.getOptionCount();
+        GameObject objects[] = gameCamera.getHighlightedObjects();
+        int players[] = gameCamera.getHighlightedPlayers();
+        for(int i2 = 0; i2 < optionCount; i2++)
         {
             if(menuOptionsCount > 200)
                 break;
-            int j2 = ai1[i2];
-            i l2 = ai[i2];
-            if(l2.chl[j2] <= 65535 || l2.chl[j2] >= 0x30d40 && l2.chl[j2] <= 0x493e0)
-                if(l2 == gameCamera.beh)
+            int player = players[i2];
+            GameObject object = objects[i2];
+            if(object.entityType[player] <= 65535 || object.entityType[player] >= 0x30d40 && object.entityType[player] <= 0x493e0)
+                if(object == gameCamera.highlightedObject)
                 {
-                    int i3 = l2.chl[j2] % 10000;
-                    int l3 = l2.chl[j2] / 10000;
-                    if(l3 == 1)
+                    int index = object.entityType[player] % 10000;
+                    int type = object.entityType[player] / 10000;
+                    if(type == 1)
                     {
                         String s1 = "";
                         int k4 = 0;
-                        if(ourPlayer.gnm > 0 && playerArray[i3].gnm > 0)
-                            k4 = ourPlayer.gnm - playerArray[i3].gnm;
+                        if(ourPlayer.level > 0 && playerArray[index].level > 0)
+                            k4 = ourPlayer.level - playerArray[index].level;
                         if(k4 < 0)
                             s1 = "@or1@";
                         if(k4 < -3)
@@ -5163,17 +5204,17 @@ label0:
                             s1 = "@gr3@";
                         if(k4 > 9)
                             s1 = "@gre@";
-                        s1 = " " + s1 + "(level-" + playerArray[i3].gnm + ")";
+                        s1 = " " + s1 + "(level-" + playerArray[index].level + ")";
                         if(selectedSpell >= 0)
                         {
-                            if(Data.amd[selectedSpell] == 1 || Data.amd[selectedSpell] == 2)
+                            if(Data.spellType[selectedSpell] == 1 || Data.spellType[selectedSpell] == 2)
                             {
                                 menuText1[menuOptionsCount] = "Cast " + Data.spellName[selectedSpell] + " on";
-                                menuText2[menuOptionsCount] = "@whi@" + playerArray[i3].gme + s1;
+                                menuText2[menuOptionsCount] = "@whi@" + playerArray[index].username + s1;
                                 menuActionID[menuOptionsCount] = 800;
-                                menuActionX[menuOptionsCount] = playerArray[i3].currentX;
-                                menuActionY[menuOptionsCount] = playerArray[i3].currentY;
-                                menuActionType[menuOptionsCount] = playerArray[i3].serverIndex;
+                                menuActionX[menuOptionsCount] = playerArray[index].currentX;
+                                menuActionY[menuOptionsCount] = playerArray[index].currentY;
+                                menuActionType[menuOptionsCount] = playerArray[index].serverIndex;
                                 menuActionVar1[menuOptionsCount] = selectedSpell;
                                 menuOptionsCount++;
                             }
@@ -5181,62 +5222,62 @@ label0:
                         if(selectedItem >= 0)
                         {
                             menuText1[menuOptionsCount] = "Use " + selectedItemName + " with";
-                            menuText2[menuOptionsCount] = "@whi@" + playerArray[i3].gme + s1;
+                            menuText2[menuOptionsCount] = "@whi@" + playerArray[index].username + s1;
                             menuActionID[menuOptionsCount] = 810;
-                            menuActionX[menuOptionsCount] = playerArray[i3].currentX;
-                            menuActionY[menuOptionsCount] = playerArray[i3].currentY;
-                            menuActionType[menuOptionsCount] = playerArray[i3].serverIndex;
+                            menuActionX[menuOptionsCount] = playerArray[index].currentX;
+                            menuActionY[menuOptionsCount] = playerArray[index].currentY;
+                            menuActionType[menuOptionsCount] = playerArray[index].serverIndex;
                             menuActionVar1[menuOptionsCount] = selectedItem;
                             menuOptionsCount++;
                         } else
                         {
-                            if(l > 0 && (playerArray[i3].currentY - 64) / magicLoc + eaj + areaY < 2203)
+                            if(l > 0 && (playerArray[index].currentY - 64) / magicLoc + wildY + areaY < 2203)
                             {
                                 menuText1[menuOptionsCount] = "Attack";
-                                menuText2[menuOptionsCount] = "@whi@" + playerArray[i3].gme + s1;
+                                menuText2[menuOptionsCount] = "@whi@" + playerArray[index].username + s1;
                                 if(k4 >= 0 && k4 < 5)
                                     menuActionID[menuOptionsCount] = 805;
                                 else
                                     menuActionID[menuOptionsCount] = 2805;
-                                menuActionX[menuOptionsCount] = playerArray[i3].currentX;
-                                menuActionY[menuOptionsCount] = playerArray[i3].currentY;
-                                menuActionType[menuOptionsCount] = playerArray[i3].serverIndex;
+                                menuActionX[menuOptionsCount] = playerArray[index].currentX;
+                                menuActionY[menuOptionsCount] = playerArray[index].currentY;
+                                menuActionType[menuOptionsCount] = playerArray[index].serverIndex;
                                 menuOptionsCount++;
                             } else
                             if(members)
                             {
                                 menuText1[menuOptionsCount] = "Duel with";
-                                menuText2[menuOptionsCount] = "@whi@" + playerArray[i3].gme + s1;
-                                menuActionX[menuOptionsCount] = playerArray[i3].currentX;
-                                menuActionY[menuOptionsCount] = playerArray[i3].currentY;
+                                menuText2[menuOptionsCount] = "@whi@" + playerArray[index].username + s1;
+                                menuActionX[menuOptionsCount] = playerArray[index].currentX;
+                                menuActionY[menuOptionsCount] = playerArray[index].currentY;
                                 menuActionID[menuOptionsCount] = 2806;
-                                menuActionType[menuOptionsCount] = playerArray[i3].serverIndex;
+                                menuActionType[menuOptionsCount] = playerArray[index].serverIndex;
                                 menuOptionsCount++;
                             }
                             menuText1[menuOptionsCount] = "Trade with";
-                            menuText2[menuOptionsCount] = "@whi@" + playerArray[i3].gme + s1;
+                            menuText2[menuOptionsCount] = "@whi@" + playerArray[index].username + s1;
                             menuActionID[menuOptionsCount] = 2810;
-                            menuActionType[menuOptionsCount] = playerArray[i3].serverIndex;
+                            menuActionType[menuOptionsCount] = playerArray[index].serverIndex;
                             menuOptionsCount++;
                             menuText1[menuOptionsCount] = "Follow";
-                            menuText2[menuOptionsCount] = "@whi@" + playerArray[i3].gme + s1;
+                            menuText2[menuOptionsCount] = "@whi@" + playerArray[index].username + s1;
                             menuActionID[menuOptionsCount] = 2820;
-                            menuActionType[menuOptionsCount] = playerArray[i3].serverIndex;
+                            menuActionType[menuOptionsCount] = playerArray[index].serverIndex;
                             menuOptionsCount++;
                         }
                     } else
-                    if(l3 == 2)
+                    if(type == 2)
                     {
                         if(selectedSpell >= 0)
                         {
-                            if(Data.amd[selectedSpell] == 3)
+                            if(Data.spellType[selectedSpell] == 3)
                             {
                                 menuText1[menuOptionsCount] = "Cast " + Data.spellName[selectedSpell] + " on";
-                                menuText2[menuOptionsCount] = "@lre@" + Data.itemName[dmn[i3]];
+                                menuText2[menuOptionsCount] = "@lre@" + Data.itemName[groundItemID[index]];
                                 menuActionID[menuOptionsCount] = 200;
-                                menuActionX[menuOptionsCount] = dml[i3];
-                                menuActionY[menuOptionsCount] = dmm[i3];
-                                menuActionType[menuOptionsCount] = dmn[i3];
+                                menuActionX[menuOptionsCount] = groundItemX[index];
+                                menuActionY[menuOptionsCount] = groundItemY[index];
+                                menuActionType[menuOptionsCount] = groundItemID[index];
                                 menuActionVar1[menuOptionsCount] = selectedSpell;
                                 menuOptionsCount++;
                             }
@@ -5244,37 +5285,37 @@ label0:
                         if(selectedItem >= 0)
                         {
                             menuText1[menuOptionsCount] = "Use " + selectedItemName + " with";
-                            menuText2[menuOptionsCount] = "@lre@" + Data.itemName[dmn[i3]];
+                            menuText2[menuOptionsCount] = "@lre@" + Data.itemName[groundItemID[index]];
                             menuActionID[menuOptionsCount] = 210;
-                            menuActionX[menuOptionsCount] = dml[i3];
-                            menuActionY[menuOptionsCount] = dmm[i3];
-                            menuActionType[menuOptionsCount] = dmn[i3];
+                            menuActionX[menuOptionsCount] = groundItemX[index];
+                            menuActionY[menuOptionsCount] = groundItemY[index];
+                            menuActionType[menuOptionsCount] = groundItemID[index];
                             menuActionVar1[menuOptionsCount] = selectedItem;
                             menuOptionsCount++;
                         } else
                         {
                             menuText1[menuOptionsCount] = "Take";
-                            menuText2[menuOptionsCount] = "@lre@" + Data.itemName[dmn[i3]];
+                            menuText2[menuOptionsCount] = "@lre@" + Data.itemName[groundItemID[index]];
                             menuActionID[menuOptionsCount] = 220;
-                            menuActionX[menuOptionsCount] = dml[i3];
-                            menuActionY[menuOptionsCount] = dmm[i3];
-                            menuActionType[menuOptionsCount] = dmn[i3];
+                            menuActionX[menuOptionsCount] = groundItemX[index];
+                            menuActionY[menuOptionsCount] = groundItemY[index];
+                            menuActionType[menuOptionsCount] = groundItemID[index];
                             menuOptionsCount++;
                             menuText1[menuOptionsCount] = "Examine";
-                            menuText2[menuOptionsCount] = "@lre@" + Data.itemName[dmn[i3]];
+                            menuText2[menuOptionsCount] = "@lre@" + Data.itemName[groundItemID[index]];
                             menuActionID[menuOptionsCount] = 3200;
-                            menuActionType[menuOptionsCount] = dmn[i3];
+                            menuActionType[menuOptionsCount] = groundItemID[index];
                             menuOptionsCount++;
                         }
                     } else
-                    if(l3 == 3)
+                    if(type == 3)
                     {
                         String s2 = "";
                         int l4 = -1;
-                        int i5 = npcArray[i3].gmj;
-                        if(Data.alf[i5] > 0)
+                        int id = npcArray[index].npcId;
+                        if(Data.npcAttackable[id] > 0)
                         {
-                            int j5 = (Data.alb[i5] + Data.ale[i5] + Data.alc[i5] + Data.ald[i5]) / 4;
+                            int j5 = (Data.npcAttack[id] + Data.npcDefense[id] + Data.npcStrength[id] + Data.npcHits[id]) / 4;
                             int k5 = (playerStatBase[0] + playerStatBase[1] + playerStatBase[2] + playerStatBase[3] + 27) / 4;
                             l4 = k5 - j5;
                             s2 = "@yel@";
@@ -5298,14 +5339,14 @@ label0:
                         }
                         if(selectedSpell >= 0)
                         {
-                            if(Data.amd[selectedSpell] == 2)
+                            if(Data.spellType[selectedSpell] == 2)
                             {
                                 menuText1[menuOptionsCount] = "Cast " + Data.spellName[selectedSpell] + " on";
-                                menuText2[menuOptionsCount] = "@yel@" + Data.ahd[npcArray[i3].gmj];
+                                menuText2[menuOptionsCount] = "@yel@" + Data.npcName[npcArray[index].npcId];
                                 menuActionID[menuOptionsCount] = 700;
-                                menuActionX[menuOptionsCount] = npcArray[i3].currentX;
-                                menuActionY[menuOptionsCount] = npcArray[i3].currentY;
-                                menuActionType[menuOptionsCount] = npcArray[i3].serverIndex;
+                                menuActionX[menuOptionsCount] = npcArray[index].currentX;
+                                menuActionY[menuOptionsCount] = npcArray[index].currentY;
+                                menuActionType[menuOptionsCount] = npcArray[index].serverIndex;
                                 menuActionVar1[menuOptionsCount] = selectedSpell;
                                 menuOptionsCount++;
                             }
@@ -5313,65 +5354,65 @@ label0:
                         if(selectedItem >= 0)
                         {
                             menuText1[menuOptionsCount] = "Use " + selectedItemName + " with";
-                            menuText2[menuOptionsCount] = "@yel@" + Data.ahd[npcArray[i3].gmj];
+                            menuText2[menuOptionsCount] = "@yel@" + Data.npcName[npcArray[index].npcId];
                             menuActionID[menuOptionsCount] = 710;
-                            menuActionX[menuOptionsCount] = npcArray[i3].currentX;
-                            menuActionY[menuOptionsCount] = npcArray[i3].currentY;
-                            menuActionType[menuOptionsCount] = npcArray[i3].serverIndex;
+                            menuActionX[menuOptionsCount] = npcArray[index].currentX;
+                            menuActionY[menuOptionsCount] = npcArray[index].currentY;
+                            menuActionType[menuOptionsCount] = npcArray[index].serverIndex;
                             menuActionVar1[menuOptionsCount] = selectedItem;
                             menuOptionsCount++;
                         } else
                         {
-                            if(Data.alf[i5] > 0)
+                            if(Data.npcAttackable[id] > 0)
                             {
                                 menuText1[menuOptionsCount] = "Attack";
-                                menuText2[menuOptionsCount] = "@yel@" + Data.ahd[npcArray[i3].gmj] + s2;
+                                menuText2[menuOptionsCount] = "@yel@" + Data.npcName[npcArray[index].npcId] + s2;
                                 if(l4 >= 0)
                                     menuActionID[menuOptionsCount] = 715;
                                 else
                                     menuActionID[menuOptionsCount] = 2715;
-                                menuActionX[menuOptionsCount] = npcArray[i3].currentX;
-                                menuActionY[menuOptionsCount] = npcArray[i3].currentY;
-                                menuActionType[menuOptionsCount] = npcArray[i3].serverIndex;
+                                menuActionX[menuOptionsCount] = npcArray[index].currentX;
+                                menuActionY[menuOptionsCount] = npcArray[index].currentY;
+                                menuActionType[menuOptionsCount] = npcArray[index].serverIndex;
                                 menuOptionsCount++;
                             }
                             menuText1[menuOptionsCount] = "Talk-to";
-                            menuText2[menuOptionsCount] = "@yel@" + Data.ahd[npcArray[i3].gmj];
+                            menuText2[menuOptionsCount] = "@yel@" + Data.npcName[npcArray[index].npcId];
                             menuActionID[menuOptionsCount] = 720;
-                            menuActionX[menuOptionsCount] = npcArray[i3].currentX;
-                            menuActionY[menuOptionsCount] = npcArray[i3].currentY;
-                            menuActionType[menuOptionsCount] = npcArray[i3].serverIndex;
+                            menuActionX[menuOptionsCount] = npcArray[index].currentX;
+                            menuActionY[menuOptionsCount] = npcArray[index].currentY;
+                            menuActionType[menuOptionsCount] = npcArray[index].serverIndex;
                             menuOptionsCount++;
-                            if(!Data.ahf[i5].equals(""))
+                            if(!Data.npcCommand[id].equals(""))
                             {
-                                menuText1[menuOptionsCount] = Data.ahf[i5];
-                                menuText2[menuOptionsCount] = "@yel@" + Data.ahd[npcArray[i3].gmj];
+                                menuText1[menuOptionsCount] = Data.npcCommand[id];
+                                menuText2[menuOptionsCount] = "@yel@" + Data.npcName[npcArray[index].npcId];
                                 menuActionID[menuOptionsCount] = 725;
-                                menuActionX[menuOptionsCount] = npcArray[i3].currentX;
-                                menuActionY[menuOptionsCount] = npcArray[i3].currentY;
-                                menuActionType[menuOptionsCount] = npcArray[i3].serverIndex;
+                                menuActionX[menuOptionsCount] = npcArray[index].currentX;
+                                menuActionY[menuOptionsCount] = npcArray[index].currentY;
+                                menuActionType[menuOptionsCount] = npcArray[index].serverIndex;
                                 menuOptionsCount++;
                             }
                             menuText1[menuOptionsCount] = "Examine";
-                            menuText2[menuOptionsCount] = "@yel@" + Data.ahd[npcArray[i3].gmj];
+                            menuText2[menuOptionsCount] = "@yel@" + Data.npcName[npcArray[index].npcId];
                             menuActionID[menuOptionsCount] = 3700;
-                            menuActionType[menuOptionsCount] = npcArray[i3].gmj;
+                            menuActionType[menuOptionsCount] = npcArray[index].npcId;
                             menuOptionsCount++;
                         }
                     }
                 } else
-                if(l2 != null && l2.chk >= 10000)
+                if(object != null && object.index >= 10000)
                 {
-                    int j3 = l2.chk - 10000;
+                    int j3 = object.index - 10000;
                     int i4 = wallObjectID[j3];
-                    if(!eah[j3])
+                    if(!wallObjectAlreadyInMenu[j3])
                     {
                         if(selectedSpell >= 0)
                         {
-                            if(Data.amd[selectedSpell] == 4)
+                            if(Data.spellType[selectedSpell] == 4)
                             {
                                 menuText1[menuOptionsCount] = "Cast " + Data.spellName[selectedSpell] + " on";
-                                menuText2[menuOptionsCount] = "@cya@" + Data.ahi[i4];
+                                menuText2[menuOptionsCount] = "@cya@" + Data.wallObjectName[i4];
                                 menuActionID[menuOptionsCount] = 300;
                                 menuActionX[menuOptionsCount] = wallObjectX[j3];
                                 menuActionY[menuOptionsCount] = wallObjectY[j3];
@@ -5383,7 +5424,7 @@ label0:
                         if(selectedItem >= 0)
                         {
                             menuText1[menuOptionsCount] = "Use " + selectedItemName + " with";
-                            menuText2[menuOptionsCount] = "@cya@" + Data.ahi[i4];
+                            menuText2[menuOptionsCount] = "@cya@" + Data.wallObjectName[i4];
                             menuActionID[menuOptionsCount] = 310;
                             menuActionX[menuOptionsCount] = wallObjectX[j3];
                             menuActionY[menuOptionsCount] = wallObjectY[j3];
@@ -5392,20 +5433,20 @@ label0:
                             menuOptionsCount++;
                         } else
                         {
-                            if(!Data.ahk[i4].equalsIgnoreCase("WalkTo"))
+                            if(!Data.wallObjectCommand1[i4].equalsIgnoreCase("WalkTo"))
                             {
-                                menuText1[menuOptionsCount] = Data.ahk[i4];
-                                menuText2[menuOptionsCount] = "@cya@" + Data.ahi[i4];
+                                menuText1[menuOptionsCount] = Data.wallObjectCommand1[i4];
+                                menuText2[menuOptionsCount] = "@cya@" + Data.wallObjectName[i4];
                                 menuActionID[menuOptionsCount] = 320;
                                 menuActionX[menuOptionsCount] = wallObjectX[j3];
                                 menuActionY[menuOptionsCount] = wallObjectY[j3];
                                 menuActionType[menuOptionsCount] = wallObjectDirection[j3];
                                 menuOptionsCount++;
                             }
-                            if(!Data.ahl[i4].equalsIgnoreCase("Examine"))
+                            if(!Data.wallObjectCommand2[i4].equalsIgnoreCase("Examine"))
                             {
-                                menuText1[menuOptionsCount] = Data.ahl[i4];
-                                menuText2[menuOptionsCount] = "@cya@" + Data.ahi[i4];
+                                menuText1[menuOptionsCount] = Data.wallObjectCommand2[i4];
+                                menuText2[menuOptionsCount] = "@cya@" + Data.wallObjectName[i4];
                                 menuActionID[menuOptionsCount] = 2300;
                                 menuActionX[menuOptionsCount] = wallObjectX[j3];
                                 menuActionY[menuOptionsCount] = wallObjectY[j3];
@@ -5413,30 +5454,30 @@ label0:
                                 menuOptionsCount++;
                             }
                             menuText1[menuOptionsCount] = "Examine";
-                            menuText2[menuOptionsCount] = "@cya@" + Data.ahi[i4];
+                            menuText2[menuOptionsCount] = "@cya@" + Data.wallObjectName[i4];
                             menuActionID[menuOptionsCount] = 3300;
                             menuActionType[menuOptionsCount] = i4;
                             menuOptionsCount++;
                         }
-                        eah[j3] = true;
+                        wallObjectAlreadyInMenu[j3] = true;
                     }
                 } else
-                if(l2 != null && l2.chk >= 0)
+                if(object != null && object.index >= 0)
                 {
-                    int k3 = l2.chk;
+                    int k3 = object.index;
                     int j4 = objectID[k3];
-                    if(!dij[k3])
+                    if(!objectAlreadyInMenu[k3])
                     {
                         if(selectedSpell >= 0)
                         {
-                            if(Data.amd[selectedSpell] == 5)
+                            if(Data.spellType[selectedSpell] == 5)
                             {
                                 menuText1[menuOptionsCount] = "Cast " + Data.spellName[selectedSpell] + " on";
-                                menuText2[menuOptionsCount] = "@cya@" + Data.ajm[j4];
+                                menuText2[menuOptionsCount] = "@cya@" + Data.objectName[j4];
                                 menuActionID[menuOptionsCount] = 400;
                                 menuActionX[menuOptionsCount] = objectX[k3];
                                 menuActionY[menuOptionsCount] = objectY[k3];
-                                menuActionType[menuOptionsCount] = elb[k3];
+                                menuActionType[menuOptionsCount] = objectType[k3];
                                 menuActionVar1[menuOptionsCount] = objectID[k3];
                                 menuActionVar2[menuOptionsCount] = selectedSpell;
                                 menuOptionsCount++;
@@ -5445,56 +5486,56 @@ label0:
                         if(selectedItem >= 0)
                         {
                             menuText1[menuOptionsCount] = "Use " + selectedItemName + " with";
-                            menuText2[menuOptionsCount] = "@cya@" + Data.ajm[j4];
+                            menuText2[menuOptionsCount] = "@cya@" + Data.objectName[j4];
                             menuActionID[menuOptionsCount] = 410;
                             menuActionX[menuOptionsCount] = objectX[k3];
                             menuActionY[menuOptionsCount] = objectY[k3];
-                            menuActionType[menuOptionsCount] = elb[k3];
+                            menuActionType[menuOptionsCount] = objectType[k3];
                             menuActionVar1[menuOptionsCount] = objectID[k3];
                             menuActionVar2[menuOptionsCount] = selectedItem;
                             menuOptionsCount++;
                         } else
                         {
-                            if(!Data.aka[j4].equalsIgnoreCase("WalkTo"))
+                            if(!Data.objectCommand1[j4].equalsIgnoreCase("WalkTo"))
                             {
-                                menuText1[menuOptionsCount] = Data.aka[j4];
-                                menuText2[menuOptionsCount] = "@cya@" + Data.ajm[j4];
+                                menuText1[menuOptionsCount] = Data.objectCommand1[j4];
+                                menuText2[menuOptionsCount] = "@cya@" + Data.objectName[j4];
                                 menuActionID[menuOptionsCount] = 420;
                                 menuActionX[menuOptionsCount] = objectX[k3];
                                 menuActionY[menuOptionsCount] = objectY[k3];
-                                menuActionType[menuOptionsCount] = elb[k3];
+                                menuActionType[menuOptionsCount] = objectType[k3];
                                 menuActionVar1[menuOptionsCount] = objectID[k3];
                                 menuOptionsCount++;
                             }
-                            if(!Data.akb[j4].equalsIgnoreCase("Examine"))
+                            if(!Data.objectCommand2[j4].equalsIgnoreCase("Examine"))
                             {
-                                menuText1[menuOptionsCount] = Data.akb[j4];
-                                menuText2[menuOptionsCount] = "@cya@" + Data.ajm[j4];
+                                menuText1[menuOptionsCount] = Data.objectCommand2[j4];
+                                menuText2[menuOptionsCount] = "@cya@" + Data.objectName[j4];
                                 menuActionID[menuOptionsCount] = 2400;
                                 menuActionX[menuOptionsCount] = objectX[k3];
                                 menuActionY[menuOptionsCount] = objectY[k3];
-                                menuActionType[menuOptionsCount] = elb[k3];
+                                menuActionType[menuOptionsCount] = objectType[k3];
                                 menuActionVar1[menuOptionsCount] = objectID[k3];
                                 menuOptionsCount++;
                             }
                             menuText1[menuOptionsCount] = "Examine";
-                            menuText2[menuOptionsCount] = "@cya@" + Data.ajm[j4];
+                            menuText2[menuOptionsCount] = "@cya@" + Data.objectName[j4];
                             menuActionID[menuOptionsCount] = 3400;
                             menuActionType[menuOptionsCount] = j4;
                             menuOptionsCount++;
                         }
-                        dij[k3] = true;
+                        objectAlreadyInMenu[k3] = true;
                     }
                 } else
                 {
-                    if(j2 >= 0)
-                        j2 = l2.chl[j2] - 0x30d40;
-                    if(j2 >= 0)
-                        i1 = j2;
+                    if(player >= 0)
+                        player = object.entityType[player] - 0x30d40;
+                    if(player >= 0)
+                        ground = player;
                 }
         }
 
-        if(selectedSpell >= 0 && Data.amd[selectedSpell] <= 1)
+        if(selectedSpell >= 0 && Data.spellType[selectedSpell] <= 1)
         {
             menuText1[menuOptionsCount] = "Cast " + Data.spellName[selectedSpell] + " on self";
             menuText2[menuOptionsCount] = "";
@@ -5502,18 +5543,17 @@ label0:
             menuActionType[menuOptionsCount] = selectedSpell;
             menuOptionsCount++;
         }
-        if(i1 != -1)
+        if(ground != -1)
         {
-            int k2 = i1;
             if(selectedSpell >= 0)
             {
-                if(Data.amd[selectedSpell] == 6)
+                if(Data.spellType[selectedSpell] == 6)
                 {
                     menuText1[menuOptionsCount] = "Cast " + Data.spellName[selectedSpell] + " on ground";
                     menuText2[menuOptionsCount] = "";
                     menuActionID[menuOptionsCount] = 900;
-                    menuActionX[menuOptionsCount] = engineHandle.gin[k2];
-                    menuActionY[menuOptionsCount] = engineHandle.ghk[k2];
+                    menuActionX[menuOptionsCount] = engineHandle.selectedX[ground];
+                    menuActionY[menuOptionsCount] = engineHandle.selectedY[ground];
                     menuActionType[menuOptionsCount] = selectedSpell;
                     menuOptionsCount++;
                     return;
@@ -5524,14 +5564,14 @@ label0:
                 menuText1[menuOptionsCount] = "Walk here";
                 menuText2[menuOptionsCount] = "";
                 menuActionID[menuOptionsCount] = 920;
-                menuActionX[menuOptionsCount] = engineHandle.gin[k2];
-                menuActionY[menuOptionsCount] = engineHandle.ghk[k2];
+                menuActionX[menuOptionsCount] = engineHandle.selectedX[ground];
+                menuActionY[menuOptionsCount] = engineHandle.selectedY[ground];
                 menuOptionsCount++;
             }
         }
     }
 
-    private final void fch()
+    private final void drawShopBox()
     {
         if(mouseButtonClick != 0)
         {
@@ -5547,40 +5587,41 @@ label0:
                     {
                         int k3 = 7 + l2 * 49;
                         int k4 = 28 + l1 * 34;
-                        if(l > k3 && l < k3 + 49 && i1 > k4 && i1 < k4 + 34 && efa[j1] != -1)
+                        if(l > k3 && l < k3 + 49 && i1 > k4 && i1 < k4 + 34 && shopItems[j1] != -1)
                         {
-                            dej = j1;
-                            dek = efa[j1];
+                            selectedShopItemIndex = j1;
+                            selectedShopItemType = shopItems[j1];
                         }
                         j1++;
                     }
 
                 }
 
-                if(dej >= 0)
+                if(selectedShopItemIndex >= 0)
                 {
-                    int i3 = efa[dej];
+                    int i3 = shopItems[selectedShopItemIndex];
                     if(i3 != -1)
                     {
-                        if(efb[dej] > 0 && l > 298 && i1 >= 204 && l < 408 && i1 <= 215)
+                        // TODO M-C sends the prices directly
+                        if(shopItemCount[selectedShopItemIndex] > 0 && l > 298 && i1 >= 204 && l < 408 && i1 <= 215)
                         {
-                            int l3 = dmd + efc[dej];
+                            int l3 = shopItemBuyPriceModifier + shopItemBasePriceModifier[selectedShopItemIndex];
                             if(l3 < 10)
                                 l3 = 10;
-                            int l4 = (l3 * Data.aif[i3]) / 100;
-                            super.streamClass.createPacket(67);
-                            super.streamClass.addShort(efa[dej]);
+                            int l4 = (l3 * Data.itemBasePrice[i3]) / 100;
+                            super.streamClass.createPacket(128);
+                            super.streamClass.addShort(shopItems[selectedShopItemIndex]);
                             super.streamClass.addInt(l4);
                             super.streamClass.formatPacket();
                         }
                         if(getInventoryItemTotalCount(i3) > 0 && l > 2 && i1 >= 229 && l < 112 && i1 <= 240)
                         {
-                            int i4 = dmc + efc[dej];
+                            int i4 = shopItemSellPriceModifier + shopItemBasePriceModifier[selectedShopItemIndex];
                             if(i4 < 10)
                                 i4 = 10;
-                            int i5 = (i4 * Data.aif[i3]) / 100;
-                            super.streamClass.createPacket(177);
-                            super.streamClass.addShort(efa[dej]);
+                            int i5 = (i4 * Data.itemBasePrice[i3]) / 100;
+                            super.streamClass.createPacket(255);
+                            super.streamClass.addShort(shopItems[selectedShopItemIndex]);
                             super.streamClass.addInt(i5);
                             super.streamClass.formatPacket();
                         }
@@ -5588,7 +5629,7 @@ label0:
                 }
             } else
             {
-                super.streamClass.createPacket(92);
+                super.streamClass.createPacket(253);
                 super.streamClass.formatPacket();
                 showShopBox = false;
                 return;
@@ -5618,16 +5659,16 @@ label0:
             {
                 int i6 = byte0 + 7 + k5 * 49;
                 int l6 = byte1 + 28 + j5 * 34;
-                if(dej == j4)
+                if(selectedShopItemIndex == j4)
                     gameGraphics.drawBoxAlpha(i6, l6, 49, 34, 0xff0000, 160);
                 else
                     gameGraphics.drawBoxAlpha(i6, l6, 49, 34, j3, 160);
                 gameGraphics.drawBoxEdge(i6, l6, 50, 35, 0);
-                if(efa[j4] != -1)
+                if(shopItems[j4] != -1)
                 {
-                    gameGraphics.drawImage(i6, l6, 48, 32, baseItemPicture + Data.itemInventoryPicture[efa[j4]], Data.itemPictureMask[efa[j4]], 0, 0, false);
-                    gameGraphics.drawString(String.valueOf(efb[j4]), i6 + 1, l6 + 10, 1, 65280);
-                    gameGraphics.cdk(String.valueOf(getInventoryItemTotalCount(efa[j4])), i6 + 47, l6 + 10, 1, 65535);
+                    gameGraphics.drawImage(i6, l6, 48, 32, baseItemPicture + Data.itemInventoryPicture[shopItems[j4]], Data.itemPictureMask[shopItems[j4]], 0, 0, false);
+                    gameGraphics.drawString(String.valueOf(shopItemCount[j4]), i6 + 1, l6 + 10, 1, 65280);
+                    gameGraphics.cdk(String.valueOf(getInventoryItemTotalCount(shopItems[j4])), i6 + 47, l6 + 10, 1, 65535);
                 }
                 j4++;
             }
@@ -5635,20 +5676,20 @@ label0:
         }
 
         gameGraphics.drawLineX(byte0 + 5, byte1 + 222, 398, 0);
-        if(dej == -1)
+        if(selectedShopItemIndex == -1)
         {
             gameGraphics.drawText("Select an object to buy or sell", byte0 + 204, byte1 + 214, 3, 0xffff00);
             return;
         }
-        int l5 = efa[dej];
+        int l5 = shopItems[selectedShopItemIndex];
         if(l5 != -1)
         {
-            if(efb[dej] > 0)
+            if(shopItemCount[selectedShopItemIndex] > 0)
             {
-                int j6 = dmd + efc[dej];
+                int j6 = shopItemBuyPriceModifier + shopItemBasePriceModifier[selectedShopItemIndex];
                 if(j6 < 10)
                     j6 = 10;
-                int i7 = (j6 * Data.aif[l5]) / 100;
+                int i7 = (j6 * Data.itemBasePrice[l5]) / 100;
                 gameGraphics.drawString("Buy a new " + Data.itemName[l5] + " for " + i7 + "gp", byte0 + 2, byte1 + 214, 1, 0xffff00);
                 int j2 = 0xffffff;
                 if(super.mouseX > byte0 + 298 && super.mouseY >= byte1 + 204 && super.mouseX < byte0 + 408 && super.mouseY <= byte1 + 215)
@@ -5660,10 +5701,10 @@ label0:
             }
             if(getInventoryItemTotalCount(l5) > 0)
             {
-                int k6 = dmc + efc[dej];
+                int k6 = shopItemSellPriceModifier + shopItemBasePriceModifier[selectedShopItemIndex];
                 if(k6 < 10)
                     k6 = 10;
-                int j7 = (k6 * Data.aif[l5]) / 100;
+                int j7 = (k6 * Data.itemBasePrice[l5]) / 100;
                 gameGraphics.cdk("Sell your " + Data.itemName[l5] + " for " + j7 + "gp", byte0 + 405, byte1 + 239, 1, 0xffff00);
                 int k2 = 0xffffff;
                 if(super.mouseX > byte0 + 2 && super.mouseY >= byte1 + 229 && super.mouseX < byte0 + 112 && super.mouseY <= byte1 + 240)
@@ -5677,23 +5718,23 @@ label0:
 
     private final void loadTextures()
     {
-        byte abyte0[] = unpackData("textures" + Version.cfd + ".jag", "Textures", 50);
+        byte abyte0[] = unpackData("textures" + Version.VERSION_TEXTURES + ".jag", "Textures", 50);
         if(abyte0 == null)
         {
             errorLoading = true;
             return;
         }
         byte abyte1[] = DataOperations.loadData("index.dat", 0, abyte0);
-        gameCamera.bje(Data.akc, 7, 11);
-        for(int l = 0; l < Data.akc; l++)
+        gameCamera.createPictures(Data.textureCount, 7, 11);
+        for(int l = 0; l < Data.textureCount; l++)
         {
-            String s1 = Data.ajk[l];
+            String s1 = Data.textureName[l];
             byte abyte2[] = DataOperations.loadData(s1 + ".dat", 0, abyte0);
             gameGraphics.unpackImageData(baseTexturePic, abyte2, abyte1, 1);
             gameGraphics.drawBox(0, 0, 128, 128, 0xff00ff);
             gameGraphics.drawPicture(0, 0, baseTexturePic);
-            int i1 = ((GameImage) (gameGraphics)).bmj[baseTexturePic];
-            String s2 = Data.ajl[l];
+            int i1 = ((GameImage) (gameGraphics)).pictureWidth[baseTexturePic];
+            String s2 = Data.textureSubName[l];
             if(s2 != null && s2.length() > 0)
             {
                 byte abyte3[] = DataOperations.loadData(s2 + ".dat", 0, abyte0);
@@ -5712,7 +5753,7 @@ label0:
 
     }
 
-    private final void fcj()
+    private final void drawAppearanceWindow()
     {
         gameGraphics.interlace = false;
         gameGraphics.clearScreen();
@@ -5721,20 +5762,20 @@ label0:
         int i1 = 50;
         l += 116;
         i1 -= 25;
-        gameGraphics.ccf(l - 32 - 55, i1, 64, 102, Data.animationNumber[appearance2Colour], appearanceTopBottomColours[appearanceBottomColour]);
-        gameGraphics.drawImage(l - 32 - 55, i1, 64, 102, Data.animationNumber[appearanceBodyGender], appearanceTopBottomColours[appearanceTopColour], dki[appearanceSkinColour], 0, false);
-        gameGraphics.drawImage(l - 32 - 55, i1, 64, 102, Data.animationNumber[appearanceHeadType], appearanceHairColours[appearanceHairColour], dki[appearanceSkinColour], 0, false);
-        gameGraphics.ccf(l - 32, i1, 64, 102, Data.animationNumber[appearance2Colour] + 6, appearanceTopBottomColours[appearanceBottomColour]);
-        gameGraphics.drawImage(l - 32, i1, 64, 102, Data.animationNumber[appearanceBodyGender] + 6, appearanceTopBottomColours[appearanceTopColour], dki[appearanceSkinColour], 0, false);
-        gameGraphics.drawImage(l - 32, i1, 64, 102, Data.animationNumber[appearanceHeadType] + 6, appearanceHairColours[appearanceHairColour], dki[appearanceSkinColour], 0, false);
-        gameGraphics.ccf((l - 32) + 55, i1, 64, 102, Data.animationNumber[appearance2Colour] + 12, appearanceTopBottomColours[appearanceBottomColour]);
-        gameGraphics.drawImage((l - 32) + 55, i1, 64, 102, Data.animationNumber[appearanceBodyGender] + 12, appearanceTopBottomColours[appearanceTopColour], dki[appearanceSkinColour], 0, false);
-        gameGraphics.drawImage((l - 32) + 55, i1, 64, 102, Data.animationNumber[appearanceHeadType] + 12, appearanceHairColours[appearanceHairColour], dki[appearanceSkinColour], 0, false);
+        gameGraphics.drawCharacterLegs(l - 32 - 55, i1, 64, 102, Data.animationNumber[appearance2Colour], appearanceTopBottomColours[appearanceBottomColour]);
+        gameGraphics.drawImage(l - 32 - 55, i1, 64, 102, Data.animationNumber[appearanceBodyGender], appearanceTopBottomColours[appearanceTopColour], appearanceSkinColours[appearanceSkinColour], 0, false);
+        gameGraphics.drawImage(l - 32 - 55, i1, 64, 102, Data.animationNumber[appearanceHeadType], appearanceHairColours[appearanceHairColour], appearanceSkinColours[appearanceSkinColour], 0, false);
+        gameGraphics.drawCharacterLegs(l - 32, i1, 64, 102, Data.animationNumber[appearance2Colour] + 6, appearanceTopBottomColours[appearanceBottomColour]);
+        gameGraphics.drawImage(l - 32, i1, 64, 102, Data.animationNumber[appearanceBodyGender] + 6, appearanceTopBottomColours[appearanceTopColour], appearanceSkinColours[appearanceSkinColour], 0, false);
+        gameGraphics.drawImage(l - 32, i1, 64, 102, Data.animationNumber[appearanceHeadType] + 6, appearanceHairColours[appearanceHairColour], appearanceSkinColours[appearanceSkinColour], 0, false);
+        gameGraphics.drawCharacterLegs((l - 32) + 55, i1, 64, 102, Data.animationNumber[appearance2Colour] + 12, appearanceTopBottomColours[appearanceBottomColour]);
+        gameGraphics.drawImage((l - 32) + 55, i1, 64, 102, Data.animationNumber[appearanceBodyGender] + 12, appearanceTopBottomColours[appearanceTopColour], appearanceSkinColours[appearanceSkinColour], 0, false);
+        gameGraphics.drawImage((l - 32) + 55, i1, 64, 102, Data.animationNumber[appearanceHeadType] + 12, appearanceHairColours[appearanceHairColour], appearanceSkinColours[appearanceSkinColour], 0, false);
         gameGraphics.drawPicture(0, windowHeight, baseInventoryPic + 22);
         gameGraphics.drawImage(graphics, 0, 0);
     }
 
-    private final void fck()
+    private final void checkMouseStatus()
     {
         if(selectedSpell >= 0 || selectedItem >= 0)
         {
@@ -5744,19 +5785,19 @@ label0:
             menuOptionsCount++;
         }
         for(int l = 0; l < menuOptionsCount; l++)
-            dec[l] = l;
+            menuIndexes[l] = l;
 
         for(boolean flag = false; !flag;)
         {
             flag = true;
             for(int i1 = 0; i1 < menuOptionsCount - 1; i1++)
             {
-                int k1 = dec[i1];
-                int i2 = dec[i1 + 1];
+                int k1 = menuIndexes[i1];
+                int i2 = menuIndexes[i1 + 1];
                 if(menuActionID[k1] > menuActionID[i2])
                 {
-                    dec[i1] = i2;
-                    dec[i1 + 1] = k1;
+                    menuIndexes[i1] = i2;
+                    menuIndexes[i1 + 1] = k1;
                     flag = false;
                 }
             }
@@ -5770,7 +5811,7 @@ label0:
             int j1 = -1;
             for(int l1 = 0; l1 < menuOptionsCount; l1++)
             {
-                if(menuText2[dec[l1]] == null || menuText2[dec[l1]].length() <= 0)
+                if(menuText2[menuIndexes[l1]] == null || menuText2[menuIndexes[l1]].length() <= 0)
                     continue;
                 j1 = l1;
                 break;
@@ -5781,10 +5822,10 @@ label0:
                 s1 = "Choose a target";
             else
             if((selectedItem >= 0 || selectedSpell >= 0) && menuOptionsCount > 1)
-                s1 = "@whi@" + menuText1[dec[0]] + " " + menuText2[dec[0]];
+                s1 = "@whi@" + menuText1[menuIndexes[0]] + " " + menuText2[menuIndexes[0]];
             else
             if(j1 != -1)
-                s1 = menuText2[dec[j1]] + ": @whi@" + menuText1[dec[0]];
+                s1 = menuText2[menuIndexes[j1]] + ": @whi@" + menuText1[menuIndexes[0]];
             if(menuOptionsCount == 2 && s1 != null)
                 s1 = s1 + "@whi@ / 1 more option";
             if(menuOptionsCount > 2 && s1 != null)
@@ -5793,32 +5834,32 @@ label0:
                 gameGraphics.drawString(s1, 6, 14, 1, 0xffff00);
             if(!configOneMouseButton && mouseButtonClick == 1 || configOneMouseButton && mouseButtonClick == 1 && menuOptionsCount == 1)
             {
-                menuClick(dec[0]);
+                menuClick(menuIndexes[0]);
                 mouseButtonClick = 0;
                 return;
             }
             if(!configOneMouseButton && mouseButtonClick == 2 || configOneMouseButton && mouseButtonClick == 1)
             {
-                eje = (menuOptionsCount + 1) * 15;
-                ejd = gameGraphics.textWidth("Choose option", 1) + 5;
+                menuHeight = (menuOptionsCount + 1) * 15;
+                menuWidth = gameGraphics.textWidth("Choose option", 1) + 5;
                 for(int j2 = 0; j2 < menuOptionsCount; j2++)
                 {
                     int k2 = gameGraphics.textWidth(menuText1[j2] + " " + menuText2[j2], 1) + 5;
-                    if(k2 > ejd)
-                        ejd = k2;
+                    if(k2 > menuWidth)
+                        menuWidth = k2;
                 }
 
-                ejb = super.mouseX - ejd / 2;
-                ejc = super.mouseY - 7;
-                dkk = true;
-                if(ejb < 0)
-                    ejb = 0;
-                if(ejc < 0)
-                    ejc = 0;
-                if(ejb + ejd > 510)
-                    ejb = 510 - ejd;
-                if(ejc + eje > 315)
-                    ejc = 315 - eje;
+                menuX = super.mouseX - menuWidth / 2;
+                menuY = super.mouseY - 7;
+                menuShow = true;
+                if(menuX < 0)
+                    menuX = 0;
+                if(menuY < 0)
+                    menuY = 0;
+                if(menuX + menuWidth > 510)
+                    menuX = 510 - menuWidth;
+                if(menuY + menuHeight > 315)
+                    menuY = 315 - menuHeight;
                 mouseButtonClick = 0;
             }
         }
@@ -5836,7 +5877,7 @@ label0:
         }
         if(showAppearanceWindow)
         {
-            fcj();
+            drawAppearanceWindow();
             return;
         }
         if(isSleeping)
@@ -5848,14 +5889,14 @@ label0:
                 gameGraphics.drawText("ZZZ", 512 - (int)(Math.random() * 80D), (int)(Math.random() * 334D), 5, (int)(Math.random() * 16777215D));
             gameGraphics.drawBox(windowWidth / 2 - 100, 160, 200, 40, 0);
             gameGraphics.drawText("You are sleeping", windowWidth / 2, 50, 7, 0xffff00);
-            gameGraphics.drawText("Fatigue: " + (dhk * 100) / 750 + "%", windowWidth / 2, 90, 7, 0xffff00);
+            gameGraphics.drawText("Fatigue: " + (fatigueSleeping * 100) / 750 + "%", windowWidth / 2, 90, 7, 0xffff00);
             gameGraphics.drawText("When you want to wake up just use your", windowWidth / 2, 140, 5, 0xffffff);
             gameGraphics.drawText("keyboard to type the word in the box below", windowWidth / 2, 160, 5, 0xffffff);
             gameGraphics.drawText(super.inputText + "*", windowWidth / 2, 180, 5, 65535);
-            if(del == null)
+            if(sleepingStatusText == null)
                 gameGraphics.drawPicture(windowWidth / 2 - 127, 230, baseTexturePic + 1);
             else
-                gameGraphics.drawText(del, windowWidth / 2, 260, 5, 0xff0000);
+                gameGraphics.drawText(sleepingStatusText, windowWidth / 2, 260, 5, 0xff0000);
             gameGraphics.drawBoxEdge(windowWidth / 2 - 128, 229, 257, 42, 0xffffff);
             drawChatMessageTabs();
             gameGraphics.drawText("If you can't read the word", windowWidth / 2, 290, 1, 0xffffff);
@@ -5863,174 +5904,174 @@ label0:
             gameGraphics.drawImage(graphics, 0, 0);
             return;
         }
-        if(!engineHandle.gii)
+        if(!engineHandle.playerIsAlive)
             return;
         for(int l = 0; l < 64; l++)
         {
-            gameCamera.removeModel(engineHandle.gih[eal][l]);
-            if(eal == 0)
+            gameCamera.removeModel(engineHandle.gih[lastLayerIndex][l]);
+            if(lastLayerIndex == 0)
             {
                 gameCamera.removeModel(engineHandle.gim[1][l]);
                 gameCamera.removeModel(engineHandle.gih[1][l]);
                 gameCamera.removeModel(engineHandle.gim[2][l]);
                 gameCamera.removeModel(engineHandle.gih[2][l]);
             }
-            ebg = true;
-            if(eal == 0 && (engineHandle.tiles[ourPlayer.currentX / 128][ourPlayer.currentY / 128] & 0x80) == 0)
+            cameraZoom = true;
+            if(lastLayerIndex == 0 && (engineHandle.tiles[ourPlayer.currentX / 128][ourPlayer.currentY / 128] & 0x80) == 0)
             {
-                gameCamera.bgm(engineHandle.gih[eal][l]);
-                if(eal == 0)
+                gameCamera.addModel(engineHandle.gih[lastLayerIndex][l]);
+                if(lastLayerIndex == 0)
                 {
-                    gameCamera.bgm(engineHandle.gim[1][l]);
-                    gameCamera.bgm(engineHandle.gih[1][l]);
-                    gameCamera.bgm(engineHandle.gim[2][l]);
-                    gameCamera.bgm(engineHandle.gih[2][l]);
+                    gameCamera.addModel(engineHandle.gim[1][l]);
+                    gameCamera.addModel(engineHandle.gih[1][l]);
+                    gameCamera.addModel(engineHandle.gim[2][l]);
+                    gameCamera.addModel(engineHandle.gih[2][l]);
                 }
-                ebg = false;
+                cameraZoom = false;
             }
         }
 
-        if(dfa != ehi)
+        if(modelFireLightningSpellNumber != lastModelFireLightningSpellNumber)
         {
-            ehi = dfa;
+            lastModelFireLightningSpellNumber = modelFireLightningSpellNumber;
             for(int i1 = 0; i1 < objectCount; i1++)
             {
                 if(objectID[i1] == 97)
-                    emj(i1, "firea" + (dfa + 1));
+                    drawModel(i1, "firea" + (modelFireLightningSpellNumber + 1));
                 if(objectID[i1] == 274)
-                    emj(i1, "fireplacea" + (dfa + 1));
+                    drawModel(i1, "fireplacea" + (modelFireLightningSpellNumber + 1));
                 if(objectID[i1] == 1031)
-                    emj(i1, "lightning" + (dfa + 1));
+                    drawModel(i1, "lightning" + (modelFireLightningSpellNumber + 1));
                 if(objectID[i1] == 1036)
-                    emj(i1, "firespell" + (dfa + 1));
+                    drawModel(i1, "firespell" + (modelFireLightningSpellNumber + 1));
                 if(objectID[i1] == 1147)
-                    emj(i1, "spellcharge" + (dfa + 1));
+                    drawModel(i1, "spellcharge" + (modelFireLightningSpellNumber + 1));
             }
 
         }
-        if(dfb != ehj)
+        if(modelTorchNumber != lastModelTorchNumber)
         {
-            ehj = dfb;
+            lastModelTorchNumber = modelTorchNumber;
             for(int j1 = 0; j1 < objectCount; j1++)
             {
                 if(objectID[j1] == 51)
-                    emj(j1, "torcha" + (dfb + 1));
+                    drawModel(j1, "torcha" + (modelTorchNumber + 1));
                 if(objectID[j1] == 143)
-                    emj(j1, "skulltorcha" + (dfb + 1));
+                    drawModel(j1, "skulltorcha" + (modelTorchNumber + 1));
             }
 
         }
-        if(dfc != ehk)
+        if(modelClawSpellNumber != lastModelClawSpellNumber)
         {
-            ehk = dfc;
+            lastModelClawSpellNumber = modelClawSpellNumber;
             for(int k1 = 0; k1 < objectCount; k1++)
                 if(objectID[k1] == 1142)
-                    emj(k1, "clawspell" + (dfc + 1));
+                    drawModel(k1, "clawspell" + (modelClawSpellNumber + 1));
 
         }
-        gameCamera.bhc(dha);
-        dha = 0;
+        gameCamera.removeLastUpdates(drawUpdatesPerformed);
+        drawUpdatesPerformed = 0;
         for(int l1 = 0; l1 < playerCount; l1++)
         {
-            Mob f1 = playerArray[l1];
-            if(f1.hab != 255)
+            Mob player = playerArray[l1];
+            if(player.bottomColour != 255)
             {
-                int j2 = f1.currentX;
-                int l2 = f1.currentY;
-                int j3 = -engineHandle.gjf(j2, l2);
+                int j2 = player.currentX;
+                int l2 = player.currentY;
+                int j3 = -engineHandle.getAveragedElevation(j2, l2);
                 int k4 = gameCamera.bhd(5000 + l1, j2, j3, l2, 145, 220, l1 + 10000);
-                dha++;
-                if(f1 == ourPlayer)
+                drawUpdatesPerformed++;
+                if(player == ourPlayer)
                     gameCamera.bhe(k4);
-                if(f1.currentSprite == 8)
+                if(player.currentSprite == 8)
                     gameCamera.bhf(k4, -30);
-                if(f1.currentSprite == 9)
+                if(player.currentSprite == 9)
                     gameCamera.bhf(k4, 30);
             }
         }
 
         for(int i2 = 0; i2 < playerCount; i2++)
         {
-            Mob f2 = playerArray[i2];
-            if(f2.projectileDistance > 0)
+            Mob player = playerArray[i2];
+            if(player.projectileDistance > 0)
             {
                 Mob f3 = null;
-                if(f2.haf != -1)
-                    f3 = npcAttackingArray[f2.haf];
+                if(player.attackingNpcIndex != -1)
+                    f3 = npcAttackingArray[player.attackingNpcIndex];
                 else
-                if(f2.hae != -1)
-                    f3 = playerBufferArray[f2.hae];
+                if(player.attackingPlayerIndex != -1)
+                    f3 = playerBufferArray[player.attackingPlayerIndex];
                 if(f3 != null)
                 {
-                    int k3 = f2.currentX;
-                    int l4 = f2.currentY;
-                    int k7 = -engineHandle.gjf(k3, l4) - 110;
+                    int k3 = player.currentX;
+                    int l4 = player.currentY;
+                    int k7 = -engineHandle.getAveragedElevation(k3, l4) - 110;
                     int k9 = f3.currentX;
                     int j10 = f3.currentY;
-                    int k10 = -engineHandle.gjf(k9, j10) - Data.aia[f3.gmj] / 2;
-                    int l10 = (k3 * f2.projectileDistance + k9 * (eic - f2.projectileDistance)) / eic;
-                    int i11 = (k7 * f2.projectileDistance + k10 * (eic - f2.projectileDistance)) / eic;
-                    int j11 = (l4 * f2.projectileDistance + j10 * (eic - f2.projectileDistance)) / eic;
-                    gameCamera.bhd(baseProjectilePic + f2.had, l10, i11, j11, 32, 32, 0);
-                    dha++;
+                    int k10 = -engineHandle.getAveragedElevation(k9, j10) - Data.npcCameraArray2[f3.npcId] / 2;
+                    int l10 = (k3 * player.projectileDistance + k9 * (projectileRange - player.projectileDistance)) / projectileRange;
+                    int i11 = (k7 * player.projectileDistance + k10 * (projectileRange - player.projectileDistance)) / projectileRange;
+                    int j11 = (l4 * player.projectileDistance + j10 * (projectileRange - player.projectileDistance)) / projectileRange;
+                    gameCamera.bhd(baseProjectilePic + player.projectileType, l10, i11, j11, 32, 32, 0);
+                    drawUpdatesPerformed++;
                 }
             }
         }
 
         for(int k2 = 0; k2 < npcCount; k2++)
         {
-            Mob f4 = npcArray[k2];
-            int l3 = f4.currentX;
-            int i5 = f4.currentY;
-            int l7 = -engineHandle.gjf(l3, i5);
-            int l9 = gameCamera.bhd(20000 + k2, l3, l7, i5, Data.ahn[f4.gmj], Data.aia[f4.gmj], k2 + 30000);
-            dha++;
-            if(f4.currentSprite == 8)
+            Mob npc = npcArray[k2];
+            int l3 = npc.currentX;
+            int i5 = npc.currentY;
+            int l7 = -engineHandle.getAveragedElevation(l3, i5);
+            int l9 = gameCamera.bhd(20000 + k2, l3, l7, i5, Data.npcCameraArray1[npc.npcId], Data.npcCameraArray2[npc.npcId], k2 + 30000);
+            drawUpdatesPerformed++;
+            if(npc.currentSprite == 8)
                 gameCamera.bhf(l9, -30);
-            if(f4.currentSprite == 9)
+            if(npc.currentSprite == 9)
                 gameCamera.bhf(l9, 30);
         }
 
         for(int i3 = 0; i3 < groundItemCount; i3++)
         {
-            int i4 = dml[i3] * magicLoc + 64;
-            int j5 = dmm[i3] * magicLoc + 64;
-            gameCamera.bhd(40000 + dmn[i3], i4, -engineHandle.gjf(i4, j5) - dna[i3], j5, 96, 64, i3 + 20000);
-            dha++;
+            int i4 = groundItemX[i3] * magicLoc + 64;
+            int j5 = groundItemY[i3] * magicLoc + 64;
+            gameCamera.bhd(40000 + groundItemID[i3], i4, -engineHandle.getAveragedElevation(i4, j5) - groundItemObjectVar[i3], j5, 96, 64, i3 + 20000);
+            drawUpdatesPerformed++;
         }
 
-        for(int j4 = 0; j4 < eig; j4++)
+        for(int j4 = 0; j4 < teleBubbleCount; j4++)
         {
-            int k5 = ell[j4] * magicLoc + 64;
-            int i8 = elh[j4] * magicLoc + 64;
+            int k5 = teleBubbleX[j4] * magicLoc + 64;
+            int i8 = teleBubbleY[j4] * magicLoc + 64;
             int i10 = teleBubbleType[j4];
             if(i10 == 0)
             {
-                gameCamera.bhd(50000 + j4, k5, -engineHandle.gjf(k5, i8), i8, 128, 256, j4 + 50000);
-                dha++;
+                gameCamera.bhd(50000 + j4, k5, -engineHandle.getAveragedElevation(k5, i8), i8, 128, 256, j4 + 50000);
+                drawUpdatesPerformed++;
             }
             if(i10 == 1)
             {
-                gameCamera.bhd(50000 + j4, k5, -engineHandle.gjf(k5, i8), i8, 128, 64, j4 + 50000);
-                dha++;
+                gameCamera.bhd(50000 + j4, k5, -engineHandle.getAveragedElevation(k5, i8), i8, 128, 64, j4 + 50000);
+                drawUpdatesPerformed++;
             }
         }
 
         gameGraphics.interlace = false;
         gameGraphics.clearScreen();
         gameGraphics.interlace = super.keyF1Toggle;
-        if(eal == 3)
+        if(lastLayerIndex == 3)
         {
             int l5 = 40 + (int)(Math.random() * 3D);
             int j8 = 40 + (int)(Math.random() * 7D);
             gameCamera.bjl(l5, j8, -50, -10, -50);
         }
-        dib = 0;
-        egg = 0;
-        ejl = 0;
+        itemsAboveHeadCount = 0;
+        receivedMessagesCount = 0;
+        healthBarVisibleCount = 0;
         if(cameraAutoAngleDebug)
         {
-            if(configCmeraAutoAngle && !ebg)
+            if(configCmeraAutoAngle && !cameraZoom)
             {
                 int i6 = cameraAutoAngle;
                 autoRotateCamera();
@@ -6040,44 +6081,60 @@ label0:
                     cameraAutoRotatePlayerY = ourPlayer.currentY;
                 }
             }
-            gameCamera.zoom1 = 3000;
-            gameCamera.zoom2 = 3000;
-            gameCamera.zoom3 = 1;
-            gameCamera.zoom4 = 2800;
+            if(fogOfWar) {
+                gameCamera.zoom1 = 3000;
+                gameCamera.zoom2 = 3000;
+                gameCamera.zoom3 = 1;
+                gameCamera.zoom4 = 2800;
+            }
+            else {
+                gameCamera.zoom1 = 40000;
+                gameCamera.zoom2 = 40000;
+                gameCamera.zoom3 = 40000;
+                gameCamera.zoom4 = 40000;
+            }
             cameraRotation = cameraAutoAngle * 32;
             int j6 = cameraAutoRotatePlayerX + cameraRotationXAmount;
             int k8 = cameraAutoRotatePlayerY + cameraRotationYAmount;
-            gameCamera.setCamera(j6, -engineHandle.gjf(j6, k8), k8, 912, cameraRotation * 4, 0, 2000);
+            gameCamera.setCamera(j6, -engineHandle.getAveragedElevation(j6, k8), k8, 912, cameraRotation * 4, 0, 2000);
         } else
         {
-            if(configCmeraAutoAngle && !ebg)
+            if(configCmeraAutoAngle && !cameraZoom)
                 autoRotateCamera();
-            if(!super.keyF1Toggle)
-            {
-                gameCamera.zoom1 = 2400;
-                gameCamera.zoom2 = 2400;
-                gameCamera.zoom3 = 1;
-                gameCamera.zoom4 = 2300;
-            } else
-            {
-                gameCamera.zoom1 = 2200;
-                gameCamera.zoom2 = 2200;
-                gameCamera.zoom3 = 1;
-                gameCamera.zoom4 = 2100;
+            if(fogOfWar) {
+                if(!super.keyF1Toggle)
+                {
+                    gameCamera.zoom1 = 2400;
+                    gameCamera.zoom2 = 2400;
+                    gameCamera.zoom3 = 1;
+                    gameCamera.zoom4 = 2300;
+                } else
+                {
+                    gameCamera.zoom1 = 2200;
+                    gameCamera.zoom2 = 2200;
+                    gameCamera.zoom3 = 1;
+                    gameCamera.zoom4 = 2100;
+                }
+            }
+            else {
+                gameCamera.zoom1 = 40000;
+                gameCamera.zoom2 = 40000;
+                gameCamera.zoom3 = 40000;
+                gameCamera.zoom4 = 40000;
             }
             int k6 = cameraAutoRotatePlayerX + cameraRotationXAmount;
             int l8 = cameraAutoRotatePlayerY + cameraRotationYAmount;
-            gameCamera.setCamera(k6, -engineHandle.gjf(k6, l8), l8, 912, cameraRotation * 4, 0, cameraDistance * 2);
+            gameCamera.setCamera(k6, -engineHandle.getAveragedElevation(k6, l8), l8, 912, cameraRotation * 4, 0, cameraDistance * 2);
         }
         gameCamera.finishCamera();
-        fde();
+        drawAboveHeadThings();
         if(actionPictureType > 0)
             gameGraphics.drawPicture(walkMouseX - 8, walkMouseY - 8, baseInventoryPic + 14 + (24 - actionPictureType) / 6);
         if(actionPictureType < 0)
             gameGraphics.drawPicture(walkMouseX - 8, walkMouseY - 8, baseInventoryPic + 18 + (24 + actionPictureType) / 6);
         if(systemUpdate != 0)
         {
-            int l6 = systemUpdate / 50;
+            int l6 = systemUpdate / 50;// TODO might require fixing for mc
             int i9 = l6 / 60;
             l6 %= 60;
             if(l6 < 10)
@@ -6085,10 +6142,10 @@ label0:
             else
                 gameGraphics.drawText("System update in: " + i9 + ":" + l6, 256, windowHeight - 7, 1, 0xffff00);
         }
-        if(!elk)
+        if(!loadArea)
         {
-            int i7 = 2203 - (sectionY + eaj + areaY);
-            if(sectionX + eai + areaX >= 2640)
+            int i7 = 2203 - (sectionY + wildY + areaY);
+            if(sectionX + wildX + areaX >= 2640)
                 i7 = -50;
             if(i7 > 0)
             {
@@ -6096,18 +6153,18 @@ label0:
                 gameGraphics.drawPicture(453, windowHeight - 56, baseInventoryPic + 13);
                 gameGraphics.drawText("Wilderness", 465, windowHeight - 20, 1, 0xffff00);
                 gameGraphics.drawText("Level: " + j9, 465, windowHeight - 7, 1, 0xffff00);
-                if(dme == 0)
-                    dme = 2;
+                if(wildType == 0)
+                    wildType = 2;
             }
-            if(dme == 0 && i7 > -10 && i7 <= 0)
-                dme = 1;
+            if(wildType == 0 && i7 > -10 && i7 <= 0)
+                wildType = 1;
         }
-        if(dea == 0)
+        if(messagesTab == 0)
         {
             for(int j7 = 0; j7 < 5; j7++)
-                if(eib[j7] > 0)
+                if(messagesTimeout[j7] > 0)
                 {
-                    String s1 = die[j7];
+                    String s1 = messagesArray[j7];
                     gameGraphics.drawString(s1, 7, windowHeight - 18 - j7 * 12, 1, 0xffff00);
                 }
 
@@ -6115,25 +6172,25 @@ label0:
         chatInputMenu.ggf(messagesHandleType2);
         chatInputMenu.ggf(messagesHandleType5);
         chatInputMenu.ggf(messagesHandleType6);
-        if(dea == 1)
+        if(messagesTab == 1)
             chatInputMenu.gge(messagesHandleType2);
         else
-        if(dea == 2)
+        if(messagesTab == 2)
             chatInputMenu.gge(messagesHandleType5);
         else
-        if(dea == 3)
+        if(messagesTab == 3)
             chatInputMenu.gge(messagesHandleType6);
-        Menu.gdm = 2;
+        Menu.chatMenuTextHeightMod = 2;
         chatInputMenu.drawMenu();
-        Menu.gdm = 0;
+        Menu.chatMenuTextHeightMod = 0;
         gameGraphics.ccd(((GameImage) (gameGraphics)).gameWidth - 3 - 197, 3, baseInventoryPic, 128);
-        fcn();
+        drawMenus();
         gameGraphics.loggedIn = false;
         drawChatMessageTabs();
         gameGraphics.drawImage(graphics, 0, 0);
     }
 
-    private final void fcm()
+    private final void drawReportAbuseBox2()
     {
         if(super.enteredInputText.length() > 0)
         {
@@ -6143,10 +6200,10 @@ label0:
             if(s1.length() > 0)
             {
                 long l1 = DataOperations.nameToHash(s1);
-                super.streamClass.createPacket(215);
+                super.streamClass.createPacket(7);
                 super.streamClass.addLong(l1);
                 super.streamClass.addByte(reportAbuseOptionSelected);
-                super.streamClass.addByte(dia ? 1 : 0);
+                //super.streamClass.addByte(dia ? 1 : 0);
                 super.streamClass.formatPacket();
             }
             showAbuseBox = 0;
@@ -6158,17 +6215,17 @@ label0:
         gameGraphics.drawText("Now type the name of the offending player, and press enter", 256, l, 1, 0xffff00);
         l += 18;
         gameGraphics.drawText("Name: " + super.inputText + "*", 256, l, 4, 0xffffff);
-        if(super.abj > 0)
+        if(super.moderator > 0)// TODO remove
         {
             l = 207;
-            if(dia)
+            if(abuseModeratorMutePlayer)
                 gameGraphics.drawText("Moderator option: Mute player for 48 hours: <ON>", 256, l, 1, 0xff8000);
             else
                 gameGraphics.drawText("Moderator option: Mute player for 48 hours: <OFF>", 256, l, 1, 0xffffff);
             if(super.mouseX > 106 && super.mouseX < 406 && super.mouseY > l - 13 && super.mouseY < l + 2 && mouseButtonClick == 1)
             {
                 mouseButtonClick = 0;
-                dia = !dia;
+                abuseModeratorMutePlayer = !abuseModeratorMutePlayer;
             }
         }
         l = 222;
@@ -6190,7 +6247,7 @@ label0:
         }
     }
 
-    private final void fcn()
+    private final void drawMenus()
     {
         if(logoutTimer != 0)
             drawLogoutBox();
@@ -6198,17 +6255,17 @@ label0:
         if(showWelcomeBox)
             drawWelcomeBox();
         else
-        if(ecc)
-            fdl();
+        if(showServerMessageBox)
+            drawServerMessageBox();
         else
-        if(dme == 1)
-            fdc();
+        if(wildType == 1)
+            drawWildernessAlertBox();
         else
         if(showBankBox && combatTimeout == 0)
-            fdf();
+            drawBankBox();
         else
         if(showShopBox && combatTimeout == 0)
-            fch();
+            drawShopBox();
         else
         if(showTradeConfirmBox)
             drawTradeConfirmBox();
@@ -6219,104 +6276,91 @@ label0:
         if(showDuelConfirmBox)
             drawDuelConfirmBox();
         else
-        if(eld)
-            fdb();
+        if(showDuelBox)
+            drawDuelBox();
         else
         if(showAbuseBox == 1)
             drawReportAbuseBox1();
         else
         if(showAbuseBox == 2)
-            fcm();
+            drawReportAbuseBox2();
         else
         if(showFriendsBox != 0)
         {
-            fed();
+            drawFriendsBox();
         } else
         {
             if(showQuestionMenu)
                 drawQuestionMenu();
             if(ourPlayer.currentSprite == 8 || ourPlayer.currentSprite == 9)
                 drawCombatStyleBox();
-            feg();
-            boolean flag = !showQuestionMenu && !dkk;
+            getMenuHighlighted();
+            boolean flag = !showQuestionMenu && !menuShow;
             if(flag)
                 menuOptionsCount = 0;
             if(drawMenuTab == 0 && flag)
-                fcg();
+                generateWorldRightClickMenu();
             if(drawMenuTab == 1)
                 drawInventoryMenu(flag);
             if(drawMenuTab == 2)
                 drawMinimapMenu(flag);
             if(drawMenuTab == 3)
-                fec(flag);
+                drawStatsQuestsMenu(flag);
             if(drawMenuTab == 4)
                 drawPrayerMagicMenu(flag);
             if(drawMenuTab == 5)
                 drawFriendsMenu(flag);
             if(drawMenuTab == 6)
                 drawOptionsMenu(flag);
-            if(!dkk && !showQuestionMenu)
-                fck();
-            if(dkk && !showQuestionMenu)
-                fef();
+            if(!menuShow && !showQuestionMenu)
+                checkMouseStatus();
+            if(menuShow && !showQuestionMenu)
+                drawRightClickMenu();
         }
         mouseButtonClick = 0;
     }
 
     private final void loadModels()
     {
-        Data.anj("torcha2");
-        Data.anj("torcha3");
-        Data.anj("torcha4");
-        Data.anj("skulltorcha2");
-        Data.anj("skulltorcha3");
-        Data.anj("skulltorcha4");
-        Data.anj("firea2");
-        Data.anj("firea3");
-        Data.anj("fireplacea2");
-        Data.anj("fireplacea3");
-        Data.anj("firespell2");
-        Data.anj("firespell3");
-        Data.anj("lightning2");
-        Data.anj("lightning3");
-        Data.anj("clawspell2");
-        Data.anj("clawspell3");
-        Data.anj("clawspell4");
-        Data.anj("clawspell5");
-        Data.anj("spellcharge2");
-        Data.anj("spellcharge3");
-        if(inBrowser())
+        Data.getModelNameIndex("torcha2");
+        Data.getModelNameIndex("torcha3");
+        Data.getModelNameIndex("torcha4");
+        Data.getModelNameIndex("skulltorcha2");
+        Data.getModelNameIndex("skulltorcha3");
+        Data.getModelNameIndex("skulltorcha4");
+        Data.getModelNameIndex("firea2");
+        Data.getModelNameIndex("firea3");
+        Data.getModelNameIndex("fireplacea2");
+        Data.getModelNameIndex("fireplacea3");
+        Data.getModelNameIndex("firespell2");
+        Data.getModelNameIndex("firespell3");
+        Data.getModelNameIndex("lightning2");
+        Data.getModelNameIndex("lightning3");
+        Data.getModelNameIndex("clawspell2");
+        Data.getModelNameIndex("clawspell3");
+        Data.getModelNameIndex("clawspell4");
+        Data.getModelNameIndex("clawspell5");
+        Data.getModelNameIndex("spellcharge2");
+        Data.getModelNameIndex("spellcharge3");
+        byte abyte0[] = unpackData("models" + Version.VERSION_MODELS + ".jag", "3d models", 60);
+        if(abyte0 == null)
         {
-            byte abyte0[] = unpackData("models" + Version.cfc + ".jag", "3d models", 60);
-            if(abyte0 == null)
-            {
-                errorLoading = true;
-                return;
-            }
-            for(int i1 = 0; i1 < Data.ama; i1++)
-            {
-                int j1 = DataOperations.getSoundOffset(Data.ajj[i1] + ".ob3", abyte0);
-                if(j1 != 0)
-                    gameDataObjects[i1] = new i(abyte0, j1, true);
-                else
-                    gameDataObjects[i1] = new i(1, 1);
-                if(Data.ajj[i1].equals("giantcrystal"))
-                    gameDataObjects[i1].chj = true;
-            }
-
+            errorLoading = true;
             return;
         }
-        drawLoadingBarText(70, "Loading 3d models");
-        for(int l = 0; l < Data.ama; l++)
+        for(int i1 = 0; i1 < Data.modelCount; i1++)
         {
-            gameDataObjects[l] = new i("../gamedata/models/" + Data.ajj[l] + ".ob2");
-            if(Data.ajj[l].equals("giantcrystal"))
-                gameDataObjects[l].chj = true;
+            int j1 = DataOperations.getSoundOffset(Data.modelName[i1] + ".ob3", abyte0);
+            if(j1 != 0)
+                gameDataObjects[i1] = new GameObject(abyte0, j1, true);
+            else
+                gameDataObjects[i1] = new GameObject(1, 1);
+            if(Data.modelName[i1].equals("giantcrystal"))
+                gameDataObjects[i1].isGiantCrystal = true;
         }
-
     }
 
-    private final void fdb()
+    private final void drawDuelBox()
     {
         if(mouseButtonClick != 0 && mouseClickedHeldInTradeDuelBox == 0)
             mouseClickedHeldInTradeDuelBox = 1;
@@ -6334,14 +6378,14 @@ label0:
                         boolean flag1 = false;
                         int k2 = 0;
                         int j3 = inventoryItems[j1];
-                        for(int j4 = 0; j4 < ded; j4++)
-                            if(dee[j4] == j3)
+                        for(int j4 = 0; j4 < duelMyItemCount; j4++)
+                            if(duelMyItems[j4] == j3)
                                 if(Data.itemStackable[j3] == 0)
                                 {
                                     for(int l4 = 0; l4 < mouseClickedHeldInTradeDuelBox; l4++)
                                     {
-                                        if(def[j4] < inventoryItemCount[j1])
-                                            def[j4]++;
+                                        if(duelMyItemsCount[j4] < inventoryItemCount[j1])
+                                            duelMyItemsCount[j4]++;
                                         flag1 = true;
                                     }
 
@@ -6357,121 +6401,121 @@ label0:
                             displayMessage("This object cannot be added to a duel offer", 3);
                             flag1 = true;
                         }
-                        if(!flag1 && ded < 8)
+                        if(!flag1 && duelMyItemCount < 8)
                         {
-                            dee[ded] = j3;
-                            def[ded] = 1;
-                            ded++;
+                            duelMyItems[duelMyItemCount] = j3;
+                            duelMyItemsCount[duelMyItemCount] = 1;
+                            duelMyItemCount++;
                             flag1 = true;
                         }
                         if(flag1)
                         {
-                            super.streamClass.createPacket(229);
-                            super.streamClass.addByte(ded);
-                            for(int i5 = 0; i5 < ded; i5++)
+                            super.streamClass.createPacket(123);
+                            super.streamClass.addByte(duelMyItemCount);
+                            for(int i5 = 0; i5 < duelMyItemCount; i5++)
                             {
-                                super.streamClass.addShort(dee[i5]);
-                                super.streamClass.addInt(def[i5]);
+                                super.streamClass.addShort(duelMyItems[i5]);
+                                super.streamClass.addInt(duelMyItemsCount[i5]);
                             }
 
                             super.streamClass.formatPacket();
-                            dhe = false;
-                            dhf = false;
+                            duelOpponentAccepted = false;
+                            duelMyAccepted = false;
                         }
                     }
                 }
                 if(l > 8 && i1 > 30 && l < 205 && i1 < 129)
                 {
                     int k1 = (l - 9) / 49 + ((i1 - 31) / 34) * 4;
-                    if(k1 >= 0 && k1 < ded)
+                    if(k1 >= 0 && k1 < duelMyItemCount)
                     {
-                        int i2 = dee[k1];
+                        int i2 = duelMyItems[k1];
                         for(int l2 = 0; l2 < mouseClickedHeldInTradeDuelBox; l2++)
                         {
-                            if(Data.itemStackable[i2] == 0 && def[k1] > 1)
+                            if(Data.itemStackable[i2] == 0 && duelMyItemsCount[k1] > 1)
                             {
-                                def[k1]--;
+                                duelMyItemsCount[k1]--;
                                 continue;
                             }
-                            ded--;
+                            duelMyItemCount--;
                             mouseButtonHeldTime = 0;
-                            for(int k3 = k1; k3 < ded; k3++)
+                            for(int k3 = k1; k3 < duelMyItemCount; k3++)
                             {
-                                dee[k3] = dee[k3 + 1];
-                                def[k3] = def[k3 + 1];
+                                duelMyItems[k3] = duelMyItems[k3 + 1];
+                                duelMyItemsCount[k3] = duelMyItemsCount[k3 + 1];
                             }
 
                             break;
                         }
 
-                        super.streamClass.createPacket(229);
-                        super.streamClass.addByte(ded);
-                        for(int l3 = 0; l3 < ded; l3++)
+                        super.streamClass.createPacket(123);
+                        super.streamClass.addByte(duelMyItemCount);
+                        for(int l3 = 0; l3 < duelMyItemCount; l3++)
                         {
-                            super.streamClass.addShort(dee[l3]);
-                            super.streamClass.addInt(def[l3]);
+                            super.streamClass.addShort(duelMyItems[l3]);
+                            super.streamClass.addInt(duelMyItemsCount[l3]);
                         }
 
                         super.streamClass.formatPacket();
-                        dhe = false;
-                        dhf = false;
+                        duelOpponentAccepted = false;
+                        duelMyAccepted = false;
                     }
                 }
                 boolean flag = false;
                 if(l >= 93 && i1 >= 221 && l <= 104 && i1 <= 232)
                 {
-                    dgg = !dgg;
+                    duelNoRetreating = !duelNoRetreating;
                     flag = true;
                 }
                 if(l >= 93 && i1 >= 240 && l <= 104 && i1 <= 251)
                 {
-                    dgh = !dgh;
+                    duelNoMagic = !duelNoMagic;
                     flag = true;
                 }
                 if(l >= 191 && i1 >= 221 && l <= 202 && i1 <= 232)
                 {
-                    dgi = !dgi;
+                    duelNoPrayer = !duelNoPrayer;
                     flag = true;
                 }
                 if(l >= 191 && i1 >= 240 && l <= 202 && i1 <= 251)
                 {
-                    dgj = !dgj;
+                    duelNoWeapons = !duelNoWeapons;
                     flag = true;
                 }
                 if(flag)
                 {
-                    super.streamClass.createPacket(138);
-                    super.streamClass.addByte(dgg ? 1 : 0);
-                    super.streamClass.addByte(dgh ? 1 : 0);
-                    super.streamClass.addByte(dgi ? 1 : 0);
-                    super.streamClass.addByte(dgj ? 1 : 0);
+                    super.streamClass.createPacket(225);
+                    super.streamClass.addByte(duelNoRetreating ? 1 : 0);
+                    super.streamClass.addByte(duelNoMagic ? 1 : 0);
+                    super.streamClass.addByte(duelNoPrayer ? 1 : 0);
+                    super.streamClass.addByte(duelNoWeapons ? 1 : 0);
                     super.streamClass.formatPacket();
-                    dhe = false;
-                    dhf = false;
+                    duelOpponentAccepted = false;
+                    duelMyAccepted = false;
                 }
                 if(l >= 217 && i1 >= 238 && l <= 286 && i1 <= 259)
                 {
-                    dhf = true;
-                    super.streamClass.createPacket(125);
+                    duelMyAccepted = true;
+                    super.streamClass.createPacket(252);
                     super.streamClass.formatPacket();
                 }
                 if(l >= 394 && i1 >= 238 && l < 463 && i1 < 259)
                 {
-                    eld = false;
-                    super.streamClass.createPacket(43);
+                    showDuelBox = false;
+                    super.streamClass.createPacket(35);
                     super.streamClass.formatPacket();
                 }
             } else
             if(mouseButtonClick != 0)
             {
-                eld = false;
-                super.streamClass.createPacket(43);
+                showDuelBox = false;
+                super.streamClass.createPacket(35);
                 super.streamClass.formatPacket();
             }
             mouseButtonClick = 0;
             mouseClickedHeldInTradeDuelBox = 0;
         }
-        if(!eld)
+        if(!showDuelBox)
             return;
         byte byte0 = 22;
         byte byte1 = 36;
@@ -6512,7 +6556,7 @@ label0:
         gameGraphics.drawLineX(byte0 + 8, byte1 + 257, 197, 0);
         gameGraphics.drawLineY(byte0 + 8, byte1 + 215, 43, 0);
         gameGraphics.drawLineY(byte0 + 204, byte1 + 215, 43, 0);
-        gameGraphics.drawString("Preparing to duel with: " + eke, byte0 + 1, byte1 + 10, 1, 0xffffff);
+        gameGraphics.drawString("Preparing to duel with: " + duelOpponent, byte0 + 1, byte1 + 10, 1, 0xffffff);
         gameGraphics.drawString("Your Stake", byte0 + 9, byte1 + 27, 4, 0xffffff);
         gameGraphics.drawString("Opponent's Stake", byte0 + 9, byte1 + 120, 4, 0xffffff);
         gameGraphics.drawString("Duel Options", byte0 + 9, byte1 + 212, 4, 0xffffff);
@@ -6522,26 +6566,26 @@ label0:
         gameGraphics.drawString("No prayer", byte0 + 8 + 102, byte1 + 215 + 16, 3, 0xffff00);
         gameGraphics.drawString("No weapons", byte0 + 8 + 102, byte1 + 215 + 35, 3, 0xffff00);
         gameGraphics.drawBoxEdge(byte0 + 93, byte1 + 215 + 6, 11, 11, 0xffff00);
-        if(dgg)
+        if(duelNoRetreating)
             gameGraphics.drawBox(byte0 + 95, byte1 + 215 + 8, 7, 7, 0xffff00);
         gameGraphics.drawBoxEdge(byte0 + 93, byte1 + 215 + 25, 11, 11, 0xffff00);
-        if(dgh)
+        if(duelNoMagic)
             gameGraphics.drawBox(byte0 + 95, byte1 + 215 + 27, 7, 7, 0xffff00);
         gameGraphics.drawBoxEdge(byte0 + 191, byte1 + 215 + 6, 11, 11, 0xffff00);
-        if(dgi)
+        if(duelNoPrayer)
             gameGraphics.drawBox(byte0 + 193, byte1 + 215 + 8, 7, 7, 0xffff00);
         gameGraphics.drawBoxEdge(byte0 + 191, byte1 + 215 + 25, 11, 11, 0xffff00);
-        if(dgj)
+        if(duelNoWeapons)
             gameGraphics.drawBox(byte0 + 193, byte1 + 215 + 27, 7, 7, 0xffff00);
-        if(!dhf)
+        if(!duelMyAccepted)
             gameGraphics.drawPicture(byte0 + 217, byte1 + 238, baseInventoryPic + 25);
         gameGraphics.drawPicture(byte0 + 394, byte1 + 238, baseInventoryPic + 26);
-        if(dhe)
+        if(duelOpponentAccepted)
         {
             gameGraphics.drawText("Other player", byte0 + 341, byte1 + 246, 1, 0xffffff);
             gameGraphics.drawText("has accepted", byte0 + 341, byte1 + 256, 1, 0xffffff);
         }
-        if(dhf)
+        if(duelMyAccepted)
         {
             gameGraphics.drawText("Waiting for", byte0 + 217 + 35, byte1 + 246, 1, 0xffffff);
             gameGraphics.drawText("other player", byte0 + 217 + 35, byte1 + 256, 1, 0xffffff);
@@ -6555,31 +6599,31 @@ label0:
                 gameGraphics.drawString(String.valueOf(inventoryItemCount[k5]), l5 + 1, j6 + 10, 1, 0xffff00);
         }
 
-        for(int i6 = 0; i6 < ded; i6++)
+        for(int i6 = 0; i6 < duelMyItemCount; i6++)
         {
             int k6 = 9 + byte0 + (i6 % 4) * 49;
             int i7 = 31 + byte1 + (i6 / 4) * 34;
-            gameGraphics.drawImage(k6, i7, 48, 32, baseItemPicture + Data.itemInventoryPicture[dee[i6]], Data.itemPictureMask[dee[i6]], 0, 0, false);
-            if(Data.itemStackable[dee[i6]] == 0)
-                gameGraphics.drawString(String.valueOf(def[i6]), k6 + 1, i7 + 10, 1, 0xffff00);
+            gameGraphics.drawImage(k6, i7, 48, 32, baseItemPicture + Data.itemInventoryPicture[duelMyItems[i6]], Data.itemPictureMask[duelMyItems[i6]], 0, 0, false);
+            if(Data.itemStackable[duelMyItems[i6]] == 0)
+                gameGraphics.drawString(String.valueOf(duelMyItemsCount[i6]), k6 + 1, i7 + 10, 1, 0xffff00);
             if(super.mouseX > k6 && super.mouseX < k6 + 48 && super.mouseY > i7 && super.mouseY < i7 + 32)
-                gameGraphics.drawString(Data.itemName[dee[i6]] + ": @whi@" + Data.itemDescription[dee[i6]], byte0 + 8, byte1 + 273, 1, 0xffff00);
+                gameGraphics.drawString(Data.itemName[duelMyItems[i6]] + ": @whi@" + Data.itemDescription[duelMyItems[i6]], byte0 + 8, byte1 + 273, 1, 0xffff00);
         }
 
-        for(int l6 = 0; l6 < dkl; l6++)
+        for(int l6 = 0; l6 < duelOpponentItemCount; l6++)
         {
             int j7 = 9 + byte0 + (l6 % 4) * 49;
             int k7 = 124 + byte1 + (l6 / 4) * 34;
-            gameGraphics.drawImage(j7, k7, 48, 32, baseItemPicture + Data.itemInventoryPicture[dkm[l6]], Data.itemPictureMask[dkm[l6]], 0, 0, false);
-            if(Data.itemStackable[dkm[l6]] == 0)
-                gameGraphics.drawString(String.valueOf(dkn[l6]), j7 + 1, k7 + 10, 1, 0xffff00);
+            gameGraphics.drawImage(j7, k7, 48, 32, baseItemPicture + Data.itemInventoryPicture[duelOpponentItems[l6]], Data.itemPictureMask[duelOpponentItems[l6]], 0, 0, false);
+            if(Data.itemStackable[duelOpponentItems[l6]] == 0)
+                gameGraphics.drawString(String.valueOf(duelOpponentItemsCount[l6]), j7 + 1, k7 + 10, 1, 0xffff00);
             if(super.mouseX > j7 && super.mouseX < j7 + 48 && super.mouseY > k7 && super.mouseY < k7 + 32)
-                gameGraphics.drawString(Data.itemName[dkm[l6]] + ": @whi@" + Data.itemDescription[dkm[l6]], byte0 + 8, byte1 + 273, 1, 0xffff00);
+                gameGraphics.drawString(Data.itemName[duelOpponentItems[l6]] + ": @whi@" + Data.itemDescription[duelOpponentItems[l6]], byte0 + 8, byte1 + 273, 1, 0xffff00);
         }
 
     }
 
-    private final void fdc()
+    private final void drawWildernessAlertBox()
     {
         int l = 97;
         gameGraphics.drawBox(86, 77, 340, 180, 0);
@@ -6607,17 +6651,17 @@ label0:
         if(mouseButtonClick != 0)
         {
             if(super.mouseY > l - 12 && super.mouseY <= l && super.mouseX > 181 && super.mouseX < 331)
-                dme = 2;
+                wildType = 2;
             if(super.mouseX < 86 || super.mouseX > 426 || super.mouseY < 77 || super.mouseY > 257)
-                dme = 2;
+                wildType = 2;
             mouseButtonClick = 0;
         }
     }
 
-    final void fdd(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6)
+    final void drawNPC(int x, int y, int width, int height, int index, int unknown1, int unknown2)
     {
-        Mob f1 = npcArray[arg4];
-        int l = f1.currentSprite + (cameraRotation + 16) / 32 & 7;
+        Mob npc = npcArray[index];
+        int l = npc.currentSprite + (cameraRotation + 16) / 32 & 7;
         boolean flag = false;
         int i1 = l;
         if(i1 == 5)
@@ -6635,27 +6679,27 @@ label0:
             i1 = 1;
             flag = true;
         }
-        int j1 = i1 * 3 + dhn[(f1.stepCount / Data.akl[f1.gmj]) % 4];
-        if(f1.currentSprite == 8)
+        int j1 = i1 * 3 + walkModel[(npc.stepCount / Data.npcWalkModelArray[npc.npcId]) % 4];
+        if(npc.currentSprite == 8)
         {
             i1 = 5;
             l = 2;
             flag = false;
-            arg0 -= (Data.akn[f1.gmj] * arg6) / 100;
-            j1 = i1 * 3 + eme[(tick / (Data.akm[f1.gmj] - 1)) % 8];
+            x -= (Data.npcCombatSprite[npc.npcId] * unknown2) / 100;
+            j1 = i1 * 3 + combatModelArray1[(tick / (Data.npcCombatModel[npc.npcId] - 1)) % 8];
         } else
-        if(f1.currentSprite == 9)
+        if(npc.currentSprite == 9)
         {
             i1 = 5;
             l = 2;
             flag = true;
-            arg0 += (Data.akn[f1.gmj] * arg6) / 100;
-            j1 = i1 * 3 + eab[(tick / Data.akm[f1.gmj]) % 8];
+            x += (Data.npcCombatSprite[npc.npcId] * unknown2) / 100;
+            j1 = i1 * 3 + combatModelArray2[(tick / Data.npcCombatModel[npc.npcId]) % 8];
         }
         for(int k1 = 0; k1 < 12; k1++)
         {
-            int l1 = dgl[l][k1];
-            int k2 = Data.ala[f1.gmj][l1];
+            int l1 = animationModelArray[l][k1];
+            int k2 = Data.npcAnimationCount[npc.npcId][l1];
             if(k2 >= 0)
             {
                 int i3 = 0;
@@ -6666,72 +6710,72 @@ label0:
                 if(i1 != 5 || Data.animationHasA[k2] == 1)
                 {
                     int l3 = k3 + Data.animationNumber[k2];
-                    i3 = (i3 * arg2) / ((GameImage) (gameGraphics)).bmj[l3];
-                    j3 = (j3 * arg3) / ((GameImage) (gameGraphics)).bmk[l3];
-                    int i4 = (arg2 * ((GameImage) (gameGraphics)).bmj[l3]) / ((GameImage) (gameGraphics)).bmj[Data.animationNumber[k2]];
-                    i3 -= (i4 - arg2) / 2;
-                    int j4 = Data.alh[k2];
+                    i3 = (i3 * width) / ((GameImage) (gameGraphics)).pictureWidth[l3];
+                    j3 = (j3 * height) / ((GameImage) (gameGraphics)).pictureHeight[l3];
+                    int i4 = (width * ((GameImage) (gameGraphics)).pictureWidth[l3]) / ((GameImage) (gameGraphics)).pictureWidth[Data.animationNumber[k2]];
+                    i3 -= (i4 - width) / 2;
+                    int j4 = Data.animationCharacterColor[k2];
                     int k4 = 0;
                     if(j4 == 1)
                     {
-                        j4 = Data.ajc[f1.gmj];
-                        k4 = Data.ajf[f1.gmj];
+                        j4 = Data.npcHairColor[npc.npcId];
+                        k4 = Data.npcSkinColor[npc.npcId];
                     } else
                     if(j4 == 2)
                     {
-                        j4 = Data.ajd[f1.gmj];
-                        k4 = Data.ajf[f1.gmj];
+                        j4 = Data.npcTopColor[npc.npcId];
+                        k4 = Data.npcSkinColor[npc.npcId];
                     } else
                     if(j4 == 3)
                     {
-                        j4 = Data.aje[f1.gmj];
-                        k4 = Data.ajf[f1.gmj];
+                        j4 = Data.npcBottomColor[npc.npcId];
+                        k4 = Data.npcSkinColor[npc.npcId];
                     }
-                    gameGraphics.drawImage(arg0 + i3, arg1 + j3, i4, arg3, l3, j4, k4, arg5, flag);
+                    gameGraphics.drawImage(x + i3, y + j3, i4, height, l3, j4, k4, unknown1, flag);
                 }
             }
         }
 
-        if(f1.lastMessageTimeout > 0)
+        if(npc.lastMessageTimeout > 0)
         {
-            eaf[egg] = gameGraphics.textWidth(f1.gne, 1) / 2;
-            if(eaf[egg] > 150)
-                eaf[egg] = 150;
-            eag[egg] = (gameGraphics.textWidth(f1.gne, 1) / 300) * gameGraphics.ced(1);
-            ead[egg] = arg0 + arg2 / 2;
-            eae[egg] = arg1;
-            egh[egg++] = f1.gne;
+            receivedMessageMidPoint[receivedMessagesCount] = gameGraphics.textWidth(npc.lastMessage, 1) / 2;
+            if(receivedMessageMidPoint[receivedMessagesCount] > 150)
+                receivedMessageMidPoint[receivedMessagesCount] = 150;
+            receivedMessageHeight[receivedMessagesCount] = (gameGraphics.textWidth(npc.lastMessage, 1) / 300) * gameGraphics.textHeightNumber(1);
+            receivedMessageX[receivedMessagesCount] = x + width / 2;
+            receivedMessageY[receivedMessagesCount] = y;
+            receivedMessages[receivedMessagesCount++] = npc.lastMessage;
         }
-        if(f1.currentSprite == 8 || f1.currentSprite == 9 || f1.combatTimer != 0)
+        if(npc.currentSprite == 8 || npc.currentSprite == 9 || npc.combatTimer != 0)
         {
-            if(f1.combatTimer > 0)
+            if(npc.combatTimer > 0)
             {
-                int i2 = arg0;
-                if(f1.currentSprite == 8)
-                    i2 -= (20 * arg6) / 100;
+                int i2 = x;
+                if(npc.currentSprite == 8)
+                    i2 -= (20 * unknown2) / 100;
                 else
-                if(f1.currentSprite == 9)
-                    i2 += (20 * arg6) / 100;
-                int l2 = (f1.gnj * 30) / f1.gnk;
-                ekj[ejl] = i2 + arg2 / 2;
-                ekk[ejl] = arg1;
-                ekl[ejl++] = l2;
+                if(npc.currentSprite == 9)
+                    i2 += (20 * unknown2) / 100;
+                int l2 = (npc.currentHits * 30) / npc.baseHits;
+                healthBarX[healthBarVisibleCount] = i2 + width / 2;
+                healthBarY[healthBarVisibleCount] = y;
+                healthBarMissing[healthBarVisibleCount++] = l2;
             }
-            if(f1.combatTimer > 150)
+            if(npc.combatTimer > 150)
             {
-                int j2 = arg0;
-                if(f1.currentSprite == 8)
-                    j2 -= (10 * arg6) / 100;
+                int j2 = x;
+                if(npc.currentSprite == 8)
+                    j2 -= (10 * unknown2) / 100;
                 else
-                if(f1.currentSprite == 9)
-                    j2 += (10 * arg6) / 100;
-                gameGraphics.drawPicture((j2 + arg2 / 2) - 12, (arg1 + arg3 / 2) - 12, baseInventoryPic + 12);
-                gameGraphics.drawText(String.valueOf(f1.gni), (j2 + arg2 / 2) - 1, arg1 + arg3 / 2 + 5, 3, 0xffffff);
+                if(npc.currentSprite == 9)
+                    j2 += (10 * unknown2) / 100;
+                gameGraphics.drawPicture((j2 + width / 2) - 12, (y + height / 2) - 12, baseInventoryPic + 12);
+                gameGraphics.drawText(String.valueOf(npc.lastDamageCount), (j2 + width / 2) - 1, y + height / 2 + 5, 3, 0xffffff);
             }
         }
     }
 
-    protected final void handleServerMessage(String s1)
+    protected final void displayMessage(String s1)
     {
         if(s1.startsWith("@bor@"))
         {
@@ -6754,53 +6798,53 @@ label0:
         }
     }
 
-    private final void fde()
+    private final void drawAboveHeadThings()
     {
-        for(int l = 0; l < egg; l++)
+        for(int l = 0; l < receivedMessagesCount; l++)
         {
-            int i1 = gameGraphics.ced(1);
-            int k1 = ead[l];
-            int j2 = eae[l];
-            int i3 = eaf[l];
-            int l3 = eag[l];
+            int height = gameGraphics.textHeightNumber(1);
+            int x = receivedMessageX[l];
+            int y = receivedMessageY[l];
+            int midpoint = receivedMessageMidPoint[l];
+            int l3 = receivedMessageHeight[l];
             boolean flag = true;
             while(flag) 
             {
                 flag = false;
                 for(int l4 = 0; l4 < l; l4++)
-                    if(j2 + l3 > eae[l4] - i1 && j2 - i1 < eae[l4] + eag[l4] && k1 - i3 < ead[l4] + eaf[l4] && k1 + i3 > ead[l4] - eaf[l4] && eae[l4] - i1 - l3 < j2)
+                    if(y + l3 > receivedMessageY[l4] - height && y - height < receivedMessageY[l4] + receivedMessageHeight[l4] && x - midpoint < receivedMessageX[l4] + receivedMessageMidPoint[l4] && x + midpoint > receivedMessageX[l4] - receivedMessageMidPoint[l4] && receivedMessageY[l4] - height - l3 < y)
                     {
-                        j2 = eae[l4] - i1 - l3;
+                        y = receivedMessageY[l4] - height - l3;
                         flag = true;
                     }
 
             }
-            eae[l] = j2;
-            gameGraphics.cdm(egh[l], k1, j2, 1, 0xffff00, 300);
+            receivedMessageY[l] = y;
+            gameGraphics.drawFloatingText(receivedMessages[l], x, y, 1, 0xffff00, 300);
         }
 
-        for(int j1 = 0; j1 < dib; j1++)
+        for(int j1 = 0; j1 < itemsAboveHeadCount; j1++)
         {
-            int l1 = ebk[j1];
-            int k2 = ebl[j1];
-            int j3 = dfi[j1];
-            int i4 = dfj[j1];
-            int k4 = (39 * j3) / 100;
-            int i5 = (27 * j3) / 100;
-            int j5 = k2 - i5;
-            gameGraphics.cce(l1 - k4 / 2, j5, k4, i5, baseInventoryPic + 9, 85);
-            int k5 = (36 * j3) / 100;
-            int l5 = (24 * j3) / 100;
-            gameGraphics.drawImage(l1 - k5 / 2, (j5 + i5 / 2) - l5 / 2, k5, l5, Data.itemInventoryPicture[i4] + baseItemPicture, Data.itemPictureMask[i4], 0, 0, false);
+            int x = itemAboveHeadX[j1];
+            int y = itemAboveHeadY[j1];
+            int scale = itemAboveHeadScale[j1];
+            int id = itemAboveHeadID[j1];
+            int width = (39 * scale) / 100;
+            int height = (27 * scale) / 100;
+            int j5 = y - height;
+            gameGraphics.drawTransparentImage(x - width / 2, j5, width, height, baseInventoryPic + 9, 85);
+            int k5 = (36 * scale) / 100;
+            int l5 = (24 * scale) / 100;
+            gameGraphics.drawImage(x - k5 / 2, (j5 + height / 2) - l5 / 2, k5, l5, Data.itemInventoryPicture[id] + baseItemPicture, Data.itemPictureMask[id], 0, 0, false);
         }
 
-        for(int i2 = 0; i2 < ejl; i2++)
+        for(int i2 = 0; i2 < healthBarVisibleCount; i2++)
         {
-            int l2 = ekj[i2];
-            int k3 = ekk[i2];
-            int j4 = ekl[i2];
-            gameGraphics.drawBoxAlpha(l2 - 15, k3 - 3, j4, 5, 65280, 192);
-            gameGraphics.drawBoxAlpha((l2 - 15) + j4, k3 - 3, 30 - j4, 5, 0xff0000, 192);
+            int x = healthBarX[i2];
+            int y = healthBarY[i2];
+            int missing = healthBarMissing[i2];
+            gameGraphics.drawBoxAlpha(x - 15, y - 3, missing, 5, 65280, 192);
+            gameGraphics.drawBoxAlpha((x - 15) + missing, y - 3, 30 - missing, 5, 0xff0000, 192);
         }
 
     }
@@ -6811,22 +6855,22 @@ label0:
         displayMessage("@cya@Sorry, you can't logout at the moment", 3);
     }
 
-    private final void fdf()
+    private final void drawBankBox()
     {
         char c1 = '\u0198';
         char c2 = '\u014E';
-        if(ekf > 0 && elm <= 48)
-            ekf = 0;
-        if(ekf > 1 && elm <= 96)
-            ekf = 1;
-        if(ekf > 2 && elm <= 144)
-            ekf = 2;
-        if(ecj >= elm || ecj < 0)
-            ecj = -1;
-        if(ecj != -1 && eam[ecj] != eck)
+        if(bankPage > 0 && bankItemsCount <= 48)
+            bankPage = 0;
+        if(bankPage > 1 && bankItemsCount <= 96)
+            bankPage = 1;
+        if(bankPage > 2 && bankItemsCount <= 144)
+            bankPage = 2;
+        if(selectedBankItem >= bankItemsCount || selectedBankItem < 0)
+            selectedBankItem = -1;
+        if(selectedBankItem != -1 && bankItems[selectedBankItem] != selectedBankItemType)
         {
-            ecj = -1;
-            eck = -2;
+            selectedBankItem = -1;
+            selectedBankItemType = -2;
         }
         if(mouseButtonClick != 0)
         {
@@ -6835,17 +6879,17 @@ label0:
             int j1 = super.mouseY - (170 - c2 / 2);
             if(l >= 0 && j1 >= 12 && l < 408 && j1 < 280)
             {
-                int l1 = ekf * 48;
+                int l1 = bankPage * 48;
                 for(int k2 = 0; k2 < 6; k2++)
                 {
                     for(int i3 = 0; i3 < 8; i3++)
                     {
                         int k7 = 7 + i3 * 49;
                         int i8 = 28 + k2 * 34;
-                        if(l > k7 && l < k7 + 49 && j1 > i8 && j1 < i8 + 34 && l1 < elm && eam[l1] != -1)
+                        if(l > k7 && l < k7 + 49 && j1 > i8 && j1 < i8 + 34 && l1 < bankItemsCount && bankItems[l1] != -1)
                         {
-                            eck = eam[l1];
-                            ecj = l1;
+                            selectedBankItemType = bankItems[l1];
+                            selectedBankItem = l1;
                         }
                         l1++;
                     }
@@ -6854,117 +6898,117 @@ label0:
 
                 l = 256 - c1 / 2;
                 j1 = 170 - c2 / 2;
-                int j3;
-                if(ecj < 0)
-                    j3 = -1;
+                int id;
+                if(selectedBankItem < 0)
+                    id = -1;
                 else
-                    j3 = eam[ecj];
-                if(j3 != -1)
+                    id = bankItems[selectedBankItem];
+                if(id != -1)
                 {
-                    int i2 = ean[ecj];
-                    if(Data.itemStackable[j3] == 1 && i2 > 1)
-                        i2 = 1;
-                    if(i2 >= 1 && super.mouseX >= l + 220 && super.mouseY >= j1 + 238 && super.mouseX < l + 250 && super.mouseY <= j1 + 249)
+                    int count = bankItemCount[selectedBankItem];
+                    if(Data.itemStackable[id] == 1 && count > 1)
+                        count = 1;
+                    if(count >= 1 && super.mouseX >= l + 220 && super.mouseY >= j1 + 238 && super.mouseX < l + 250 && super.mouseY <= j1 + 249)
                     {
-                        super.streamClass.createPacket(131);
-                        super.streamClass.addShort(j3);
-                        super.streamClass.addShort(1);
+                        super.streamClass.createPacket(183);
+                        super.streamClass.addShort(id);
+                        super.streamClass.addInt(1);
                         super.streamClass.formatPacket();
                     }
-                    if(i2 >= 5 && super.mouseX >= l + 250 && super.mouseY >= j1 + 238 && super.mouseX < l + 280 && super.mouseY <= j1 + 249)
+                    if(count >= 5 && super.mouseX >= l + 250 && super.mouseY >= j1 + 238 && super.mouseX < l + 280 && super.mouseY <= j1 + 249)
                     {
-                        super.streamClass.createPacket(131);
-                        super.streamClass.addShort(j3);
-                        super.streamClass.addShort(5);
+                        super.streamClass.createPacket(183);
+                        super.streamClass.addShort(id);
+                        super.streamClass.addInt(5);
                         super.streamClass.formatPacket();
                     }
-                    if(i2 >= 25 && super.mouseX >= l + 280 && super.mouseY >= j1 + 238 && super.mouseX < l + 305 && super.mouseY <= j1 + 249)
+                    if(count >= 25 && super.mouseX >= l + 280 && super.mouseY >= j1 + 238 && super.mouseX < l + 305 && super.mouseY <= j1 + 249)
                     {
-                        super.streamClass.createPacket(131);
-                        super.streamClass.addShort(j3);
-                        super.streamClass.addShort(25);
+                        super.streamClass.createPacket(183);
+                        super.streamClass.addShort(id);
+                        super.streamClass.addInt(25);
                         super.streamClass.formatPacket();
                     }
-                    if(i2 >= 100 && super.mouseX >= l + 305 && super.mouseY >= j1 + 238 && super.mouseX < l + 335 && super.mouseY <= j1 + 249)
+                    if(count >= 100 && super.mouseX >= l + 305 && super.mouseY >= j1 + 238 && super.mouseX < l + 335 && super.mouseY <= j1 + 249)
                     {
-                        super.streamClass.createPacket(131);
-                        super.streamClass.addShort(j3);
-                        super.streamClass.addShort(100);
+                        super.streamClass.createPacket(183);
+                        super.streamClass.addShort(id);
+                        super.streamClass.addInt(100);
                         super.streamClass.formatPacket();
                     }
-                    if(i2 >= 500 && super.mouseX >= l + 335 && super.mouseY >= j1 + 238 && super.mouseX < l + 368 && super.mouseY <= j1 + 249)
+                    if(count >= 500 && super.mouseX >= l + 335 && super.mouseY >= j1 + 238 && super.mouseX < l + 368 && super.mouseY <= j1 + 249)
                     {
-                        super.streamClass.createPacket(131);
-                        super.streamClass.addShort(j3);
-                        super.streamClass.addShort(500);
+                        super.streamClass.createPacket(183);
+                        super.streamClass.addShort(id);
+                        super.streamClass.addInt(500);
                         super.streamClass.formatPacket();
                     }
-                    if(i2 >= 2500 && super.mouseX >= l + 370 && super.mouseY >= j1 + 238 && super.mouseX < l + 400 && super.mouseY <= j1 + 249)
+                    if(count >= 2500 && super.mouseX >= l + 370 && super.mouseY >= j1 + 238 && super.mouseX < l + 400 && super.mouseY <= j1 + 249)
                     {
-                        super.streamClass.createPacket(131);
-                        super.streamClass.addShort(j3);
-                        super.streamClass.addShort(2500);
+                        super.streamClass.createPacket(183);
+                        super.streamClass.addShort(id);
+                        super.streamClass.addInt(2500);
                         super.streamClass.formatPacket();
                     }
-                    if(getInventoryItemTotalCount(j3) >= 1 && super.mouseX >= l + 220 && super.mouseY >= j1 + 263 && super.mouseX < l + 250 && super.mouseY <= j1 + 274)
+                    if(getInventoryItemTotalCount(id) >= 1 && super.mouseX >= l + 220 && super.mouseY >= j1 + 263 && super.mouseX < l + 250 && super.mouseY <= j1 + 274)
                     {
-                        super.streamClass.createPacket(190);
-                        super.streamClass.addShort(j3);
-                        super.streamClass.addShort(1);
+                        super.streamClass.createPacket(198);
+                        super.streamClass.addShort(id);
+                        super.streamClass.addInt(1);
                         super.streamClass.formatPacket();
                     }
-                    if(getInventoryItemTotalCount(j3) >= 5 && super.mouseX >= l + 250 && super.mouseY >= j1 + 263 && super.mouseX < l + 280 && super.mouseY <= j1 + 274)
+                    if(getInventoryItemTotalCount(id) >= 5 && super.mouseX >= l + 250 && super.mouseY >= j1 + 263 && super.mouseX < l + 280 && super.mouseY <= j1 + 274)
                     {
-                        super.streamClass.createPacket(190);
-                        super.streamClass.addShort(j3);
-                        super.streamClass.addShort(5);
+                        super.streamClass.createPacket(198);
+                        super.streamClass.addShort(id);
+                        super.streamClass.addInt(5);
                         super.streamClass.formatPacket();
                     }
-                    if(getInventoryItemTotalCount(j3) >= 25 && super.mouseX >= l + 280 && super.mouseY >= j1 + 263 && super.mouseX < l + 305 && super.mouseY <= j1 + 274)
+                    if(getInventoryItemTotalCount(id) >= 25 && super.mouseX >= l + 280 && super.mouseY >= j1 + 263 && super.mouseX < l + 305 && super.mouseY <= j1 + 274)
                     {
-                        super.streamClass.createPacket(190);
-                        super.streamClass.addShort(j3);
-                        super.streamClass.addShort(25);
+                        super.streamClass.createPacket(198);
+                        super.streamClass.addShort(id);
+                        super.streamClass.addInt(25);
                         super.streamClass.formatPacket();
                     }
-                    if(getInventoryItemTotalCount(j3) >= 100 && super.mouseX >= l + 305 && super.mouseY >= j1 + 263 && super.mouseX < l + 335 && super.mouseY <= j1 + 274)
+                    if(getInventoryItemTotalCount(id) >= 100 && super.mouseX >= l + 305 && super.mouseY >= j1 + 263 && super.mouseX < l + 335 && super.mouseY <= j1 + 274)
                     {
-                        super.streamClass.createPacket(190);
-                        super.streamClass.addShort(j3);
-                        super.streamClass.addShort(100);
+                        super.streamClass.createPacket(198);
+                        super.streamClass.addShort(id);
+                        super.streamClass.addInt(100);
                         super.streamClass.formatPacket();
                     }
-                    if(getInventoryItemTotalCount(j3) >= 500 && super.mouseX >= l + 335 && super.mouseY >= j1 + 263 && super.mouseX < l + 368 && super.mouseY <= j1 + 274)
+                    if(getInventoryItemTotalCount(id) >= 500 && super.mouseX >= l + 335 && super.mouseY >= j1 + 263 && super.mouseX < l + 368 && super.mouseY <= j1 + 274)
                     {
-                        super.streamClass.createPacket(190);
-                        super.streamClass.addShort(j3);
-                        super.streamClass.addShort(500);
+                        super.streamClass.createPacket(198);
+                        super.streamClass.addShort(id);
+                        super.streamClass.addInt(500);
                         super.streamClass.formatPacket();
                     }
-                    if(getInventoryItemTotalCount(j3) >= 2500 && super.mouseX >= l + 370 && super.mouseY >= j1 + 263 && super.mouseX < l + 400 && super.mouseY <= j1 + 274)
+                    if(getInventoryItemTotalCount(id) >= 2500 && super.mouseX >= l + 370 && super.mouseY >= j1 + 263 && super.mouseX < l + 400 && super.mouseY <= j1 + 274)
                     {
-                        super.streamClass.createPacket(190);
-                        super.streamClass.addShort(j3);
-                        super.streamClass.addShort(2500);
+                        super.streamClass.createPacket(198);
+                        super.streamClass.addShort(id);
+                        super.streamClass.addInt(2500);
                         super.streamClass.formatPacket();
                     }
                 }
             } else
-            if(elm > 48 && l >= 50 && l <= 115 && j1 <= 12)
-                ekf = 0;
+            if(bankItemsCount > 48 && l >= 50 && l <= 115 && j1 <= 12)
+                bankPage = 0;
             else
-            if(elm > 48 && l >= 115 && l <= 180 && j1 <= 12)
-                ekf = 1;
+            if(bankItemsCount > 48 && l >= 115 && l <= 180 && j1 <= 12)
+                bankPage = 1;
             else
-            if(elm > 96 && l >= 180 && l <= 245 && j1 <= 12)
-                ekf = 2;
+            if(bankItemsCount > 96 && l >= 180 && l <= 245 && j1 <= 12)
+                bankPage = 2;
             else
-            if(elm > 144 && l >= 245 && l <= 310 && j1 <= 12)
+            if(bankItemsCount > 144 && l >= 245 && l <= 310 && j1 <= 12)
             {
-                ekf = 3;
+                bankPage = 3;
             } else
             {
-                super.streamClass.createPacket(78);
+                super.streamClass.createPacket(48);
                 super.streamClass.formatPacket();
                 showBankBox = false;
                 return;
@@ -6980,10 +7024,10 @@ label0:
         gameGraphics.drawBoxAlpha(i1, k1 + 233, 408, 47, j2, 160);
         gameGraphics.drawString("Bank", i1 + 1, k1 + 10, 1, 0xffffff);
         int l2 = 50;
-        if(elm > 48)
+        if(bankItemsCount > 48)
         {
             int k3 = 0xffffff;
-            if(ekf == 0)
+            if(bankPage == 0)
                 k3 = 0xff0000;
             else
             if(super.mouseX > i1 + l2 && super.mouseY >= k1 && super.mouseX < i1 + l2 + 65 && super.mouseY < k1 + 12)
@@ -6991,7 +7035,7 @@ label0:
             gameGraphics.drawString("<page 1>", i1 + l2, k1 + 10, 1, k3);
             l2 += 65;
             k3 = 0xffffff;
-            if(ekf == 1)
+            if(bankPage == 1)
                 k3 = 0xff0000;
             else
             if(super.mouseX > i1 + l2 && super.mouseY >= k1 && super.mouseX < i1 + l2 + 65 && super.mouseY < k1 + 12)
@@ -6999,10 +7043,10 @@ label0:
             gameGraphics.drawString("<page 2>", i1 + l2, k1 + 10, 1, k3);
             l2 += 65;
         }
-        if(elm > 96)
+        if(bankItemsCount > 96)
         {
             int l3 = 0xffffff;
-            if(ekf == 2)
+            if(bankPage == 2)
                 l3 = 0xff0000;
             else
             if(super.mouseX > i1 + l2 && super.mouseY >= k1 && super.mouseX < i1 + l2 + 65 && super.mouseY < k1 + 12)
@@ -7010,10 +7054,10 @@ label0:
             gameGraphics.drawString("<page 3>", i1 + l2, k1 + 10, 1, l3);
             l2 += 65;
         }
-        if(elm > 144)
+        if(bankItemsCount > 144)
         {
             int i4 = 0xffffff;
-            if(ekf == 3)
+            if(bankPage == 3)
                 i4 = 0xff0000;
             else
             if(super.mouseX > i1 + l2 && super.mouseY >= k1 && super.mouseX < i1 + l2 + 65 && super.mouseY < k1 + 12)
@@ -7028,23 +7072,23 @@ label0:
         gameGraphics.drawString("Number in bank in green", i1 + 7, k1 + 24, 1, 65280);
         gameGraphics.drawString("Number held in blue", i1 + 289, k1 + 24, 1, 65535);
         int l7 = 0xd0d0d0;
-        int j8 = ekf * 48;
+        int j8 = bankPage * 48;
         for(int l8 = 0; l8 < 6; l8++)
         {
             for(int i9 = 0; i9 < 8; i9++)
             {
                 int k9 = i1 + 7 + i9 * 49;
                 int l9 = k1 + 28 + l8 * 34;
-                if(ecj == j8)
+                if(selectedBankItem == j8)
                     gameGraphics.drawBoxAlpha(k9, l9, 49, 34, 0xff0000, 160);
                 else
                     gameGraphics.drawBoxAlpha(k9, l9, 49, 34, l7, 160);
                 gameGraphics.drawBoxEdge(k9, l9, 50, 35, 0);
-                if(j8 < elm && eam[j8] != -1)
+                if(j8 < bankItemsCount && bankItems[j8] != -1)
                 {
-                    gameGraphics.drawImage(k9, l9, 48, 32, baseItemPicture + Data.itemInventoryPicture[eam[j8]], Data.itemPictureMask[eam[j8]], 0, 0, false);
-                    gameGraphics.drawString(String.valueOf(ean[j8]), k9 + 1, l9 + 10, 1, 65280);
-                    gameGraphics.cdk(String.valueOf(getInventoryItemTotalCount(eam[j8])), k9 + 47, l9 + 29, 1, 65535);
+                    gameGraphics.drawImage(k9, l9, 48, 32, baseItemPicture + Data.itemInventoryPicture[bankItems[j8]], Data.itemPictureMask[bankItems[j8]], 0, 0, false);
+                    gameGraphics.drawString(String.valueOf(bankItemCount[j8]), k9 + 1, l9 + 10, 1, 65280);
+                    gameGraphics.cdk(String.valueOf(getInventoryItemTotalCount(bankItems[j8])), k9 + 47, l9 + 29, 1, 65535);
                 }
                 j8++;
             }
@@ -7052,19 +7096,19 @@ label0:
         }
 
         gameGraphics.drawLineX(i1 + 5, k1 + 256, 398, 0);
-        if(ecj == -1)
+        if(selectedBankItem == -1)
         {
             gameGraphics.drawText("Select an object to withdraw or deposit", i1 + 204, k1 + 248, 3, 0xffff00);
             return;
         }
         int j9;
-        if(ecj < 0)
+        if(selectedBankItem < 0)
             j9 = -1;
         else
-            j9 = eam[ecj];
+            j9 = bankItems[selectedBankItem];
         if(j9 != -1)
         {
-            int k8 = ean[ecj];
+            int k8 = bankItemCount[selectedBankItem];
             if(Data.itemStackable[j9] == 1 && k8 > 1)
                 k8 = 1;
             if(k8 > 0)
@@ -7166,19 +7210,19 @@ label0:
             return super.getGraphics();
     }
 
-    private final boolean fdg(int arg0, int arg1)
+    private final boolean loadSection(int x, int y)
     {
         if(playerAliveTimeout != 0)
         {
-            engineHandle.gii = false;
+            engineHandle.playerIsAlive = false;
             return false;
         }
-        elk = false;
-        arg0 += eai;
-        arg1 += eaj;
-        if(eal == dnk && arg0 > ega && arg0 < egc && arg1 > egb && arg1 < egd)
+        loadArea = false;
+        x += wildX;
+        y += wildY;
+        if(lastLayerIndex == layerIndex && x > sectionLowerX && x < sectionUpperX && y > sectionLowerY && y < sectionUpperY)
         {
-            engineHandle.gii = true;
+            engineHandle.playerIsAlive = true;
             return false;
         }
         gameGraphics.drawText("Loading... Please wait", 256, 192, 1, 0xffffff);
@@ -7186,31 +7230,31 @@ label0:
         gameGraphics.drawImage(graphics, 0, 0);
         int l = areaX;
         int i1 = areaY;
-        int j1 = (arg0 + 24) / 48;
-        int k1 = (arg1 + 24) / 48;
-        eal = dnk;
-        areaX = j1 * 48 - 48;
-        areaY = k1 * 48 - 48;
-        ega = j1 * 48 - 32;
-        egb = k1 * 48 - 32;
-        egc = j1 * 48 + 32;
-        egd = k1 * 48 + 32;
-        engineHandle.gjj(arg0, arg1, eal);
-        areaX -= eai;
-        areaY -= eaj;
-        int l1 = areaX - l;
-        int i2 = areaY - i1;
+        int xBase = (x + 24) / 48;
+        int yBase = (y + 24) / 48;
+        lastLayerIndex = layerIndex;
+        areaX = xBase * 48 - 48;
+        areaY = yBase * 48 - 48;
+        sectionLowerX = xBase * 48 - 32;
+        sectionLowerY = yBase * 48 - 32;
+        sectionUpperX = xBase * 48 + 32;
+        sectionUpperY = yBase * 48 + 32;
+        engineHandle.loadSection(x, y, lastLayerIndex);
+        areaX -= wildX;
+        areaY -= wildY;
+        int offsetX = areaX - l;
+        int offsetY = areaY - i1;
         for(int j2 = 0; j2 < objectCount; j2++)
         {
-            objectX[j2] -= l1;
-            objectY[j2] -= i2;
+            objectX[j2] -= offsetX;
+            objectY[j2] -= offsetY;
             int k2 = objectX[j2];
             int i3 = objectY[j2];
             int l3 = objectID[j2];
-            i k4 = objectArray[j2];
+            GameObject object = objectArray[j2];
             try
             {
-                int j5 = elb[j2];
+                int j5 = objectType[j2];
                 int i6;
                 int l6;
                 if(j5 == 0 || j5 == 4)
@@ -7226,25 +7270,25 @@ label0:
                 int j7 = ((i3 + i3 + l6) * magicLoc) / 2;
                 if(k2 >= 0 && i3 >= 0 && k2 < 96 && i3 < 96)
                 {
-                    gameCamera.bgm(k4);
-                    k4.cml(i7, -engineHandle.gjf(i7, j7), j7);
+                    gameCamera.addModel(object);
+                    object.cml(i7, -engineHandle.getAveragedElevation(i7, j7), j7);
                     engineHandle.gla(k2, i3, l3);
                     if(l3 == 74)
-                        k4.cmk(0, -480, 0);
+                        object.cmk(0, -480, 0);
                 }
             }
             catch(RuntimeException runtimeexception)
             {
                 System.out.println("Loc Error: " + runtimeexception.getMessage());
-                System.out.println("i:" + j2 + " obj:" + k4);
+                System.out.println("i:" + j2 + " obj:" + object);
                 runtimeexception.printStackTrace();
             }
         }
 
         for(int l2 = 0; l2 < wallObjectCount; l2++)
         {
-            wallObjectX[l2] -= l1;
-            wallObjectY[l2] -= i2;
+            wallObjectX[l2] -= offsetX;
+            wallObjectY[l2] -= offsetY;
             int j3 = wallObjectX[l2];
             int i4 = wallObjectY[l2];
             int l4 = wallObjectID[l2];
@@ -7252,7 +7296,7 @@ label0:
             try
             {
                 engineHandle.gkc(j3, i4, k5, l4);
-                i j6 = fdm(j3, i4, k5, l4, l2);
+                GameObject j6 = makeWallObject(j3, i4, k5, l4, l2);
                 wallObjectArray[l2] = j6;
             }
             catch(RuntimeException runtimeexception1)
@@ -7264,19 +7308,19 @@ label0:
 
         for(int k3 = 0; k3 < groundItemCount; k3++)
         {
-            dml[k3] -= l1;
-            dmm[k3] -= i2;
+            groundItemX[k3] -= offsetX;
+            groundItemY[k3] -= offsetY;
         }
 
         for(int j4 = 0; j4 < playerCount; j4++)
         {
             Mob f1 = playerArray[j4];
-            f1.currentX -= l1 * magicLoc;
-            f1.currentY -= i2 * magicLoc;
+            f1.currentX -= offsetX * magicLoc;
+            f1.currentY -= offsetY * magicLoc;
             for(int l5 = 0; l5 <= f1.waypointCurrent; l5++)
             {
-                f1.waypointsX[l5] -= l1 * magicLoc;
-                f1.waypointsY[l5] -= i2 * magicLoc;
+                f1.waypointsX[l5] -= offsetX * magicLoc;
+                f1.waypointsY[l5] -= offsetY * magicLoc;
             }
 
         }
@@ -7284,17 +7328,17 @@ label0:
         for(int i5 = 0; i5 < npcCount; i5++)
         {
             Mob f2 = npcArray[i5];
-            f2.currentX -= l1 * magicLoc;
-            f2.currentY -= i2 * magicLoc;
+            f2.currentX -= offsetX * magicLoc;
+            f2.currentY -= offsetY * magicLoc;
             for(int k6 = 0; k6 <= f2.waypointCurrent; k6++)
             {
-                f2.waypointsX[k6] -= l1 * magicLoc;
-                f2.waypointsY[k6] -= i2 * magicLoc;
+                f2.waypointsX[k6] -= offsetX * magicLoc;
+                f2.waypointsY[k6] -= offsetY * magicLoc;
             }
 
         }
 
-        engineHandle.gii = true;
+        engineHandle.playerIsAlive = true;
         return true;
     }
 
@@ -7325,15 +7369,15 @@ label0:
         return getInventoryItemTotalCount(l) >= i1;
     }
 
-    private final void displayMessage(String arg0, int arg1)
+    private final void displayMessage(String message, int type)
     {
-        if(arg1 == 2 || arg1 == 4 || arg1 == 6)
+        if(type == 2 || type == 4 || type == 6)
         {
-            for(; arg0.length() > 5 && arg0.charAt(0) == '@' && arg0.charAt(4) == '@'; arg0 = arg0.substring(5));
-            int l = arg0.indexOf(":");
+            for(; message.length() > 5 && message.charAt(0) == '@' && message.charAt(4) == '@'; message = message.substring(5));
+            int l = message.indexOf(":");
             if(l != -1)
             {
-                String s1 = arg0.substring(0, l);
+                String s1 = message.substring(0, l);
                 long l1 = DataOperations.nameToHash(s1);
                 for(int j1 = 0; j1 < super.ignoresCount; j1++)
                     if(super.ignoresList[j1] == l1)
@@ -7341,77 +7385,77 @@ label0:
 
             }
         }
-        if(arg1 == 2)
-            arg0 = "@yel@" + arg0;
-        if(arg1 == 3 || arg1 == 4)
-            arg0 = "@whi@" + arg0;
-        if(arg1 == 6)
-            arg0 = "@cya@" + arg0;
-        if(dea != 0)
+        if(type == 2)
+            message = "@yel@" + message;
+        if(type == 3 || type == 4)
+            message = "@whi@" + message;
+        if(type == 6)
+            message = "@cya@" + message;
+        if(messagesTab != 0)
         {
-            if(arg1 == 4 || arg1 == 3)
+            if(type == 4 || type == 3)
                 chatTabAllMsgFlash = 200;
-            if(arg1 == 2 && dea != 1)
+            if(type == 2 && messagesTab != 1)
                 chatTabHistoryFlash = 200;
-            if(arg1 == 5 && dea != 2)
+            if(type == 5 && messagesTab != 2)
                 chatTabQuestFlash = 200;
-            if(arg1 == 6 && dea != 3)
+            if(type == 6 && messagesTab != 3)
                 chatTabPrivateFlash = 200;
-            if(arg1 == 3 && dea != 0)
-                dea = 0;
-            if(arg1 == 6 && dea != 3 && dea != 0)
-                dea = 0;
+            if(type == 3 && messagesTab != 0)
+                messagesTab = 0;
+            if(type == 6 && messagesTab != 3 && messagesTab != 0)
+                messagesTab = 0;
         }
         for(int i1 = 4; i1 > 0; i1--)
         {
-            die[i1] = die[i1 - 1];
-            eib[i1] = eib[i1 - 1];
+            messagesArray[i1] = messagesArray[i1 - 1];
+            messagesTimeout[i1] = messagesTimeout[i1 - 1];
         }
 
-        die[0] = arg0;
-        eib[0] = 300;
-        if(arg1 == 2)
-            if(chatInputMenu.gbc[messagesHandleType2] == chatInputMenu.gbd[messagesHandleType2] - 4)
-                chatInputMenu.ggb(messagesHandleType2, arg0, true);
+        messagesArray[0] = message;
+        messagesTimeout[0] = 300;
+        if(type == 2)
+            if(chatInputMenu.gbc[messagesHandleType2] == chatInputMenu.listLength[messagesHandleType2] - 4)
+                chatInputMenu.addMessage(messagesHandleType2, message, true);
             else
-                chatInputMenu.ggb(messagesHandleType2, arg0, false);
-        if(arg1 == 5)
-            if(chatInputMenu.gbc[messagesHandleType5] == chatInputMenu.gbd[messagesHandleType5] - 4)
-                chatInputMenu.ggb(messagesHandleType5, arg0, true);
+                chatInputMenu.addMessage(messagesHandleType2, message, false);
+        if(type == 5)
+            if(chatInputMenu.gbc[messagesHandleType5] == chatInputMenu.listLength[messagesHandleType5] - 4)
+                chatInputMenu.addMessage(messagesHandleType5, message, true);
             else
-                chatInputMenu.ggb(messagesHandleType5, arg0, false);
-        if(arg1 == 6)
+                chatInputMenu.addMessage(messagesHandleType5, message, false);
+        if(type == 6)
         {
-            if(chatInputMenu.gbc[messagesHandleType6] == chatInputMenu.gbd[messagesHandleType6] - 4)
+            if(chatInputMenu.gbc[messagesHandleType6] == chatInputMenu.listLength[messagesHandleType6] - 4)
             {
-                chatInputMenu.ggb(messagesHandleType6, arg0, true);
+                chatInputMenu.addMessage(messagesHandleType6, message, true);
                 return;
             }
-            chatInputMenu.ggb(messagesHandleType6, arg0, false);
+            chatInputMenu.addMessage(messagesHandleType6, message, false);
         }
     }
 
     private final void drawMinimapObject(int l, int i1, int j1)
     {
-        gameGraphics.cbe(l, i1, j1);
-        gameGraphics.cbe(l - 1, i1, j1);
-        gameGraphics.cbe(l + 1, i1, j1);
-        gameGraphics.cbe(l, i1 - 1, j1);
-        gameGraphics.cbe(l, i1 + 1, j1);
+        gameGraphics.drawMinimapPixel(l, i1, j1);
+        gameGraphics.drawMinimapPixel(l - 1, i1, j1);
+        gameGraphics.drawMinimapPixel(l + 1, i1, j1);
+        gameGraphics.drawMinimapPixel(l, i1 - 1, j1);
+        gameGraphics.drawMinimapPixel(l, i1 + 1, j1);
     }
 
-    private final void fdl()
+    private final void drawServerMessageBox()
     {
         char c1 = '\u0190';
         char c2 = 'd';
-        if(dhi)
+        if(serverMessageBoxTop)
         {
             c2 = '\u01C2';
             c2 = '\u012C';
         }
         gameGraphics.drawBox(256 - c1 / 2, 167 - c2 / 2, c1, c2, 0);
         gameGraphics.drawBoxEdge(256 - c1 / 2, 167 - c2 / 2, c1, c2, 0xffffff);
-        gameGraphics.cdm(dhc, 256, (167 - c2 / 2) + 20, 1, 0xffffff, c1 - 40);
+        gameGraphics.drawFloatingText(serverMessage, 256, (167 - c2 / 2) + 20, 1, 0xffffff, c1 - 40);
         int l = 157 + c2 / 2;
         int i1 = 0xffffff;
         if(super.mouseY > l - 12 && super.mouseY <= l && super.mouseX > 106 && super.mouseX < 406)
@@ -7420,9 +7464,9 @@ label0:
         if(mouseButtonClick == 1)
         {
             if(i1 == 0xff0000)
-                ecc = false;
+                showServerMessageBox = false;
             if((super.mouseX < 256 - c1 / 2 || super.mouseX > 256 + c1 / 2) && (super.mouseY < 167 - c2 / 2 || super.mouseY > 167 + c2 / 2))
-                ecc = false;
+                showServerMessageBox = false;
         }
         mouseButtonClick = 0;
     }
@@ -7437,46 +7481,46 @@ label0:
             return super.createImage(l, i1);
     }
 
-    private final i fdm(int l, int i1, int j1, int k1, int l1)
+    private final GameObject makeWallObject(int x, int y, int dir, int type, int totalCount)
     {
-        int i2 = l;
-        int j2 = i1;
-        int k2 = l;
-        int l2 = i1;
-        int i3 = Data.amn[k1];
-        int j3 = Data.ana[k1];
-        int k3 = Data.amm[k1];
-        i l3 = new i(4, 1);
-        if(j1 == 0)
-            k2 = l + 1;
-        if(j1 == 1)
-            l2 = i1 + 1;
-        if(j1 == 2)
+        int i2 = x;
+        int j2 = y;
+        int k2 = x;
+        int l2 = y;
+        int i3 = Data.wallObjectModelVar2[type];
+        int j3 = Data.wallObjectModelVar3[type];
+        int k3 = Data.wallObjectModelVar1[type];
+        GameObject l3 = new GameObject(4, 1);
+        if(dir == 0)
+            k2 = x + 1;
+        if(dir == 1)
+            l2 = y + 1;
+        if(dir == 2)
         {
-            i2 = l + 1;
-            l2 = i1 + 1;
+            i2 = x + 1;
+            l2 = y + 1;
         }
-        if(j1 == 3)
+        if(dir == 3)
         {
-            k2 = l + 1;
-            l2 = i1 + 1;
+            k2 = x + 1;
+            l2 = y + 1;
         }
         i2 *= magicLoc;
         j2 *= magicLoc;
         k2 *= magicLoc;
         l2 *= magicLoc;
-        int i4 = l3.cln(i2, -engineHandle.gjf(i2, j2), j2);
-        int j4 = l3.cln(i2, -engineHandle.gjf(i2, j2) - k3, j2);
-        int k4 = l3.cln(k2, -engineHandle.gjf(k2, l2) - k3, l2);
-        int l4 = l3.cln(k2, -engineHandle.gjf(k2, l2), l2);
+        int i4 = l3.cln(i2, -engineHandle.getAveragedElevation(i2, j2), j2);
+        int j4 = l3.cln(i2, -engineHandle.getAveragedElevation(i2, j2) - k3, j2);
+        int k4 = l3.cln(k2, -engineHandle.getAveragedElevation(k2, l2) - k3, l2);
+        int l4 = l3.cln(k2, -engineHandle.getAveragedElevation(k2, l2), l2);
         int ai[] = {
             i4, j4, k4, l4
         };
         l3.cmb(4, ai, i3, j3);
         l3.cme(false, 60, 24, -50, -10, -50);
-        if(l >= 0 && i1 >= 0 && l < 96 && i1 < 96)
-            gameCamera.bgm(l3);
-        l3.chk = l1 + 10000;
+        if(x >= 0 && y >= 0 && x < 96 && y < 96)
+            gameCamera.addModel(l3);
+        l3.index = totalCount + 10000;
         return l3;
     }
 
@@ -7486,18 +7530,18 @@ label0:
         super.enteredPMText = "";
     }
 
-    private final Mob fea(int arg0, int arg1, int arg2, int arg3, int arg4)
+    private final Mob makeNPC(int index, int x, int y, int sprite, int id)
     {
-        if(npcAttackingArray[arg0] == null)
+        if(npcAttackingArray[index] == null)
         {
-            npcAttackingArray[arg0] = new Mob();
-            npcAttackingArray[arg0].serverIndex = arg0;
+            npcAttackingArray[index] = new Mob();
+            npcAttackingArray[index].serverIndex = index;
         }
-        Mob f1 = npcAttackingArray[arg0];
+        Mob f1 = npcAttackingArray[index];
         boolean flag = false;
-        for(int l = 0; l < ebc; l++)
+        for(int l = 0; l < lastNpcCount; l++)
         {
-            if(edc[l].serverIndex != arg0)
+            if(lastNpcArray[l].serverIndex != index)
                 continue;
             flag = true;
             break;
@@ -7505,48 +7549,48 @@ label0:
 
         if(flag)
         {
-            f1.gmj = arg4;
-            f1.nextSprite = arg3;
+            f1.npcId = id;
+            f1.nextSprite = sprite;
             int i1 = f1.waypointCurrent;
-            if(arg1 != f1.waypointsX[i1] || arg2 != f1.waypointsY[i1])
+            if(x != f1.waypointsX[i1] || y != f1.waypointsY[i1])
             {
                 f1.waypointCurrent = i1 = (i1 + 1) % 10;
-                f1.waypointsX[i1] = arg1;
-                f1.waypointsY[i1] = arg2;
+                f1.waypointsX[i1] = x;
+                f1.waypointsY[i1] = y;
             }
         } else
         {
-            f1.serverIndex = arg0;
+            f1.serverIndex = index;
             f1.waypointsEndSprite = 0;
             f1.waypointCurrent = 0;
-            f1.waypointsX[0] = f1.currentX = arg1;
-            f1.waypointsY[0] = f1.currentY = arg2;
-            f1.gmj = arg4;
-            f1.nextSprite = f1.currentSprite = arg3;
+            f1.waypointsX[0] = f1.currentX = x;
+            f1.waypointsY[0] = f1.currentY = y;
+            f1.npcId = id;
+            f1.nextSprite = f1.currentSprite = sprite;
             f1.stepCount = 0;
         }
         npcArray[npcCount++] = f1;
         return f1;
     }
 
-    private final void feb()
+    private final void updateBankItems()
     {
-        elm = elg;
-        for(int l = 0; l < elg; l++)
+        bankItemsCount = serverBankItemsCount;
+        for(int l = 0; l < serverBankItemsCount; l++)
         {
-            eam[l] = dmi[l];
-            ean[l] = dmj[l];
+            bankItems[l] = serverBankItems[l];
+            bankItemCount[l] = serverBankItemCount[l];
         }
 
         for(int i1 = 0; i1 < inventoryItemsCount; i1++)
         {
-            if(elm >= dnc)
+            if(bankItemsCount >= maxBankItems)
                 break;
             int j1 = inventoryItems[i1];
             boolean flag = false;
-            for(int k1 = 0; k1 < elm; k1++)
+            for(int k1 = 0; k1 < bankItemsCount; k1++)
             {
-                if(eam[k1] != j1)
+                if(bankItems[k1] != j1)
                     continue;
                 flag = true;
                 break;
@@ -7554,15 +7598,15 @@ label0:
 
             if(!flag)
             {
-                eam[elm] = j1;
-                ean[elm] = 0;
-                elm++;
+                bankItems[bankItemsCount] = j1;
+                bankItemCount[bankItemsCount] = 0;
+                bankItemsCount++;
             }
         }
 
     }
 
-    private final void fec(boolean arg0)
+    private final void drawStatsQuestsMenu(boolean canClick)
     {
         int l = ((GameImage) (gameGraphics)).gameWidth - 199;
         int i1 = 36;
@@ -7571,7 +7615,7 @@ label0:
         char c2 = '\u0113';
         int k1;
         int j1 = k1 = GameImage.rgbToInt(160, 160, 160);
-        if(dii == 0)
+        if(questMenuSelected == 0)
             j1 = GameImage.rgbToInt(220, 220, 220);
         else
             k1 = GameImage.rgbToInt(220, 220, 220);
@@ -7582,7 +7626,7 @@ label0:
         gameGraphics.drawLineY(l + c1 / 2, i1, 24, 0);
         gameGraphics.drawText("Stats", l + c1 / 4, i1 + 16, 4, 0);
         gameGraphics.drawText("Quests", l + c1 / 4 + c1 / 2, i1 + 16, 4, 0);
-        if(dii == 0)
+        if(questMenuSelected == 0)
         {
             int l1 = 72;
             int j2 = -1;
@@ -7596,28 +7640,28 @@ label0:
                     l2 = 0xff0000;
                     j2 = k2;
                 }
-                gameGraphics.drawString(eba[k2] + ":@yel@" + playerStatCurrent[k2] + "/" + playerStatBase[k2], l + 5, l1, 1, l2);
+                gameGraphics.drawString(skillName[k2] + ":@yel@" + playerStatCurrent[k2] + "/" + playerStatBase[k2], l + 5, l1, 1, l2);
                 l2 = 0xffffff;
                 if(super.mouseX >= l + 90 && super.mouseY >= l1 - 13 - 11 && super.mouseY < (l1 - 13) + 2 && super.mouseX < l + 196)
                 {
                     l2 = 0xff0000;
                     j2 = k2 + 9;
                 }
-                gameGraphics.drawString(eba[k2 + 9] + ":@yel@" + playerStatCurrent[k2 + 9] + "/" + playerStatBase[k2 + 9], (l + c1 / 2) - 5, l1 - 13, 1, l2);
+                gameGraphics.drawString(skillName[k2 + 9] + ":@yel@" + playerStatCurrent[k2 + 9] + "/" + playerStatBase[k2 + 9], (l + c1 / 2) - 5, l1 - 13, 1, l2);
                 l1 += 13;
             }
 
-            gameGraphics.drawString("Quest Points:@yel@" + ema, (l + c1 / 2) - 5, l1 - 13, 1, 0xffffff);
+            gameGraphics.drawString("Quest Points:@yel@" + questPoints, (l + c1 / 2) - 5, l1 - 13, 1, 0xffffff);
             l1 += 12;
-            gameGraphics.drawString("Fatigue: @yel@" + (dhj * 100) / 750 + "%", l + 5, l1 - 13, 1, 0xffffff);
+            gameGraphics.drawString("Fatigue: @yel@" + (fatigue * 100) / 750 + "%", l + 5, l1 - 13, 1, 0xffffff);
             l1 += 8;
             gameGraphics.drawString("Equipment Status", l + 5, l1, 3, 0xffff00);
             l1 += 12;
             for(int i3 = 0; i3 < 3; i3++)
             {
-                gameGraphics.drawString(eha[i3] + ":@yel@" + ege[i3], l + 5, l1, 1, 0xffffff);
+                gameGraphics.drawString(gearStats[i3] + ":@yel@" + equipmentStatus[i3], l + 5, l1, 1, 0xffffff);
                 if(i3 < 2)
-                    gameGraphics.drawString(eha[i3 + 3] + ":@yel@" + ege[i3 + 3], l + c1 / 2 + 25, l1, 1, 0xffffff);
+                    gameGraphics.drawString(gearStats[i3 + 3] + ":@yel@" + equipmentStatus[i3 + 3], l + c1 / 2 + 25, l1, 1, 0xffffff);
                 l1 += 13;
             }
 
@@ -7625,14 +7669,14 @@ label0:
             gameGraphics.drawLineX(l, l1 - 15, c1, 0);
             if(j2 != -1)
             {
-                gameGraphics.drawString(dfn[j2] + " skill", l + 5, l1, 1, 0xffff00);
+                gameGraphics.drawString(skillNameVerb[j2] + " skill", l + 5, l1, 1, 0xffff00);
                 l1 += 12;
                 int j3 = experienceList[0];
                 for(int l3 = 0; l3 < 98; l3++)
-                    if(edn[j2] >= experienceList[l3])
+                    if(playerStatExp[j2] >= experienceList[l3])
                         j3 = experienceList[l3 + 1];
 
-                gameGraphics.drawString("Total xp: " + edn[j2] / 4, l + 5, l1, 1, 0xffffff);
+                gameGraphics.drawString("Total xp: " + playerStatExp[j2] / 4, l + 5, l1, 1, 0xffffff);
                 l1 += 12;
                 gameGraphics.drawString("Next level at: " + j3 / 4, l + 5, l1, 1, 0xffffff);
             } else
@@ -7645,41 +7689,41 @@ label0:
 
                 gameGraphics.drawString("Skill total: " + k3, l + 5, l1, 1, 0xffffff);
                 l1 += 12;
-                gameGraphics.drawString("Combat level: " + ourPlayer.gnm, l + 5, l1, 1, 0xffffff);
+                gameGraphics.drawString("Combat level: " + ourPlayer.level, l + 5, l1, 1, 0xffffff);
                 l1 += 12;
             }
         }
-        if(dii == 1)
+        if(questMenuSelected == 1)
         {
             questMenu.clearList(questMenuHandle);
             questMenu.addListItem(questMenuHandle, 0, "@whi@Quest-list (green=completed)");
-            for(int i2 = 0; i2 < 50; i2++)
-                questMenu.addListItem(questMenuHandle, i2 + 1, (ehf[i2] ? "@gre@" : "@red@") + dei[i2]);
+            for(int i2 = 0; i2 < usedQuestName.length; i2++)
+                questMenu.addListItem(questMenuHandle, i2 + 1, (questStage[i2] == 0 ? "@red@" : questStage[i2] == 1 ? "@yel@" : "@gre@") + questName[i2]);
 
             questMenu.drawMenu();
         }
-        if(!arg0)
+        if(!canClick)
             return;
         l = super.mouseX - (((GameImage) (gameGraphics)).gameWidth - 199);
         i1 = super.mouseY - 36;
         if(l >= 0 && i1 >= 0 && l < c1 && i1 < c2)
         {
-            if(dii == 1)
+            if(questMenuSelected == 1)
                 questMenu.mouseClick(l + (((GameImage) (gameGraphics)).gameWidth - 199), i1 + 36, super.lastMouseButton, super.mouseButton);
             if(i1 <= 24 && mouseButtonClick == 1)
             {
                 if(l < 98)
                 {
-                    dii = 0;
+                    questMenuSelected = 0;
                     return;
                 }
                 if(l > 98)
-                    dii = 1;
+                    questMenuSelected = 1;
             }
         }
     }
 
-    private final void fed()
+    private final void drawFriendsBox()
     {
         if(mouseButtonClick != 0)
         {
@@ -7720,7 +7764,7 @@ label0:
                 super.inputText = "";
                 super.enteredInputText = "";
                 showFriendsBox = 0;
-                if(s1.length() > 0 && DataOperations.nameToHash(s1) != ourPlayer.gmd)
+                if(s1.length() > 0 && DataOperations.nameToHash(s1) != ourPlayer.nameHash)
                     addFriend(s1);
             }
         }
@@ -7738,11 +7782,11 @@ label0:
                 super.pmText = "";
                 super.enteredPMText = "";
                 showFriendsBox = 0;
-                int j1 = v.stringToBytes(s2);
-                sendPrivateMessage(pmTarget, v.ceg, j1);
-                s2 = v.bytesToString(v.ceg, 0, j1);
-                s2 = ChatFilter.fgd(s2);
-                handleServerMessage("@pri@You tell " + DataOperations.hashToName(pmTarget) + ": " + s2);
+                int j1 = ChatMessage.stringToBytes(s2);
+                sendPrivateMessage(pmTarget, ChatMessage.lastChat, j1);
+                s2 = ChatMessage.bytesToString(ChatMessage.lastChat, 0, j1);
+                s2 = ChatFilter.filterChat(s2);
+                displayMessage("@pri@You tell " + DataOperations.hashToName(pmTarget) + ": " + s2);
             }
         }
         if(showFriendsBox == 3)
@@ -7759,7 +7803,7 @@ label0:
                 super.inputText = "";
                 super.enteredInputText = "";
                 showFriendsBox = 0;
-                if(s3.length() > 0 && DataOperations.nameToHash(s3) != ourPlayer.gmd)
+                if(s3.length() > 0 && DataOperations.nameToHash(s3) != ourPlayer.nameHash)
                     addIgnore(s3);
             }
         }
@@ -7777,44 +7821,44 @@ label0:
             audioPlayer.play(soundData, DataOperations.getSoundOffset(s1 + ".pcm", soundData), DataOperations.getSoundLength(s1 + ".pcm", soundData));
     }
 
-    private final void fef()
+    private final void drawRightClickMenu()
     {
         if(mouseButtonClick != 0)
         {
             for(int l = 0; l < menuOptionsCount; l++)
             {
-                int j1 = ejb + 2;
-                int l1 = ejc + 27 + l * 15;
-                if(super.mouseX <= j1 - 2 || super.mouseY <= l1 - 12 || super.mouseY >= l1 + 4 || super.mouseX >= (j1 - 3) + ejd)
+                int j1 = menuX + 2;
+                int l1 = menuY + 27 + l * 15;
+                if(super.mouseX <= j1 - 2 || super.mouseY <= l1 - 12 || super.mouseY >= l1 + 4 || super.mouseX >= (j1 - 3) + menuWidth)
                     continue;
-                menuClick(dec[l]);
+                menuClick(menuIndexes[l]);
                 break;
             }
 
             mouseButtonClick = 0;
-            dkk = false;
+            menuShow = false;
             return;
         }
-        if(super.mouseX < ejb - 10 || super.mouseY < ejc - 10 || super.mouseX > ejb + ejd + 10 || super.mouseY > ejc + eje + 10)
+        if(super.mouseX < menuX - 10 || super.mouseY < menuY - 10 || super.mouseX > menuX + menuWidth + 10 || super.mouseY > menuY + menuHeight + 10)
         {
-            dkk = false;
+            menuShow = false;
             return;
         }
-        gameGraphics.drawBoxAlpha(ejb, ejc, ejd, eje, 0xd0d0d0, 160);
-        gameGraphics.drawString("Choose option", ejb + 2, ejc + 12, 1, 65535);
+        gameGraphics.drawBoxAlpha(menuX, menuY, menuWidth, menuHeight, 0xd0d0d0, 160);
+        gameGraphics.drawString("Choose option", menuX + 2, menuY + 12, 1, 65535);
         for(int i1 = 0; i1 < menuOptionsCount; i1++)
         {
-            int k1 = ejb + 2;
-            int i2 = ejc + 27 + i1 * 15;
+            int k1 = menuX + 2;
+            int i2 = menuY + 27 + i1 * 15;
             int j2 = 0xffffff;
-            if(super.mouseX > k1 - 2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && super.mouseX < (k1 - 3) + ejd)
+            if(super.mouseX > k1 - 2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && super.mouseX < (k1 - 3) + menuWidth)
                 j2 = 0xffff00;
-            gameGraphics.drawString(menuText1[dec[i1]] + " " + menuText2[dec[i1]], k1, i2, 1, j2);
+            gameGraphics.drawString(menuText1[menuIndexes[i1]] + " " + menuText2[menuIndexes[i1]], k1, i2, 1, j2);
         }
 
     }
 
-    private final void feg()
+    private final void getMenuHighlighted()
     {
         if(drawMenuTab == 0 && super.mouseX >= ((GameImage) (gameGraphics)).gameWidth - 35 && super.mouseY >= 3 && super.mouseX < ((GameImage) (gameGraphics)).gameWidth - 3 && super.mouseY < 35)
             drawMenuTab = 1;
@@ -7858,9 +7902,52 @@ label0:
             drawMenuTab = 0;
     }
 
-    protected final int adi()
+    protected final int getUID()
     {
         return link.uid;
+    }
+    
+    private boolean takeScreenshot(boolean verb) {
+        try {
+            String charName = DataOperations.hashToName(DataOperations.nameToHash(username));
+            File dir = new File(Config.MEDIA_DIR + "/" + charName);
+            if(!dir.exists() || !dir.isDirectory())
+                dir.mkdir();
+            String folder = dir.getPath() + "/";
+            File file = null;
+            for(int count = 0; file == null || file.exists(); count++)
+                file = new File(folder + "screenshot" + count + ".png");
+            BufferedImage bi = new BufferedImage(windowWidth, windowHeight + 11, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2d = bi.createGraphics();
+            g2d.drawImage(gameGraphics.bmb, 0, 0, this);
+            g2d.dispose();
+            ImageIO.write(bi, "png", file);
+            if(verb)
+                displayMessage("Screenshot saved as " + file.getName());
+            return true;
+        } catch(IOException ioe) {
+            if(verb)
+                displayMessage("Error saving screenshot");
+            return false;
+        }
+    }
+    
+    private Mob getLastPlayer(int serverIndex) {
+        for (int i1 = 0; i1 < lastPlayerCount; i1++) {
+            if (lastPlayerArray[i1].serverIndex == serverIndex) {
+                return lastPlayerArray[i1];
+            }
+        }
+        return null;
+    }
+
+    private Mob getLastNpc(int serverIndex) {
+        for (int i1 = 0; i1 < lastNpcCount; i1++) {
+            if (lastNpcArray[i1].serverIndex == serverIndex) {
+                return lastNpcArray[i1];
+            }
+        }
+        return null;
     }
 
     public mudclient()
@@ -7868,9 +7955,8 @@ label0:
         tradeOtherName = "";
         windowWidth = 512;
         windowHeight = 334;
-        dcj = 9;
+        cameraFieldOfView = 9;
         showQuestionMenu = false;
-        dcl = "";
         loginScreenShown = false;
         appletMode = true;
         questionMenuAnswer = new String[5];
@@ -7880,48 +7966,47 @@ label0:
         appearanceTopColour = 8;
         appearanceBottomColour = 14;
         appearanceHeadGender = 1;
-        dec = new int[250];
-        dee = new int[8];
-        def = new int[8];
+        menuIndexes = new int[250];
+        duelMyItems = new int[8];
+        duelMyItemsCount = new int[8];
         playerArray = new Mob[500];
-        dej = -1;
-        dek = -2;
+        selectedShopItemIndex = -1;
+        selectedShopItemType = -2;
         menuText1 = new String[250];
         isSleeping = false;
         tradeItemsOther = new int[14];
-        dff = new int[14];
+        tradeItemOtherCount = new int[14];
         tradeOtherAccepted = false;
         tradeWeAccepted = false;
-        dfi = new int[50];
-        dfj = new int[50];
+        itemAboveHeadScale = new int[50];
+        itemAboveHeadID = new int[50];
         playerStatCurrent = new int[18];
         menuActionX = new int[250];
         menuActionY = new int[250];
         menuActionID = new int[250];
         showTradeBox = false;
         npcArray = new Mob[500];
-        dgg = false;
-        dgh = false;
-        dgi = false;
-        dgj = false;
+        duelNoRetreating = false;
+        duelNoMagic = false;
+        duelNoPrayer = false;
+        duelNoWeapons = false;
         playerBufferArray = new Mob[4000];
-        dhc = "";
-        dhe = false;
-        dhf = false;
+        serverMessage = "";
+        duelOpponentAccepted = false;
+        duelMyAccepted = false;
         wallObjectX = new int[500];
         wallObjectY = new int[500];
-        dhi = false;
+        serverMessageBoxTop = false;
         cameraRotationYIncrement = 2;
-        dia = false;
-        wallObjectArray = new i[500];
-        die = new String[5];
-        dij = new boolean[1500];
-        objectArray = new i[1500];
+        abuseModeratorMutePlayer = false;
+        wallObjectArray = new GameObject[500];
+        messagesArray = new String[5];
+        objectAlreadyInMenu = new boolean[1500];
+        objectArray = new GameObject[1500];
         selectedSpell = -1;
         cameraAutoAngleDebug = false;
-        dja = "";
         ourPlayer = new Mob();
-        djf = -1;
+        serverIndex = -1;
         tradeItemsOur = new int[14];
         tradeItemOurCount = new int[14];
         showWelcomeBox = false;
@@ -7932,50 +8017,50 @@ label0:
         configCmeraAutoAngle = true;
         cameraRotation = 128;
         configSoundOff = false;
-        dkk = false;
-        dkm = new int[8];
-        dkn = new int[8];
+        menuShow = false;
+        duelOpponentItems = new int[8];
+        duelOpponentItemsCount = new int[8];
         showBankBox = false;
         playerStatBase = new int[18];
-        dmi = new int[256];
-        dmj = new int[256];
+        serverBankItems = new int[256];
+        serverBankItemCount = new int[256];
         showShopBox = false;
-        dml = new int[5000];
-        dmm = new int[5000];
-        dmn = new int[5000];
-        dna = new int[5000];
-        dnc = 48;
+        groundItemX = new int[5000];
+        groundItemY = new int[5000];
+        groundItemID = new int[5000];
+        groundItemObjectVar = new int[5000];
+        maxBankItems = 48;
         tradeConfirmOtherItems = new int[14];
         tradeConfirmOtherItemsCount = new int[14];
-        dnk = -1;
+        layerIndex = -1;
         walkArrayX = new int[8000];
         walkArrayY = new int[8000];
         cameraDistance = 550;
-        ead = new int[50];
-        eae = new int[50];
-        eaf = new int[50];
-        eag = new int[50];
-        eah = new boolean[500];
-        eal = -1;
-        eam = new int[256];
-        ean = new int[256];
+        receivedMessageX = new int[50];
+        receivedMessageY = new int[50];
+        receivedMessageMidPoint = new int[50];
+        receivedMessageHeight = new int[50];
+        wallObjectAlreadyInMenu = new boolean[500];
+        lastLayerIndex = -1;
+        bankItems = new int[256];
+        bankItemCount = new int[256];
         maxInventoryItems = 30;
-        ebg = false;
+        cameraZoom = false;
         errorLoading = false;
-        ebk = new int[50];
-        ebl = new int[50];
-        ecc = false;
-        ece = new int[500];
+        itemAboveHeadX = new int[50];
+        itemAboveHeadY = new int[50];
+        showServerMessageBox = false;
+        playerBufferArrayIndexes = new int[500];
         tradeConfirmItems = new int[14];
         tradeConfigItemsCount = new int[14];
-        ecj = -1;
-        eck = -2;
+        selectedBankItem = -1;
+        selectedBankItemType = -2;
         showDuelConfirmBox = false;
         duelConfirmOurAccepted = false;
         wallObjectDirection = new int[500];
         wallObjectID = new int[500];
-        gameDataObjects = new i[1000];
-        edc = new Mob[500];
+        gameDataObjects = new GameObject[1000];
+        lastNpcArray = new Mob[500];
         inventoryItems = new int[35];
         inventoryItemCount = new int[35];
         inventoryItemEquipped = new int[35];
@@ -7984,74 +8069,68 @@ label0:
         lastPlayerArray = new Mob[500];
         showTradeConfirmBox = false;
         tradeConfirmAccepted = false;
-        edn = new int[18];
+        playerStatExp = new int[18];
         mouseTrailX = new int[8192];
         mouseTrailY = new int[8192];
         configOneMouseButton = false;
-        eeg = 0xbc614e;
         prayerOn = new boolean[50];
-        efa = new int[256];
-        efb = new int[256];
-        efc = new int[256];
-        eff = new int[8];
+        shopItems = new int[256];
+        shopItemCount = new int[256];
+        shopItemBasePriceModifier = new int[256];
+        duelOpponentStakeItem = new int[8];
         duelOutStakeItemCount = new int[8];
-        ege = new int[5];
-        egh = new String[50];
+        equipmentStatus = new int[5];
+        receivedMessages = new String[50];
         members = false;
         cameraRotationXIncrement = 2;
         teleBubbleTime = new int[50];
         magicLoc = 128;
-        ehf = new boolean[50];
+        questStage = new int[questName.length];
         teleBubbleType = new int[50];
         experienceList = new int[99];
-        ehi = -1;
-        ehj = -1;
-        ehk = -1;
-        eib = new int[5];
-        eic = 40;
-        eif = "";
+        lastModelFireLightningSpellNumber = -1;
+        lastModelTorchNumber = -1;
+        lastModelClawSpellNumber = -1;
+        messagesTimeout = new int[5];
+        projectileRange = 40;
         memoryError = false;
         duelOurStakeItem = new int[8];
         duelOurStakeItemCount = new int[8];
         menuText2 = new String[250];
         loginUsername = "";
         loginPassword = "";
-        eke = "";
+        duelOpponent = "";
         codebaseError = false;
-        ekj = new int[50];
-        ekk = new int[50];
-        ekl = new int[50];
+        healthBarX = new int[50];
+        healthBarY = new int[50];
+        healthBarMissing = new int[50];
         objectX = new int[1500];
         objectY = new int[1500];
         objectID = new int[1500];
-        elb = new int[1500];
-        eld = false;
+        objectType = new int[1500];
+        showDuelBox = false;
         npcAttackingArray = new Mob[5000];
-        elh = new int[50];
+        teleBubbleY = new int[50];
         cameraAutoAngle = 1;
-        elk = false;
-        ell = new int[50];
+        loadArea = false;
+        teleBubbleX = new int[50];
         showAppearanceWindow = false;
+
+        fogOfWar = true;
+        combatWindow = false;
+        showRoofs = true;
+        autoScreenshot = false;
+        usedQuestName = new String[0];
+        subDaysLeft = 0;
+        shopItemSellPrice = new int[256];
+        shopItemBuyPrice = new int[256];
     }
 
-    private final int dbi = 250;
-    private final int dbj = 5;
-    private final int dbk = 50;
-    private final int dbl = 18;
-    private final int dbm = 500;
-    private final int dbn = 1500;
-    private final int dca = 5000;
-    private final int dcb = 5000;
-    private final int dcc = 500;
-    private final int dcd = 4000;
-    private final int dce = 500;
-    private final int dcf = 8000;
     private String tradeOtherName;
     private int windowWidth;
     private int windowHeight;
-    private int dcj;
+    private int cameraFieldOfView;
     private boolean showQuestionMenu;
-    private String dcl;
     private boolean loginScreenShown;
     private boolean appletMode;
     private String questionMenuAnswer[];
@@ -8068,40 +8147,49 @@ label0:
     int chatInputBox;
     int messagesHandleType5;
     int messagesHandleType6;
-    int dea;
-    private int deb;
-    private int dec[];
-    private int ded;
-    private int dee[];
-    private int def[];
+    int messagesTab;
+    private int packetErrorCount;
+    private int menuIndexes[];
+    private int duelMyItemCount;
+    private int duelMyItems[];
+    private int duelMyItemsCount[];
     private int systemUpdate;
     private Mob playerArray[];
-    private final String dei[] = {
-        "Black knight's fortress", "Cook's assistant", "Demon slayer", "Doric's quest", "The restless ghost", "Goblin diplomacy", "Ernest the chicken", "Imp catcher", "Pirate's treasure", "Prince Ali rescue", 
-        "Romeo & Juliet", "Sheep shearer", "Shield of Arrav", "The knight's sword", "Vampire slayer", "Witch's potion", "Dragon slayer", "Witch's house (members)", "Lost city (members)", "Hero's quest (members)", 
-        "Druidic ritual (members)", "Merlin's crystal (members)", "Scorpion catcher (members)", "Family crest (members)", "Tribal totem (members)", "Fishing contest (members)", "Monk's friend (members)", "Temple of Ikov (members)", "Clock tower (members)", "The Holy Grail (members)", 
-        "Fight Arena (members)", "Tree Gnome Village (members)", "The Hazeel Cult (members)", "Sheep Herder (members)", "Plague City (members)", "Sea Slug (members)", "Waterfall quest (members)", "Biohazard (members)", "Jungle potion (members)", "Grand tree (members)", 
-        "Shilo village (members)", "Underground pass (members)", "Observatory quest (members)", "Tourist trap (members)", "Watchtower (members)", "Dwarf Cannon (members)", "Murder Mystery (members)", "Digsite (members)", "Gertrude's Cat (members)", "Legend's Quest (members)"
+    private final String questName[] = {// TODO really?...
+            "Cook's Assistant", "Sheep Shearer", "Black knight's fortress", "Imp catcher", "Vampire slayer",
+            "Romeo & Juliet", "The restless ghost", "Doric's quest", "The knight's sword", "Witch's potion",
+            "Goblin diplomacy", "Ernest the chicken", "Demon Slayer", "Pirate's treasure", "Prince Ali Rescue",
+            "Shield of Arrav", "Dragon Slayer"
+        /*"Black knight's fortress", "Cook's assistant", "Demon slayer", "Doric's quest", "The restless ghost", "Goblin diplomacy", "Ernest the chicken",
+        "Imp catcher", "Pirate's treasure", "Prince Ali rescue", 
+        "Romeo & Juliet", "Sheep shearer", "Shield of Arrav", "The knight's sword", "Vampire slayer", "Witch's potion", "Dragon slayer", "Witch's house (members)",
+        "Lost city (members)", "Hero's quest (members)", 
+        "Druidic ritual (members)", "Merlin's crystal (members)", "Scorpion catcher (members)", "Family crest (members)", "Tribal totem (members)",
+        "Fishing contest (members)", "Monk's friend (members)", "Temple of Ikov (members)", "Clock tower (members)", "The Holy Grail (members)", 
+        "Fight Arena (members)", "Tree Gnome Village (members)", "The Hazeel Cult (members)", "Sheep Herder (members)", "Plague City (members)",
+        "Sea Slug (members)", "Waterfall quest (members)", "Biohazard (members)", "Jungle potion (members)", "Grand tree (members)", 
+        "Shilo village (members)", "Underground pass (members)", "Observatory quest (members)", "Tourist trap (members)", "Watchtower (members)",
+        "Dwarf Cannon (members)", "Murder Mystery (members)", "Digsite (members)", "Gertrude's Cat (members)", "Legend's Quest (members)"*/
     };
-    private int dej;
-    private int dek;
-    private String del;
+    private int selectedShopItemIndex;
+    private int selectedShopItemType;
+    private String sleepingStatusText;
     private String menuText1[];
     private boolean isSleeping;
-    private int dfa;
-    private int dfb;
-    private int dfc;
+    private int modelFireLightningSpellNumber;
+    private int modelTorchNumber;
+    private int modelClawSpellNumber;
     private int tradeItemsOtherCount;
     private int tradeItemsOther[];
-    private int dff[];
+    private int tradeItemOtherCount[];
     private boolean tradeOtherAccepted;
     private boolean tradeWeAccepted;
-    private int dfi[];
-    private int dfj[];
+    private int itemAboveHeadScale[];
+    private int itemAboveHeadID[];
     private int playerStatCurrent[];
     private int menuActionX[];
     private int menuActionY[];
-    private final String dfn[] = {
+    private final String skillNameVerb[] = {
         "Attack", "Defense", "Strength", "Hits", "Ranged", "Prayer", "Magic", "Cooking", "Woodcutting", "Fletching", 
         "Fishing", "Firemaking", "Crafting", "Smithing", "Mining", "Herblaw", "Agility", "Thieving"
     };
@@ -8111,12 +8199,12 @@ label0:
     private int cameraAutoRotatePlayerY;
     private boolean showTradeBox;
     private Mob npcArray[];
-    private boolean dgg;
-    private boolean dgh;
-    private boolean dgi;
-    private boolean dgj;
+    private boolean duelNoRetreating;
+    private boolean duelNoMagic;
+    private boolean duelNoPrayer;
+    private boolean duelNoWeapons;
     private Menu appearanceMenu;
-    private int dgl[][] = {
+    private int animationModelArray[][] = {
         {
             11, 2, 9, 7, 1, 6, 10, 0, 5, 8, 
             3, 4
@@ -8145,42 +8233,40 @@ label0:
     };
     private int playerCount;
     private int lastPlayerCount;
-    private int dha;
+    private int drawUpdatesPerformed;
     private Mob playerBufferArray[];
-    private String dhc;
+    private String serverMessage;
     private int groundItemCount;
-    private boolean dhe;
-    private boolean dhf;
+    private boolean duelOpponentAccepted;
+    private boolean duelMyAccepted;
     private int wallObjectX[];
     private int wallObjectY[];
-    private boolean dhi;
-    private int dhj;
-    private int dhk;
+    private boolean serverMessageBoxTop;
+    private int fatigue;
+    private int fatigueSleeping;
     private int cameraRotationYAmount;
     private int cameraRotationYIncrement;
-    private int dhn[] = {
+    private int walkModel[] = {
         0, 1, 2, 1
     };
-    private boolean dia;
-    private int dib;
+    private boolean abuseModeratorMutePlayer;
+    private int itemsAboveHeadCount;
     private AudioReader audioPlayer;
-    private i wallObjectArray[];
-    private String die[];
+    private GameObject wallObjectArray[];
+    private String messagesArray[];
     private long duelOpponentHash;
     private Menu questMenu;
     int questMenuHandle;
-    int dii;
-    private boolean dij[];
-    private i objectArray[];
+    int questMenuSelected;
+    private boolean objectAlreadyInMenu[];
+    private GameObject objectArray[];
     private int selectedSpell;
     private boolean cameraAutoAngleDebug;
     private String lastLoginAddress;
-    private String dja;
-    private String djb;
     private Mob ourPlayer;
     int sectionX;
     int sectionY;
-    int djf;
+    int serverIndex;
     private int tradeItemsOurCount;
     private int tradeItemsOur[];
     private int tradeItemOurCount[];
@@ -8193,18 +8279,17 @@ label0:
     private int minimapRandomRotationX;
     private int minimapRandomRotationY;
     private int referId;
-    private int loginMenuNotUsedText;
     private int loginMenuOkButton;
     private int cameraRotation;
     private int combatStyle;
-    private final int dki[] = {
+    private final int appearanceSkinColours[] = {
         0xecded0, 0xccb366, 0xb38c40, 0x997326, 0x906020
     };
     private boolean configSoundOff;
-    private boolean dkk;
-    private int dkl;
-    private int dkm[];
-    private int dkn[];
+    private boolean menuShow;
+    private int duelOpponentItemCount;
+    private int duelOpponentItems[];
+    private int duelOpponentItemsCount[];
     private Menu loginMenuLogin;
     private int appearanceHeadLeftArrow;
     private int appearanceHeadRightArrow;
@@ -8221,21 +8306,21 @@ label0:
     private int appearanceAcceptButton;
     private byte soundData[];
     private boolean showBankBox;
-    private int dmc;
-    private int dmd;
-    private int dme;
+    private int shopItemSellPriceModifier;
+    private int shopItemBuyPriceModifier;
+    private int wildType;
     private int playerStatBase[];
     private long tradeConfirmOtherNameLong;
     private int showAbuseBox;
-    private int dmi[];
-    private int dmj[];
+    private int serverBankItems[];
+    private int serverBankItemCount[];
     private boolean showShopBox;
-    private int dml[];
-    private int dmm[];
-    private int dmn[];
-    private int dna[];
+    private int groundItemX[];
+    private int groundItemY[];
+    private int groundItemID[];
+    private int groundItemObjectVar[];
     private GameImageMiddleMan gameGraphics;
-    private int dnc;
+    private int maxBankItems;
     private int tradeConfirmOtherItemCount;
     private int tradeConfirmOtherItems[];
     private int tradeConfirmOtherItemsCount[];
@@ -8243,61 +8328,60 @@ label0:
     private EngineHandle engineHandle;
     private int areaX;
     private int areaY;
-    private int dnk;
+    private int layerIndex;
     private int mouseButtonClick;
     private Menu loginNewUser;
     private int walkArrayX[];
     private int walkArrayY[];
-    private int eab[] = {
+    private int combatModelArray2[] = {
         0, 0, 0, 0, 0, 1, 2, 1
     };
     private int cameraDistance;
-    private int ead[];
-    private int eae[];
-    private int eaf[];
-    private int eag[];
-    private boolean eah[];
-    private int eai;
-    private int eaj;
-    private int eak;
-    private int eal;
-    private int eam[];
-    private int ean[];
-    private final String eba[] = {
+    private int receivedMessageX[];
+    private int receivedMessageY[];
+    private int receivedMessageMidPoint[];
+    private int receivedMessageHeight[];
+    private boolean wallObjectAlreadyInMenu[];
+    private int wildX;
+    private int wildY;
+    private int layerModifier;
+    private int lastLayerIndex;
+    private int bankItems[];
+    private int bankItemCount[];
+    private final String skillName[] = {
         "Attack", "Defense", "Strength", "Hits", "Ranged", "Prayer", "Magic", "Cooking", "Woodcut", "Fletching", 
         "Fishing", "Firemaking", "Crafting", "Smithing", "Mining", "Herblaw", "Agility", "Thieving"
     };
     private int npcCount;
-    private int ebc;
+    private int lastNpcCount;
     private int combatTimeout;
     private int maxInventoryItems;
     private Graphics graphics;
-    private boolean ebg;
+    private boolean cameraZoom;
     private boolean errorLoading;
-    private int ebi;
     private int animationNumber;
-    private int ebk[];
-    private int ebl[];
+    private int itemAboveHeadX[];
+    private int itemAboveHeadY[];
     private int duelRetreat;
     private int duelMagic;
     private int duelPrayer;
     private int duelWeapons;
-    private boolean ecc;
+    private boolean showServerMessageBox;
     private int unreadMessages;
-    private int ece[];
+    private int playerBufferArrayIndexes[];
     private int loginScreen;
     private int tradeConfigItemCount;
     private int tradeConfirmItems[];
     private int tradeConfigItemsCount[];
-    private int ecj;
-    private int eck;
+    private int selectedBankItem;
+    private int selectedBankItemType;
     private boolean showDuelConfirmBox;
     private boolean duelConfirmOurAccepted;
     private int wallObjectDirection[];
     private int wallObjectID[];
-    private i gameDataObjects[];
-    private Mob edc[];
-    private int edd;
+    private GameObject gameDataObjects[];
+    private Mob lastNpcArray[];
+    private int modelUpdatingTimer;
     private int inventoryItemsCount;
     private int inventoryItems[];
     private int inventoryItemCount[];
@@ -8307,14 +8391,13 @@ label0:
     private Mob lastPlayerArray[];
     private boolean showTradeConfirmBox;
     private boolean tradeConfirmAccepted;
-    private int edn[];
+    private int playerStatExp[];
     private int loginButtonNewUser;
     private int loginMenuLoginButton;
     private int mouseTrailIndex;
     int mouseTrailX[];
     int mouseTrailY[];
     private boolean configOneMouseButton;
-    private int eeg;
     private boolean prayerOn[];
     private int lastLoginDays;
     private int loginMenuStatusText;
@@ -8322,12 +8405,12 @@ label0:
     private int loginMenuPasswordText;
     private int loginMenuOkLoginButton;
     private int loginMenuCancelButton;
-    private int efa[];
-    private int efb[];
-    private int efc[];
+    private int shopItems[];
+    private int shopItemCount[];
+    private int shopItemBasePriceModifier[];
     private int objectCount;
     private int duelOpponentStakeCount;
-    private int eff[];
+    private int duelOpponentStakeItem[];
     private int duelOutStakeItemCount[];
     private int baseInventoryPic;
     private int baseScrollPic;
@@ -8336,46 +8419,45 @@ label0:
     private int baseTexturePic;
     private int subTexturePic;
     private int baseLoginScreenBackgroundPic;
-    private int ega;
-    private int egb;
-    private int egc;
-    private int egd;
-    private int ege[];
+    private int sectionLowerX;
+    private int sectionLowerY;
+    private int sectionUpperX;
+    private int sectionUpperY;
+    private int equipmentStatus[];
     private int drawMenuTab;
-    private int egg;
-    String egh[];
+    private int receivedMessagesCount;
+    String receivedMessages[];
     private boolean members;
     private int cameraRotateTime;
     private int questionMenuCount;
     private int cameraRotationXAmount;
     private int cameraRotationXIncrement;
     private int teleBubbleTime[];
-    private final String eha[] = {
+    private final String gearStats[] = {
         "Armour", "WeaponAim", "WeaponPower", "Magic", "Prayer"
     };
     private int logoutTimer;
     private int wallObjectCount;
     private int magicLoc;
     private int loggedIn;
-    private boolean ehf[];
+    private int questStage[];
     private int teleBubbleType[];
     private int experienceList[];
-    private int ehi;
-    private int ehj;
-    private int ehk;
+    private int lastModelFireLightningSpellNumber;
+    private int lastModelTorchNumber;
+    private int lastModelClawSpellNumber;
     private int chatTabAllMsgFlash;
     private int chatTabHistoryFlash;
     private int chatTabQuestFlash;
     private int chatTabPrivateFlash;
-    private int eib[];
-    private int eic;
+    private int messagesTimeout[];
+    private int projectileRange;
     private final int appearanceTopBottomColours[] = {
         0xff0000, 0xff8000, 0xffe000, 0xa0e000, 57344, 32768, 41088, 45311, 33023, 12528, 
         0xe000e0, 0x303030, 0x604000, 0x805000, 0xffffff
     };
     private int showFriendsBox;
-    private String eif;
-    private int eig;
+    private int teleBubbleCount;
     private boolean memoryError;
     private final int appearanceHairColours[] = {
         0xffc030, 0xffa040, 0x805030, 0x604020, 0x303030, 0xff6020, 0xff4000, 0xffffff, 65280, 65535
@@ -8386,56 +8468,61 @@ label0:
     private int duelOurStakeCount;
     private int duelOurStakeItem[];
     private int duelOurStakeItemCount[];
-    private int ejb;
-    private int ejc;
-    private int ejd;
-    private int eje;
+    private int menuX;
+    private int menuY;
+    private int menuWidth;
+    private int menuHeight;
     private int menuOptionsCount;
     private Camera gameCamera;
     private Menu friendsMenu;
     int friendsMenuHandle;
     int friendsIgnoreMenuSelected;
     long pmTarget;
-    private int ejl;
+    private int healthBarVisibleCount;
     private String menuText2[];
     private int sleepWordDelayTimer;
     private int mouseButtonHeldTime;
     private int mouseClickedHeldInTradeDuelBox;
     private String loginUsername;
     private String loginPassword;
-    private String eke;
-    private int ekf;
+    private String duelOpponent;
+    private int bankPage;
     private int lastChangedRecoveryDays;
     private boolean codebaseError;
     private Menu loginMenuFirst;
-    private int ekj[];
-    private int ekk[];
-    private int ekl[];
+    private int healthBarX[];
+    private int healthBarY[];
+    private int healthBarMissing[];
     private int objectX[];
     private int objectY[];
     private int objectID[];
-    private int elb[];
+    private int objectType[];
     private int reportAbuseOptionSelected;
-    private boolean eld;
+    private boolean showDuelBox;
     private Mob npcAttackingArray[];
     private int lastLoginIPInt;
-    private int elg;
-    private int elh[];
+    private int serverBankItemsCount;
+    private int teleBubbleY[];
     private int cameraAutoAngle;
     private int cameraAutoRotationAmoun;
-    private boolean elk;
-    private int ell[];
-    private int elm;
+    private boolean loadArea;
+    private int teleBubbleX[];
+    private int bankItemsCount;
     private boolean showAppearanceWindow;
-    private int ema;
+    private int questPoints;
     private int actionPictureType;
     int walkMouseX;
     int walkMouseY;
-    private int eme[] = {
+    private int combatModelArray1[] = {
         0, 1, 2, 1, 0, 0, 0, 0
     };
-    private final String emf[] = {
-        "Where were you born?", "What was your first teachers name?", "What is your fathers middle name?", "Who was your first best friend?", "What is your favourite vacation spot?", "What is your mothers middle name?", "What was your first pets name?", "What was the name of your first school?", "What is your mothers maiden name?", "Who was your first boyfriend/girlfriend?", 
-        "What was the first computer game you purchased?", "Who is your favourite actor/actress?", "Who is your favourite author?", "Who is your favourite musician?", "Who is your favourite cartoon character?", "What is your favourite book?", "What is your favourite food?", "What is your favourite movie?"
-    };
+    
+    private boolean fogOfWar;
+    private boolean combatWindow;
+    private boolean showRoofs;
+    private boolean autoScreenshot;
+    private String usedQuestName[];
+    private int subDaysLeft;
+    private int shopItemSellPrice[];
+    private int shopItemBuyPrice[];
 }

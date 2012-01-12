@@ -13,86 +13,85 @@ public class StreamClass extends PacketConstruction
     public StreamClass(Socket socket, GameApplet a1)
         throws IOException
     {
-        bae = false;
-        bai = true;
-        bad = socket;
-        bab = socket.getInputStream();
-        bac = socket.getOutputStream();
-        bai = false;
+        socketClosing = false;
+        socketClosed = true;
+        this.socket = socket;
+        inputStream = socket.getInputStream();
+        outputStream = socket.getOutputStream();
+        socketClosed = false;
         a1.startThread(this);
     }
 
     public void closeStream()
     {
         super.closeStream();
-        bae = true;
+        socketClosing = true;
         try
         {
-            if(bab != null)
-                bab.close();
-            if(bac != null)
-                bac.close();
-            if(bad != null)
-                bad.close();
+            if(inputStream != null)
+                inputStream.close();
+            if(outputStream != null)
+                outputStream.close();
+            if(socket != null)
+                socket.close();
         }
         catch(IOException _ex)
         {
             System.out.println("Error closing stream");
         }
-        bai = true;
+        socketClosed = true;
         synchronized(this)
         {
             notify();
         }
-        baf = null;
+        buffer = null;
     }
 
-    public int readInputStream()
+    public int read()
         throws IOException
     {
-        if(bae)
+        if(socketClosing)
             return 0;
         else
-            return bab.read();
+            return inputStream.read();
     }
 
-    public int bal()
+    public int available()
         throws IOException
     {
-        if(bae)
+        if(socketClosing)
             return 0;
         else
-            return bab.available();
+            return inputStream.available();
     }
 
-    public void bam(int arg0, int arg1, byte arg2[])
+    public void readInputStream(int arg0, int arg1, byte arg2[])
         throws IOException
     {
-        if(bae)
+        if(socketClosing)
             return;
         int i = 0;
-        boolean flag = false;
         int j;
         for(; i < arg0; i += j)
-            if((j = bab.read(arg2, i + arg1, arg0 - i)) <= 0)
+            if((j = inputStream.read(arg2, i + arg1, arg0 - i)) <= 0)
                 throw new IOException("EOF");
 
     }
 
-    public void ban(byte arg0[], int arg1, int arg2)
+    public void writeToBuffer(byte arg0[], int arg1, int arg2)
         throws IOException
     {
-        if(bae)
+        if(socketClosing)
             return;
-        if(baf == null)
-            baf = new byte[5000];
+        if(buffer == null)
+            buffer = new byte[5000];
         synchronized(this)
         {
             for(int i = 0; i < arg2; i++)
             {
-                baf[bah] = arg0[i + arg1];
-                bah = (bah + 1) % 5000;
-                if(bah == (bag + 4900) % 5000)
+                buffer[offset] = arg0[i + arg1];
+                offset = (offset + 1) % 5000;
+                if(offset == (dataWritten + 4900) % 5000)
                     throw new IOException("buffer overflow");
             }
 
@@ -102,58 +101,58 @@ public class StreamClass extends PacketConstruction
 
     public void run()
     {
-        while(!bai) 
+        while(!socketClosed) 
         {
             int i;
             int j;
             synchronized(this)
             {
-                if(bah == bag)
+                if(offset == dataWritten)
                     try
                     {
                         wait();
                     }
                     catch(InterruptedException _ex) { }
-                if(bai)
+                if(socketClosed)
                     return;
-                j = bag;
-                if(bah >= bag)
-                    i = bah - bag;
+                j = dataWritten;
+                if(offset >= dataWritten)
+                    i = offset - dataWritten;
                 else
-                    i = 5000 - bag;
+                    i = 5000 - dataWritten;
             }
             if(i > 0)
             {
                 try
                 {
-                    bac.write(baf, j, i);
+                    outputStream.write(buffer, j, i);
                 }
                 catch(IOException ioexception)
                 {
-                    super.hck = true;
-                    super.hcj = "Twriter:" + ioexception;
+                    super.error = true;
+                    super.errorText = "Twriter:" + ioexception;
                 }
-                bag = (bag + i) % 5000;
+                dataWritten = (dataWritten + i) % 5000;
                 try
                 {
-                    if(bah == bag)
-                        bac.flush();
+                    if(offset == dataWritten)
+                        outputStream.flush();
                 }
                 catch(IOException ioexception1)
                 {
-                    super.hck = true;
-                    super.hcj = "Twriter:" + ioexception1;
+                    super.error = true;
+                    super.errorText = "Twriter:" + ioexception1;
                 }
             }
         }
     }
 
-    private InputStream bab;
-    private OutputStream bac;
-    private Socket bad;
-    private boolean bae;
-    private byte baf[];
-    private int bag;
-    private int bah;
-    private boolean bai;
+    private InputStream inputStream;
+    private OutputStream outputStream;
+    private Socket socket;
+    private boolean socketClosing;
+    private byte buffer[];
+    private int dataWritten;
+    private int offset;
+    private boolean socketClosed;
 }

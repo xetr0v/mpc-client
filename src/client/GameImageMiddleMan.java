@@ -30,7 +30,7 @@ public final class GameImageMiddleMan extends GameImage
         }
         if(k1 >= 20000)
         {
-            gameReference.fdd(i, l, i1, j1, k1 - 20000, l1, i2);
+            gameReference.drawNPC(i, l, i1, j1, k1 - 20000, l1, i2);
             return;
         }
         if(k1 >= 5000)

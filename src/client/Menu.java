@@ -19,7 +19,7 @@ public class Menu
         gbb = new boolean[i];
         gbg = new boolean[i];
         gbc = new int[i];
-        gbd = new int[i];
+        listLength = new int[i];
         gbe = new int[i];
         gbf = new int[i];
         gbh = new int[i];
@@ -94,7 +94,7 @@ public class Menu
         }
     }
 
-    public void gec(int arg0)
+    public void keyPress(int arg0)
     {
         if(arg0 == 0)
             return;
@@ -140,7 +140,7 @@ public class Menu
                     gel(gbh[i], gbi[i], gbk[i]);
                 else
                 if(gbj[i] == 4)
-                    gem(i, gbh[i], gbi[i], gbk[i], gbl[i], gbn[i], gcb[i], gbd[i], gbc[i]);
+                    gem(i, gbh[i], gbi[i], gbk[i], gbl[i], gbn[i], gcb[i], listLength[i], gbc[i]);
                 else
                 if(gbj[i] == 5 || gbj[i] == 6)
                     geh(i, gbh[i], gbi[i], gbk[i], gbl[i], gca[i], gbn[i]);
@@ -152,7 +152,7 @@ public class Menu
                     gfb(i, gbh[i], gbi[i], gbn[i], gcb[i]);
                 else
                 if(gbj[i] == 9)
-                    gfc(i, gbh[i], gbi[i], gbk[i], gbl[i], gbn[i], gcb[i], gbd[i], gbc[i]);
+                    gfc(i, gbh[i], gbi[i], gbk[i], gbl[i], gbn[i], gcb[i], listLength[i], gbc[i]);
                 else
                 if(gbj[i] == 11)
                     gej(gbh[i], gbi[i], gbk[i], gbl[i]);
@@ -186,7 +186,7 @@ public class Menu
 
     protected void gef(int i, int k, int l, String s, int i1)
     {
-        int j1 = l + gaj.ced(i1) / 3;
+        int j1 = l + gaj.textHeightNumber(i1) / 3;
         geg(i, k, j1, s, i1);
     }
 
@@ -223,7 +223,7 @@ public class Menu
         }
         if(gcg == arg0)
             arg5 = arg5 + "*";
-        int k = arg2 + gaj.ced(arg6) / 3;
+        int k = arg2 + gaj.textHeightNumber(arg6) / 3;
         geg(arg0, arg1, k, arg5, arg6);
     }
 
@@ -281,7 +281,7 @@ public class Menu
     protected void gem(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, String arg6[], 
             int arg7, int arg8)
     {
-        int i = arg4 / gaj.ced(arg5);
+        int i = arg4 / gaj.textHeightNumber(arg5);
         if(arg8 > arg7 - i)
             arg8 = arg7 - i;
         if(arg8 < 0)
@@ -322,12 +322,12 @@ public class Menu
             k1 = ((arg4 - 27 - i1) * arg8) / (arg7 - i);
             gen(arg1, arg2, arg3, arg4, k1, i1);
         }
-        int l = arg4 - i * gaj.ced(arg5);
-        int j1 = arg2 + (gaj.ced(arg5) * 5) / 6 + l / 2;
+        int l = arg4 - i * gaj.textHeightNumber(arg5);
+        int j1 = arg2 + (gaj.textHeightNumber(arg5) * 5) / 6 + l / 2;
         for(int l1 = arg8; l1 < arg7; l1++)
         {
             geg(arg0, arg1 + 2, j1, arg6[l1], arg5);
-            j1 += gaj.ced(arg5) - gdm;
+            j1 += gaj.textHeightNumber(arg5) - chatMenuTextHeightMod;
             if(j1 >= arg2 + arg4)
                 return;
         }
@@ -360,7 +360,7 @@ public class Menu
         }
 
         int i1 = arg1 - i / 2;
-        int j1 = arg2 + gaj.ced(arg3) / 3;
+        int j1 = arg2 + gaj.textHeightNumber(arg3) / 3;
         for(int k1 = 0; k1 < k; k1++)
         {
             int l1;
@@ -368,7 +368,7 @@ public class Menu
                 l1 = 0xffffff;
             else
                 l1 = 0;
-            if(gcc >= i1 && gcc <= i1 + gaj.textWidth(arg4[k1], arg3) && gcd <= j1 && gcd > j1 - gaj.ced(arg3))
+            if(gcc >= i1 && gcc <= i1 + gaj.textWidth(arg4[k1], arg3) && gcd <= j1 && gcd > j1 - gaj.textHeightNumber(arg3))
             {
                 if(gbg[arg0])
                     l1 = 0x808080;
@@ -394,7 +394,7 @@ public class Menu
     protected void gfb(int arg0, int arg1, int arg2, int arg3, String arg4[])
     {
         int i = arg4.length;
-        int k = arg2 - (gaj.ced(arg3) * (i - 1)) / 2;
+        int k = arg2 - (gaj.textHeightNumber(arg3) * (i - 1)) / 2;
         for(int l = 0; l < i; l++)
         {
             int i1;
@@ -403,7 +403,7 @@ public class Menu
             else
                 i1 = 0;
             int j1 = gaj.textWidth(arg4[l], arg3);
-            if(gcc >= arg1 - j1 / 2 && gcc <= arg1 + j1 / 2 && gcd - 2 <= k && gcd - 2 > k - gaj.ced(arg3))
+            if(gcc >= arg1 - j1 / 2 && gcc <= arg1 + j1 / 2 && gcd - 2 <= k && gcd - 2 > k - gaj.textHeightNumber(arg3))
             {
                 if(gbg[arg0])
                     i1 = 0x808080;
@@ -421,7 +421,7 @@ public class Menu
                 else
                     i1 = 0xc00000;
             gaj.drawString(arg4[l], arg1 - j1 / 2, k, arg3, i1);
-            k += gaj.ced(arg3);
+            k += gaj.textHeightNumber(arg3);
         }
 
     }
@@ -429,7 +429,7 @@ public class Menu
     protected void gfc(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, String arg6[], 
             int arg7, int arg8)
     {
-        int i = arg4 / gaj.ced(arg5);
+        int i = arg4 / gaj.textHeightNumber(arg5);
         if(i < arg7)
         {
             int k = (arg1 + arg3) - 12;
@@ -470,8 +470,8 @@ public class Menu
             gbc[arg0] = 0;
         }
         gbf[arg0] = -1;
-        int l = arg4 - i * gaj.ced(arg5);
-        int j1 = arg2 + (gaj.ced(arg5) * 5) / 6 + l / 2;
+        int l = arg4 - i * gaj.textHeightNumber(arg5);
+        int j1 = arg2 + (gaj.textHeightNumber(arg5) * 5) / 6 + l / 2;
         for(int l1 = arg8; l1 < arg7; l1++)
         {
             int j2;
@@ -479,7 +479,7 @@ public class Menu
                 j2 = 0xffffff;
             else
                 j2 = 0;
-            if(gcc >= arg1 + 2 && gcc <= arg1 + 2 + gaj.textWidth(arg6[l1], arg5) && gcd - 2 <= j1 && gcd - 2 > j1 - gaj.ced(arg5))
+            if(gcc >= arg1 + 2 && gcc <= arg1 + 2 + gaj.textWidth(arg6[l1], arg5) && gcd - 2 <= j1 && gcd - 2 > j1 - gaj.textHeightNumber(arg5))
             {
                 if(gbg[arg0])
                     j2 = 0x808080;
@@ -495,7 +495,7 @@ public class Menu
             if(gbe[arg0] == l1 && gdg)
                 j2 = 0xff0000;
             gaj.drawString(arg6[l1], arg1 + 2, j1, arg5, j2);
-            j1 += gaj.ced(arg5);
+            j1 += gaj.textHeightNumber(arg5);
             if(j1 >= arg2 + arg4)
                 return;
         }
@@ -527,7 +527,7 @@ public class Menu
         return gak++;
     }
 
-    public int gff(int i, int k, int l, int i1)
+    public int drawCurvedBox(int i, int k, int l, int i1)
     {
         gbj[gak] = 11;
         gam[gak] = true;
@@ -539,7 +539,7 @@ public class Menu
         return gak++;
     }
 
-    public int gfg(int i, int k, int l)
+    public int drawArrow(int i, int k, int l)
     {
         int i1 = gaj.bmf[l];
         int j1 = gaj.bmg[l];
@@ -566,7 +566,7 @@ public class Menu
         gbg[gak] = flag;
         gbn[gak] = j1;
         gbm[gak] = k1;
-        gbd[gak] = 0;
+        listLength[gak] = 0;
         gbc[gak] = 0;
         gcb[gak] = new String[k1];
         return gak++;
@@ -621,7 +621,7 @@ public class Menu
         gbl[gak] = i1;
         gbm[gak] = k1;
         gcb[gak] = new String[k1];
-        gbd[gak] = 0;
+        listLength[gak] = 0;
         gbc[gak] = 0;
         gbe[gak] = -1;
         gbf[gak] = -1;
@@ -642,7 +642,7 @@ public class Menu
 
     public void clearList(int i)
     {
-        gbd[i] = 0;
+        listLength[i] = 0;
     }
 
     public void switchList(int i)
@@ -654,17 +654,17 @@ public class Menu
     public void addListItem(int i, int k, String s)
     {
         gcb[i][k] = s;
-        if(k + 1 > gbd[i])
-            gbd[i] = k + 1;
+        if(k + 1 > listLength[i])
+            listLength[i] = k + 1;
     }
 
-    public void ggb(int arg0, String arg1, boolean arg2)
+    public void addMessage(int arg0, String arg1, boolean arg2)
     {
-        int i = gbd[arg0]++;
+        int i = listLength[arg0]++;
         if(i >= gbm[arg0])
         {
             i--;
-            gbd[arg0]--;
+            listLength[arg0]--;
             for(int k = 0; k < i; k++)
                 gcb[arg0][k] = gcb[arg0][k + 1];
 
@@ -716,7 +716,7 @@ public class Menu
     public boolean gba[];
     public boolean gbb[];
     public int gbc[];
-    public int gbd[];
+    public int listLength[];
     public int gbe[];
     public int gbf[];
     boolean gbg[];
@@ -753,6 +753,6 @@ public class Menu
     public static int gdj = 114;
     public static int gdk = 114;
     public static int gdl = 176;
-    public static int gdm;
+    public static int chatMenuTextHeightMod;
 
 }

@@ -487,7 +487,7 @@ public class GameApplet extends Applet
         try
         {
             drawLoadingBarText(startPercentage, "Loading " + fileTitle + " - 0%");
-            java.io.InputStream inputstream = DataOperations.getInputStream(filename);
+            java.io.InputStream inputstream = DataOperations.openInputStream(filename);
             DataInputStream datainputstream = new DataInputStream(inputstream);
             byte abyte2[] = new byte[6];
             datainputstream.readFully(abyte2, 0, 6);

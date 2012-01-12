@@ -5,17 +5,17 @@ package client;
 
 import java.io.*;
 
-public class i
+public class GameObject
 {
 
-    public i(int arg0, int arg1)
+    public GameObject(int arg0, int arg1)
     {
         cgn = 1;
         cha = true;
         chh = true;
         chi = false;
-        chj = false;
-        chk = -1;
+        isGiantCrystal = false;
+        index = -1;
         chn = false;
         cia = false;
         cib = false;
@@ -37,14 +37,14 @@ public class i
 
     }
 
-    public i(int j, int k, boolean flag, boolean flag1, boolean flag2, boolean flag3, boolean flag4)
+    public GameObject(int j, int k, boolean flag, boolean flag1, boolean flag2, boolean flag3, boolean flag4)
     {
         cgn = 1;
         cha = true;
         chh = true;
         chi = false;
-        chj = false;
-        chk = -1;
+        isGiantCrystal = false;
+        index = -1;
         chn = false;
         cia = false;
         cib = false;
@@ -92,7 +92,7 @@ public class i
         if(!cic)
         {
             chm = new byte[arg1];
-            chl = new int[arg1];
+            entityType = new int[arg1];
         }
         if(chn)
         {
@@ -156,14 +156,14 @@ public class i
             cfh = 0;
     }
 
-    public i(byte arg0[], int arg1, boolean arg2)
+    public GameObject(byte arg0[], int arg1, boolean arg2)
     {
         cgn = 1;
         cha = true;
         chh = true;
         chi = false;
-        chj = false;
-        chk = -1;
+        isGiantCrystal = false;
+        index = -1;
         chn = false;
         cia = false;
         cib = false;
@@ -178,27 +178,27 @@ public class i
         cld = 256;
         cle = 512;
         clf = 32;
-        int j = DataOperations.fmi(arg0, arg1);
+        int j = DataOperations.getShort(arg0, arg1);
         arg1 += 2;
-        int k = DataOperations.fmi(arg0, arg1);
+        int k = DataOperations.getShort(arg0, arg1);
         arg1 += 2;
         cli(j, k);
         cje = new int[k][1];
         for(int l = 0; l < j; l++)
         {
-            cil[l] = DataOperations.fml(arg0, arg1);
+            cil[l] = DataOperations.getShortSigned(arg0, arg1);
             arg1 += 2;
         }
 
         for(int i1 = 0; i1 < j; i1++)
         {
-            cim[i1] = DataOperations.fml(arg0, arg1);
+            cim[i1] = DataOperations.getShortSigned(arg0, arg1);
             arg1 += 2;
         }
 
         for(int j1 = 0; j1 < j; j1++)
         {
-            cin[j1] = DataOperations.fml(arg0, arg1);
+            cin[j1] = DataOperations.getShortSigned(arg0, arg1);
             arg1 += 2;
         }
 
@@ -208,7 +208,7 @@ public class i
 
         for(int l1 = 0; l1 < k; l1++)
         {
-            cge[l1] = DataOperations.fml(arg0, arg1);
+            cge[l1] = DataOperations.getShortSigned(arg0, arg1);
             arg1 += 2;
             if(cge[l1] == 32767)
                 cge[l1] = cij;
@@ -216,7 +216,7 @@ public class i
 
         for(int i2 = 0; i2 < k; i2++)
         {
-            cgf[i2] = DataOperations.fml(arg0, arg1);
+            cgf[i2] = DataOperations.getShortSigned(arg0, arg1);
             arg1 += 2;
             if(cgf[i2] == 32767)
                 cgf[i2] = cij;
@@ -240,7 +240,7 @@ public class i
                     cgd[l2][i3] = arg0[arg1++] & 0xff;
                 } else
                 {
-                    cgd[l2][i3] = DataOperations.fmi(arg0, arg1);
+                    cgd[l2][i3] = DataOperations.getShort(arg0, arg1);
                     arg1 += 2;
                 }
 
@@ -250,14 +250,14 @@ public class i
         cgn = 1;
     }
 
-    public i(String arg0)
+    public GameObject(String arg0)
     {
         cgn = 1;
         cha = true;
         chh = true;
         chi = false;
-        chj = false;
-        chk = -1;
+        isGiantCrystal = false;
+        index = -1;
         chn = false;
         cia = false;
         cib = false;
@@ -277,7 +277,7 @@ public class i
         byte abyte0[] = null;
         try
         {
-            java.io.InputStream inputstream = DataOperations.getInputStream(arg0);
+            java.io.InputStream inputstream = DataOperations.openInputStream(arg0);
             DataInputStream datainputstream = new DataInputStream(inputstream);
             abyte0 = new byte[3];
             clg = 0;
@@ -337,14 +337,14 @@ public class i
         cgn = 1;
     }
 
-    public i(i ai[], int j, boolean flag, boolean flag1, boolean flag2, boolean flag3)
+    public GameObject(GameObject ai[], int j, boolean flag, boolean flag1, boolean flag2, boolean flag3)
     {
         cgn = 1;
         cha = true;
         chh = true;
         chi = false;
-        chj = false;
-        chk = -1;
+        isGiantCrystal = false;
+        index = -1;
         chn = false;
         cia = false;
         cib = false;
@@ -366,14 +366,14 @@ public class i
         clm(ai, j, false);
     }
 
-    public i(i ai[], int j)
+    public GameObject(GameObject ai[], int j)
     {
         cgn = 1;
         cha = true;
         chh = true;
         chi = false;
-        chj = false;
-        chk = -1;
+        isGiantCrystal = false;
+        index = -1;
         chn = false;
         cia = false;
         cib = false;
@@ -391,7 +391,7 @@ public class i
         clm(ai, j, true);
     }
 
-    public void clm(i arg0[], int arg1, boolean arg2)
+    public void clm(GameObject arg0[], int arg1, boolean arg2)
     {
         int j = 0;
         int k = 0;
@@ -406,7 +406,7 @@ public class i
             cje = new int[j][];
         for(int i1 = 0; i1 < arg1; i1++)
         {
-            i j1 = arg0[i1];
+            GameObject j1 = arg0[i1];
             j1.cni();
             clf = j1.clf;
             cle = j1.cle;
@@ -495,7 +495,7 @@ public class i
         }
     }
 
-    public i[] cmc(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, 
+    public GameObject[] cmc(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, 
             boolean arg7)
     {
         cni();
@@ -524,12 +524,12 @@ public class i
             ai1[i3]++;
         }
 
-        i ai2[] = new i[arg5];
+        GameObject ai2[] = new GameObject[arg5];
         for(int j1 = 0; j1 < arg5; j1++)
         {
             if(ai[j1] > arg6)
                 ai[j1] = arg6;
-            ai2[j1] = new i(ai[j1], ai1[j1], true, true, true, arg7, true);
+            ai2[j1] = new GameObject(ai[j1], ai1[j1], true, true, true, arg7, true);
             ai2[j1].cle = cle;
             ai2[j1].clf = clf;
         }
@@ -556,7 +556,7 @@ public class i
         return ai2;
     }
 
-    public void cmd(i arg0, int arg1[], int arg2, int arg3)
+    public void cmd(GameObject arg0, int arg1[], int arg2, int arg3)
     {
         int ai[] = new int[arg2];
         for(int j = 0; j < arg2; j++)
@@ -568,7 +568,7 @@ public class i
 
         int l = arg0.cmb(arg2, ai, cge[arg3], cgf[arg3]);
         if(!arg0.cic && !cic)
-            arg0.chl[l] = chl[arg3];
+            arg0.entityType[l] = entityType[arg3];
         arg0.cgi[l] = cgi[arg3];
         arg0.cgh[l] = cgh[arg3];
         arg0.cgg[l] = cgg[arg3];
@@ -1039,26 +1039,26 @@ public class i
         ckm = 0;
     }
 
-    public i cnj()
+    public GameObject cnj()
     {
-        i ai[] = new i[1];
+        GameObject ai[] = new GameObject[1];
         ai[0] = this;
-        i j = new i(ai, 1);
+        GameObject j = new GameObject(ai, 1);
         j.cgm = cgm;
-        j.chj = chj;
+        j.isGiantCrystal = isGiantCrystal;
         return j;
     }
 
-    public i cnk(boolean flag, boolean flag1, boolean flag2, boolean flag3)
+    public GameObject cnk(boolean flag, boolean flag1, boolean flag2, boolean flag3)
     {
-        i ai[] = new i[1];
+        GameObject ai[] = new GameObject[1];
         ai[0] = this;
-        i j = new i(ai, 1, flag, flag1, flag2, flag3);
+        GameObject j = new GameObject(ai, 1, flag, flag1, flag2, flag3);
         j.cgm = cgm;
         return j;
     }
 
-    public void cnl(i j)
+    public void cnl(GameObject j)
     {
         cka = j.cka;
         ckb = j.ckb;
@@ -1112,9 +1112,9 @@ public class i
     public int chg;
     public boolean chh;
     public boolean chi;
-    public boolean chj;
-    public int chk;
-    public int chl[];
+    public boolean isGiantCrystal;
+    public int index;
+    public int entityType[];
     public byte chm[];
     private boolean chn;
     public boolean cia;

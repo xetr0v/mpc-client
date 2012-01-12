@@ -4,10 +4,10 @@ package client;
 // Decompiler options: packimports(3) 
 
 
-class o
+class DataFileVariables
 {
 
-    o()
+    DataFileVariables()
     {
         afk = new int[256];
         afm = new int[257];

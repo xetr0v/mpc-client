@@ -4,10 +4,10 @@ package client;
 // Decompiler options: packimports(3) 
 
 
-public class m
+public class CameraVariable
 {
 
-    public m()
+    public CameraVariable()
     {
     }
 

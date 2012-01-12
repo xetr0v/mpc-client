@@ -43,7 +43,7 @@ public class GameAppletMiddleMan extends GameApplet
             long l = DataOperations.nameToHash(user);
             streamClass.createPacket(32);
             streamClass.addByte((int)(l >> 16 & 31L));
-            streamClass.addString("com.jagex.runescape.client.Client");
+            streamClass.addString("You must enter both a username and a password - Please try again");// TODO not used server-side
             streamClass.flush();
             long sessionId = streamClass.readLong();
             if(sessionId == 0L)
@@ -70,7 +70,7 @@ public class GameAppletMiddleMan extends GameApplet
             streamClass.createPacket(77);
             streamClass.addBytes(data, 0, data.length);
             streamClass.flush();
-            int loginCode = streamClass.readInputStream();
+            int loginCode = streamClass.read();
             System.out.println("login response:" + loginCode);
             if(loginCode == 99)
             {
@@ -238,10 +238,13 @@ public class GameAppletMiddleMan extends GameApplet
         if(command == 48)
         {
             String s1 = new String(packetData, 1, length - 1);
-            handleServerMessage(s1);
+            displayMessage(s1);
+            return;
         }
-        if(command == 222)
+        if(command == 222) {
             requestLogout();
+            return;
+        }
         if(command == 136)
         {
             cantLogout();
@@ -249,11 +252,11 @@ public class GameAppletMiddleMan extends GameApplet
         }
         if(command == 249)
         {
-            friendsCount = DataOperations.getUnsignedByte(packetData[1]);
+            friendsCount = DataOperations.getByte(packetData[1]);
             for(int i = 0; i < friendsCount; i++)
             {
                 friendsList[i] = DataOperations.getLong(packetData, 2 + i * 9);
-                friendsWorld[i] = DataOperations.getUnsignedByte(packetData[10 + i * 9]);
+                friendsWorld[i] = DataOperations.getByte(packetData[10 + i * 9]);
             }
 
             reOrderFriendsList();
@@ -267,9 +270,9 @@ public class GameAppletMiddleMan extends GameApplet
                 if(friendsList[j1] == l)
                 {
                     if(friendsWorld[j1] == 0 && k != 0)
-                        handleServerMessage("@pri@" + DataOperations.hashToName(l) + " has logged in");
+                        displayMessage("@pri@" + DataOperations.hashToName(l) + " has logged in");
                     if(friendsWorld[j1] != 0 && k == 0)
-                        handleServerMessage("@pri@" + DataOperations.hashToName(l) + " has logged out");
+                        displayMessage("@pri@" + DataOperations.hashToName(l) + " has logged out");
                     friendsWorld[j1] = k;
                     length = 0;
                     reOrderFriendsList();
@@ -284,7 +287,7 @@ public class GameAppletMiddleMan extends GameApplet
         }
         if(command == 2)
         {
-            ignoresCount = DataOperations.getUnsignedByte(packetData[1]);
+            ignoresCount = DataOperations.getByte(packetData[1]);
             for(int j = 0; j < ignoresCount; j++)
                 ignoresList[j] = DataOperations.getLong(packetData, 2 + j * 8);
 
@@ -301,8 +304,8 @@ public class GameAppletMiddleMan extends GameApplet
         if(command == 170)
         {
             long l1 = DataOperations.getLong(packetData, 1);
-            String s = v.bytesToString(packetData, 9, length - 9);
-            handleServerMessage("@pri@" + DataOperations.hashToName(l1) + ": tells you " + s);
+            String s = ChatMessage.bytesToString(packetData, 9, length - 9);
+            displayMessage("@pri@" + DataOperations.hashToName(l1) + ": tells you " + s);
             return;
         }
         if(command == 211) {// TODO remove?
@@ -315,11 +318,8 @@ public class GameAppletMiddleMan extends GameApplet
             //bluePoints
             //redPoints
             return;
-        } else
-        {
-            handlePacket(command, length, packetData);
-            return;
         }
+        handlePacket(command, length, packetData);
     }
 
     private final void reOrderFriendsList()
@@ -431,7 +431,7 @@ public class GameAppletMiddleMan extends GameApplet
             break;
         }
 
-        handleServerMessage("@pri@" + DataOperations.hashToName(arg0) + " has been removed from your friends list");
+        displayMessage("@pri@" + DataOperations.hashToName(arg0) + " has been removed from your friends list");
     }
 
     protected final void sendPrivateMessage(long l, byte abyte0[], int i)
@@ -476,7 +476,7 @@ public class GameAppletMiddleMan extends GameApplet
     {
     }
 
-    protected void handleServerMessage(String s1)
+    protected void displayMessage(String s1)
     {
     }
 
@@ -490,7 +490,6 @@ public class GameAppletMiddleMan extends GameApplet
         ignoresList = new long[200];
     }
 
-    public static int VERSION_CLIENT = 1;
     public static int maxPacketReadCount;
     public String server;
     public int port;
@@ -511,6 +510,6 @@ public class GameAppletMiddleMan extends GameApplet
     public int blockDuel;
     public long sessionId;
     public int socketTimeout;
-    public int abj;
+    public int moderator;
 
 }
