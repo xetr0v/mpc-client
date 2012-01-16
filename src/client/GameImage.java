@@ -22,16 +22,16 @@ public class GameImage
         blk = blh = arg1;
         bli = arg0 * arg1;
         pixels = new int[arg0 * arg1];
-        bmc = new int[arg2][];
-        bml = new boolean[arg2];
+        pictureColors = new int[arg2][];
+        pictureRequiresShift = new boolean[arg2];
         bmd = new byte[arg2][];
         bme = new int[arg2][];
-        bmf = new int[arg2];
-        bmg = new int[arg2];
         pictureWidth = new int[arg2];
         pictureHeight = new int[arg2];
-        bmh = new int[arg2];
-        bmi = new int[arg2];
+        pictureAssumedWidth = new int[arg2];
+        pictureAssumedHeight = new int[arg2];
+        pictureOffsetX = new int[arg2];
+        pictureOffsetY = new int[arg2];
         if(arg0 > 1 && arg1 > 1 && arg3 != null)
         {
             bll = new DirectColorModel(32, 0xff0000, 65280, 255);
@@ -421,11 +421,11 @@ public class GameImage
 
     public void cleanUp()
     {
-        for(int i = 0; i < bmc.length; i++)
+        for(int i = 0; i < pictureColors.length; i++)
         {
-            bmc[i] = null;
-            bmf[i] = 0;
-            bmg[i] = 0;
+            pictureColors[i] = null;
+            pictureWidth[i] = 0;
+            pictureHeight[i] = 0;
             bmd[i] = null;
             bme[i] = null;
         }
@@ -451,41 +451,41 @@ public class GameImage
         int k1 = 2;
         for(int l1 = arg0; l1 < arg0 + arg3; l1++)
         {
-            bmh[l1] = arg2[i++] & 0xff;
-            bmi[l1] = arg2[i++] & 0xff;
-            bmf[l1] = DataOperations.getShort(arg2, i);
+            pictureOffsetX[l1] = arg2[i++] & 0xff;
+            pictureOffsetY[l1] = arg2[i++] & 0xff;
+            pictureWidth[l1] = DataOperations.getShort(arg2, i);
             i += 2;
-            bmg[l1] = DataOperations.getShort(arg2, i);
+            pictureHeight[l1] = DataOperations.getShort(arg2, i);
             i += 2;
             int i2 = arg2[i++] & 0xff;
-            int j2 = bmf[l1] * bmg[l1];
+            int j2 = pictureWidth[l1] * pictureHeight[l1];
             bmd[l1] = new byte[j2];
             bme[l1] = ai;
-            pictureWidth[l1] = k;
-            pictureHeight[l1] = l;
-            bmc[l1] = null;
-            bml[l1] = false;
-            if(bmh[l1] != 0 || bmi[l1] != 0)
-                bml[l1] = true;
+            pictureAssumedWidth[l1] = k;
+            pictureAssumedHeight[l1] = l;
+            pictureColors[l1] = null;
+            pictureRequiresShift[l1] = false;
+            if(pictureOffsetX[l1] != 0 || pictureOffsetY[l1] != 0)
+                pictureRequiresShift[l1] = true;
             if(i2 == 0)
             {
                 for(int k2 = 0; k2 < j2; k2++)
                 {
                     bmd[l1][k2] = arg1[k1++];
                     if(bmd[l1][k2] == 0)
-                        bml[l1] = true;
+                        pictureRequiresShift[l1] = true;
                 }
 
             } else
             if(i2 == 1)
             {
-                for(int l2 = 0; l2 < bmf[l1]; l2++)
+                for(int l2 = 0; l2 < pictureWidth[l1]; l2++)
                 {
-                    for(int i3 = 0; i3 < bmg[l1]; i3++)
+                    for(int i3 = 0; i3 < pictureHeight[l1]; i3++)
                     {
-                        bmd[l1][l2 + i3 * bmf[l1]] = arg1[k1++];
-                        if(bmd[l1][l2 + i3 * bmf[l1]] == 0)
-                            bml[l1] = true;
+                        bmd[l1][l2 + i3 * pictureWidth[l1]] = arg1[k1++];
+                        if(bmd[l1][l2 + i3 * pictureWidth[l1]] == 0)
+                            pictureRequiresShift[l1] = true;
                     }
 
                 }
@@ -495,56 +495,66 @@ public class GameImage
 
     }
 
-    public void cbk(int arg0, byte arg1[])
+    public void setSleepSprite(int pictureIndex, byte spriteData[])
     {
-        int ai[] = bmc[arg0] = new int[10200];
-        bmf[arg0] = 255;
-        bmg[arg0] = 40;
-        bmh[arg0] = 0;
-        bmi[arg0] = 0;
-        pictureWidth[arg0] = 255;
-        pictureHeight[arg0] = 40;
-        bml[arg0] = false;
-        int i = 0;
-        int k = 1;
-        int l;
-        for(l = 0; l < 255;)
-        {
-            int i1 = arg1[k++] & 0xff;
-            for(int k1 = 0; k1 < i1; k1++)
-                ai[l++] = i;
-
-            i = 0xffffff - i;
-        }
-
-        for(int j1 = 1; j1 < 40; j1++)
-        {
-            for(int l1 = 0; l1 < 255;)
+        int colors[] = pictureColors[pictureIndex] = new int[10200];
+        pictureWidth[pictureIndex] = 255;
+        pictureHeight[pictureIndex] = 40;
+        pictureOffsetX[pictureIndex] = 0;
+        pictureOffsetY[pictureIndex] = 0;
+        pictureAssumedWidth[pictureIndex] = 255;
+        pictureAssumedHeight[pictureIndex] = 40;
+        pictureRequiresShift[pictureIndex] = false;
+        int color = 0;
+        int dataOffset = 1;
+        int x;
+        try {
+            for(x = 0; x < 255;)
             {
-                int i2 = arg1[k++] & 0xff;
-                for(int j2 = 0; j2 < i2; j2++)
-                {
-                    ai[l] = ai[l - 255];
-                    l++;
-                    l1++;
-                }
-
-                if(l1 < 255)
-                {
-                    ai[l] = 0xffffff - ai[l - 255];
-                    l++;
-                    l1++;
-                }
+                int i1 = spriteData[dataOffset++] & 0xff;
+                System.out.println("off: " + dataOffset);
+                for(int k1 = 0; k1 < i1; k1++)
+                    colors[x++] = color;
+                System.out.println("x:" + x);
+    
+                color = 0xffffff - color;
             }
-
+    
+            for(int y = 1; y < 40; y++)
+            {
+                for(int l1 = 0; l1 < 255;)
+                {
+                    int i2 = spriteData[dataOffset++] & 0xff;
+                    System.out.println("off: " + dataOffset);
+                    for(int j2 = 0; j2 < i2; j2++)
+                    {
+                        System.out.println("x:" + x);
+                        colors[x] = colors[x - 255];
+                        x++;
+                        l1++;
+                    }
+    
+                    if(l1 < 255)
+                    {
+                        colors[x] = 0xffffff - colors[x - 255];
+                        System.out.println("x:" + x);
+                        x++;
+                        l1++;
+                    }
+                }
+    
+            }
+        } catch(Exception e) {
+            System.out.println(dataOffset);
+            e.printStackTrace();
         }
 
     }
 
     public void cbl(int arg0)
     {
-        int i = bmf[arg0] * bmg[arg0];
-        int ai[] = bmc[arg0];
+        int i = pictureWidth[arg0] * pictureHeight[arg0];
+        int ai[] = pictureColors[arg0];
         int ai1[] = new int[32768];
         for(int k = 0; k < i; k++)
         {
@@ -612,14 +622,14 @@ public class GameImage
 
         bmd[arg0] = abyte0;
         bme[arg0] = ai2;
-        bmc[arg0] = null;
+        pictureColors[arg0] = null;
     }
 
     public void loadImage(int arg0)
     {
         if(bmd[arg0] == null)
             return;
-        int i = bmf[arg0] * bmg[arg0];
+        int i = pictureWidth[arg0] * pictureHeight[arg0];
         byte abyte0[] = bmd[arg0];
         int ai[] = bme[arg0];
         int ai1[] = new int[i];
@@ -634,27 +644,27 @@ public class GameImage
             ai1[k] = l;
         }
 
-        bmc[arg0] = ai1;
+        pictureColors[arg0] = ai1;
         bmd[arg0] = null;
         bme[arg0] = null;
     }
 
     public void cbn(int arg0, int arg1, int arg2, int arg3, int arg4)
     {
-        bmf[arg0] = arg3;
-        bmg[arg0] = arg4;
-        bml[arg0] = false;
-        bmh[arg0] = 0;
-        bmi[arg0] = 0;
         pictureWidth[arg0] = arg3;
         pictureHeight[arg0] = arg4;
+        pictureRequiresShift[arg0] = false;
+        pictureOffsetX[arg0] = 0;
+        pictureOffsetY[arg0] = 0;
+        pictureAssumedWidth[arg0] = arg3;
+        pictureAssumedHeight[arg0] = arg4;
         int i = arg3 * arg4;
         int k = 0;
-        bmc[arg0] = new int[i];
+        pictureColors[arg0] = new int[i];
         for(int l = arg1; l < arg1 + arg3; l++)
         {
             for(int i1 = arg2; i1 < arg2 + arg4; i1++)
-                bmc[arg0][k++] = pixels[l + i1 * gameWidth];
+                pictureColors[arg0][k++] = pixels[l + i1 * gameWidth];
 
         }
 
@@ -662,20 +672,20 @@ public class GameImage
 
     public void cca(int arg0, int arg1, int arg2, int arg3, int arg4)
     {
-        bmf[arg0] = arg3;
-        bmg[arg0] = arg4;
-        bml[arg0] = false;
-        bmh[arg0] = 0;
-        bmi[arg0] = 0;
         pictureWidth[arg0] = arg3;
         pictureHeight[arg0] = arg4;
+        pictureRequiresShift[arg0] = false;
+        pictureOffsetX[arg0] = 0;
+        pictureOffsetY[arg0] = 0;
+        pictureAssumedWidth[arg0] = arg3;
+        pictureAssumedHeight[arg0] = arg4;
         int i = arg3 * arg4;
         int k = 0;
-        bmc[arg0] = new int[i];
+        pictureColors[arg0] = new int[i];
         for(int l = arg2; l < arg2 + arg4; l++)
         {
             for(int i1 = arg1; i1 < arg1 + arg3; i1++)
-                bmc[arg0][k++] = pixels[i1 + l * gameWidth];
+                pictureColors[arg0][k++] = pixels[i1 + l * gameWidth];
 
         }
 
@@ -683,15 +693,15 @@ public class GameImage
 
     public void drawPicture(int i, int k, int l)
     {
-        if(bml[l])
+        if(pictureRequiresShift[l])
         {
-            i += bmh[l];
-            k += bmi[l];
+            i += pictureOffsetX[l];
+            k += pictureOffsetY[l];
         }
         int i1 = i + k * gameWidth;
         int j1 = 0;
-        int k1 = bmg[l];
-        int l1 = bmf[l];
+        int k1 = pictureHeight[l];
+        int l1 = pictureWidth[l];
         int i2 = gameWidth - l1;
         int j2 = 0;
         if(k < bmm)
@@ -728,20 +738,20 @@ public class GameImage
         {
             byte0 = 2;
             i2 += gameWidth;
-            j2 += bmf[l];
+            j2 += pictureWidth[l];
             if((k & 1) != 0)
             {
                 i1 += gameWidth;
                 k1--;
             }
         }
-        if(bmc[l] == null)
+        if(pictureColors[l] == null)
         {
             cch(pixels, bmd[l], bme[l], j1, i1, l1, k1, i2, j2, byte0);
             return;
         } else
         {
-            ccg(pixels, bmc[l], 0, j1, i1, l1, k1, i2, j2, byte0);
+            ccg(pixels, pictureColors[l], 0, j1, i1, l1, k1, i2, j2, byte0);
             return;
         }
     }
@@ -750,26 +760,26 @@ public class GameImage
     {
         try
         {
-            int k1 = bmf[j1];
-            int l1 = bmg[j1];
+            int k1 = pictureWidth[j1];
+            int l1 = pictureHeight[j1];
             int i2 = 0;
             int j2 = 0;
             int k2 = (k1 << 16) / l;
             int l2 = (l1 << 16) / i1;
-            if(bml[j1])
+            if(pictureRequiresShift[j1])
             {
-                int i3 = pictureWidth[j1];
-                int k3 = pictureHeight[j1];
+                int i3 = pictureAssumedWidth[j1];
+                int k3 = pictureAssumedHeight[j1];
                 k2 = (i3 << 16) / l;
                 l2 = (k3 << 16) / i1;
-                i += ((bmh[j1] * l + i3) - 1) / i3;
-                k += ((bmi[j1] * i1 + k3) - 1) / k3;
-                if((bmh[j1] * l) % i3 != 0)
-                    i2 = (i3 - (bmh[j1] * l) % i3 << 16) / l;
-                if((bmi[j1] * i1) % k3 != 0)
-                    j2 = (k3 - (bmi[j1] * i1) % k3 << 16) / i1;
-                l = (l * (bmf[j1] - (i2 >> 16))) / i3;
-                i1 = (i1 * (bmg[j1] - (j2 >> 16))) / k3;
+                i += ((pictureOffsetX[j1] * l + i3) - 1) / i3;
+                k += ((pictureOffsetY[j1] * i1 + k3) - 1) / k3;
+                if((pictureOffsetX[j1] * l) % i3 != 0)
+                    i2 = (i3 - (pictureOffsetX[j1] * l) % i3 << 16) / l;
+                if((pictureOffsetY[j1] * i1) % k3 != 0)
+                    j2 = (k3 - (pictureOffsetY[j1] * i1) % k3 << 16) / i1;
+                l = (l * (pictureWidth[j1] - (i2 >> 16))) / i3;
+                i1 = (i1 * (pictureHeight[j1] - (j2 >> 16))) / k3;
             }
             int j3 = i + k * gameWidth;
             int l3 = gameWidth - l;
@@ -810,7 +820,7 @@ public class GameImage
                     i1--;
                 }
             }
-            cci(pixels, bmc[j1], 0, i2, j2, j3, l3, l, i1, k2, l2, k1, byte0);
+            cci(pixels, pictureColors[j1], 0, i2, j2, j3, l3, l, i1, k2, l2, k1, byte0);
             return;
         }
         catch(Exception _ex)
@@ -821,15 +831,15 @@ public class GameImage
 
     public void ccd(int i, int k, int l, int i1)
     {
-        if(bml[l])
+        if(pictureRequiresShift[l])
         {
-            i += bmh[l];
-            k += bmi[l];
+            i += pictureOffsetX[l];
+            k += pictureOffsetY[l];
         }
         int j1 = i + k * gameWidth;
         int k1 = 0;
-        int l1 = bmg[l];
-        int i2 = bmf[l];
+        int l1 = pictureHeight[l];
+        int i2 = pictureWidth[l];
         int j2 = gameWidth - i2;
         int k2 = 0;
         if(k < bmm)
@@ -866,20 +876,20 @@ public class GameImage
         {
             byte0 = 2;
             j2 += gameWidth;
-            k2 += bmf[l];
+            k2 += pictureWidth[l];
             if((k & 1) != 0)
             {
                 j1 += gameWidth;
                 l1--;
             }
         }
-        if(bmc[l] == null)
+        if(pictureColors[l] == null)
         {
             cck(pixels, bmd[l], bme[l], k1, j1, i2, l1, j2, k2, byte0, i1);
             return;
         } else
         {
-            ccj(pixels, bmc[l], 0, k1, j1, i2, l1, j2, k2, byte0, i1);
+            ccj(pixels, pictureColors[l], 0, k1, j1, i2, l1, j2, k2, byte0, i1);
             return;
         }
     }
@@ -888,26 +898,26 @@ public class GameImage
     {
         try
         {
-            int l1 = bmf[j1];
-            int i2 = bmg[j1];
+            int l1 = pictureWidth[j1];
+            int i2 = pictureHeight[j1];
             int j2 = 0;
             int k2 = 0;
             int l2 = (l1 << 16) / l;
             int i3 = (i2 << 16) / i1;
-            if(bml[j1])
+            if(pictureRequiresShift[j1])
             {
-                int j3 = pictureWidth[j1];
-                int l3 = pictureHeight[j1];
+                int j3 = pictureAssumedWidth[j1];
+                int l3 = pictureAssumedHeight[j1];
                 l2 = (j3 << 16) / l;
                 i3 = (l3 << 16) / i1;
-                i += ((bmh[j1] * l + j3) - 1) / j3;
-                k += ((bmi[j1] * i1 + l3) - 1) / l3;
-                if((bmh[j1] * l) % j3 != 0)
-                    j2 = (j3 - (bmh[j1] * l) % j3 << 16) / l;
-                if((bmi[j1] * i1) % l3 != 0)
-                    k2 = (l3 - (bmi[j1] * i1) % l3 << 16) / i1;
-                l = (l * (bmf[j1] - (j2 >> 16))) / j3;
-                i1 = (i1 * (bmg[j1] - (k2 >> 16))) / l3;
+                i += ((pictureOffsetX[j1] * l + j3) - 1) / j3;
+                k += ((pictureOffsetY[j1] * i1 + l3) - 1) / l3;
+                if((pictureOffsetX[j1] * l) % j3 != 0)
+                    j2 = (j3 - (pictureOffsetX[j1] * l) % j3 << 16) / l;
+                if((pictureOffsetY[j1] * i1) % l3 != 0)
+                    k2 = (l3 - (pictureOffsetY[j1] * i1) % l3 << 16) / i1;
+                l = (l * (pictureWidth[j1] - (j2 >> 16))) / j3;
+                i1 = (i1 * (pictureHeight[j1] - (k2 >> 16))) / l3;
             }
             int k3 = i + k * gameWidth;
             int i4 = gameWidth - l;
@@ -948,7 +958,7 @@ public class GameImage
                     i1--;
                 }
             }
-            ccl(pixels, bmc[j1], 0, j2, k2, k3, i4, l, i1, l2, i3, l1, byte0, k1);
+            ccl(pixels, pictureColors[j1], 0, j2, k2, k3, i4, l, i1, l2, i3, l1, byte0, k1);
             return;
         }
         catch(Exception _ex)
@@ -961,26 +971,26 @@ public class GameImage
     {
         try
         {
-            int l1 = bmf[j1];
-            int i2 = bmg[j1];
+            int l1 = pictureWidth[j1];
+            int i2 = pictureHeight[j1];
             int j2 = 0;
             int k2 = 0;
             int l2 = (l1 << 16) / l;
             int i3 = (i2 << 16) / i1;
-            if(bml[j1])
+            if(pictureRequiresShift[j1])
             {
-                int j3 = pictureWidth[j1];
-                int l3 = pictureHeight[j1];
+                int j3 = pictureAssumedWidth[j1];
+                int l3 = pictureAssumedHeight[j1];
                 l2 = (j3 << 16) / l;
                 i3 = (l3 << 16) / i1;
-                i += ((bmh[j1] * l + j3) - 1) / j3;
-                k += ((bmi[j1] * i1 + l3) - 1) / l3;
-                if((bmh[j1] * l) % j3 != 0)
-                    j2 = (j3 - (bmh[j1] * l) % j3 << 16) / l;
-                if((bmi[j1] * i1) % l3 != 0)
-                    k2 = (l3 - (bmi[j1] * i1) % l3 << 16) / i1;
-                l = (l * (bmf[j1] - (j2 >> 16))) / j3;
-                i1 = (i1 * (bmg[j1] - (k2 >> 16))) / l3;
+                i += ((pictureOffsetX[j1] * l + j3) - 1) / j3;
+                k += ((pictureOffsetY[j1] * i1 + l3) - 1) / l3;
+                if((pictureOffsetX[j1] * l) % j3 != 0)
+                    j2 = (j3 - (pictureOffsetX[j1] * l) % j3 << 16) / l;
+                if((pictureOffsetY[j1] * i1) % l3 != 0)
+                    k2 = (l3 - (pictureOffsetY[j1] * i1) % l3 << 16) / i1;
+                l = (l * (pictureWidth[j1] - (j2 >> 16))) / j3;
+                i1 = (i1 * (pictureHeight[j1] - (k2 >> 16))) / l3;
             }
             int k3 = i + k * gameWidth;
             int i4 = gameWidth - l;
@@ -1021,7 +1031,7 @@ public class GameImage
                     i1--;
                 }
             }
-            ccm(pixels, bmc[j1], 0, j2, k2, k3, i4, l, i1, l2, i3, l1, byte0, k1);
+            ccm(pixels, pictureColors[j1], 0, j2, k2, k3, i4, l, i1, l2, i3, l1, byte0, k1);
             return;
         }
         catch(Exception _ex)
@@ -1300,15 +1310,15 @@ public class GameImage
             }
 
         }
-        int i1 = -pictureWidth[arg2] / 2;
-        int j1 = -pictureHeight[arg2] / 2;
-        if(bml[arg2])
+        int i1 = -pictureAssumedWidth[arg2] / 2;
+        int j1 = -pictureAssumedHeight[arg2] / 2;
+        if(pictureRequiresShift[arg2])
         {
-            i1 += bmh[arg2];
-            j1 += bmi[arg2];
+            i1 += pictureOffsetX[arg2];
+            j1 += pictureOffsetY[arg2];
         }
-        int k1 = i1 + bmf[arg2];
-        int l1 = j1 + bmg[arg2];
+        int k1 = i1 + pictureWidth[arg2];
+        int l1 = j1 + pictureHeight[arg2];
         int i2 = k1;
         int j2 = j1;
         int k2 = i1;
@@ -1370,8 +1380,8 @@ public class GameImage
         int i7 = 0;
         int k7 = 0;
         int i8 = 0;
-        int j8 = bmf[arg2];
-        int k8 = bmg[arg2];
+        int j8 = pictureWidth[arg2];
+        int k8 = pictureHeight[arg2];
         i1 = 0;
         j1 = 0;
         i2 = j8 - 1;
@@ -1557,7 +1567,7 @@ public class GameImage
         }
 
         int l9 = k5 * i;
-        int ai[] = bmc[arg2];
+        int ai[] = pictureColors[arg2];
         for(int i10 = k5; i10 < l5; i10++)
         {
             int j10 = bnh[i10] >> 8;
@@ -1580,7 +1590,7 @@ public class GameImage
                 if(k10 > bnb)
                     k10 = bnb;
                 if(!interlace || (i10 & 1) == 0)
-                    if(!bml[arg2])
+                    if(!pictureRequiresShift[arg2])
                         cda(pixels, ai, 0, l9 + j10, l10, j11, i11, k11, j10 - k10, j8);
                     else
                         cdb(pixels, ai, 0, l9 + j10, l10, j11, i11, k11, j10 - k10, j8);
@@ -1632,24 +1642,24 @@ public class GameImage
                 k1 = 0xffffff;
             if(l1 == 0)
                 l1 = 0xffffff;
-            int j2 = bmf[j1];
-            int k2 = bmg[j1];
+            int j2 = pictureWidth[j1];
+            int k2 = pictureHeight[j1];
             int l2 = 0;
             int i3 = 0;
             int j3 = i2 << 16;
             int k3 = (j2 << 16) / l;
             int l3 = (k2 << 16) / i1;
             int i4 = -(i2 << 16) / i1;
-            if(bml[j1])
+            if(pictureRequiresShift[j1])
             {
-                int j4 = pictureWidth[j1];
-                int l4 = pictureHeight[j1];
+                int j4 = pictureAssumedWidth[j1];
+                int l4 = pictureAssumedHeight[j1];
                 k3 = (j4 << 16) / l;
                 l3 = (l4 << 16) / i1;
-                int k5 = bmh[j1];
-                int l5 = bmi[j1];
+                int k5 = pictureOffsetX[j1];
+                int l5 = pictureOffsetY[j1];
                 if(flag)
-                    k5 = j4 - bmf[j1] - k5;
+                    k5 = j4 - pictureWidth[j1] - k5;
                 i += ((k5 * l + j4) - 1) / j4;
                 int i6 = ((l5 * i1 + l4) - 1) / l4;
                 k += i6;
@@ -1658,8 +1668,8 @@ public class GameImage
                     l2 = (j4 - (k5 * l) % j4 << 16) / l;
                 if((l5 * i1) % l4 != 0)
                     i3 = (l4 - (l5 * i1) % l4 << 16) / i1;
-                l = ((((bmf[j1] << 16) - l2) + k3) - 1) / k3;
-                i1 = ((((bmg[j1] << 16) - i3) + l3) - 1) / l3;
+                l = ((((pictureWidth[j1] << 16) - l2) + k3) - 1) / k3;
+                i1 = ((((pictureHeight[j1] << 16) - i3) + l3) - 1) / l3;
             }
             int k4 = k * gameWidth;
             j3 += i << 16;
@@ -1679,14 +1689,14 @@ public class GameImage
                 j5 = 2;
             if(l1 == 0xffffff)
             {
-                if(bmc[j1] != null)
+                if(pictureColors[j1] != null)
                     if(!flag)
                     {
-                        cde(pixels, bmc[j1], 0, l2, i3, k4, l, i1, k3, l3, j2, k1, j3, i4, j5);
+                        cde(pixels, pictureColors[j1], 0, l2, i3, k4, l, i1, k3, l3, j2, k1, j3, i4, j5);
                         return;
                     } else
                     {
-                        cde(pixels, bmc[j1], 0, (bmf[j1] << 16) - l2 - 1, i3, k4, l, i1, -k3, l3, j2, k1, j3, i4, j5);
+                        cde(pixels, pictureColors[j1], 0, (pictureWidth[j1] << 16) - l2 - 1, i3, k4, l, i1, -k3, l3, j2, k1, j3, i4, j5);
                         return;
                     }
                 if(!flag)
@@ -1695,18 +1705,18 @@ public class GameImage
                     return;
                 } else
                 {
-                    cdg(pixels, bmd[j1], bme[j1], 0, (bmf[j1] << 16) - l2 - 1, i3, k4, l, i1, -k3, l3, j2, k1, j3, i4, j5);
+                    cdg(pixels, bmd[j1], bme[j1], 0, (pictureWidth[j1] << 16) - l2 - 1, i3, k4, l, i1, -k3, l3, j2, k1, j3, i4, j5);
                     return;
                 }
             }
-            if(bmc[j1] != null)
+            if(pictureColors[j1] != null)
                 if(!flag)
                 {
-                    cdf(pixels, bmc[j1], 0, l2, i3, k4, l, i1, k3, l3, j2, k1, l1, j3, i4, j5);
+                    cdf(pixels, pictureColors[j1], 0, l2, i3, k4, l, i1, k3, l3, j2, k1, l1, j3, i4, j5);
                     return;
                 } else
                 {
-                    cdf(pixels, bmc[j1], 0, (bmf[j1] << 16) - l2 - 1, i3, k4, l, i1, -k3, l3, j2, k1, l1, j3, i4, j5);
+                    cdf(pixels, pictureColors[j1], 0, (pictureWidth[j1] << 16) - l2 - 1, i3, k4, l, i1, -k3, l3, j2, k1, l1, j3, i4, j5);
                     return;
                 }
             if(!flag)
@@ -1715,7 +1725,7 @@ public class GameImage
                 return;
             } else
             {
-                cdh(pixels, bmd[j1], bme[j1], 0, (bmf[j1] << 16) - l2 - 1, i3, k4, l, i1, -k3, l3, j2, k1, l1, j3, i4, j5);
+                cdh(pixels, bmd[j1], bme[j1], 0, (pictureWidth[j1] << 16) - l2 - 1, i3, k4, l, i1, -k3, l3, j2, k1, l1, j3, i4, j5);
                 return;
             }
         }
@@ -2494,16 +2504,16 @@ label3:
     ImageConsumer bln;
     private Component bma;
     public Image bmb;
-    public int bmc[][];
+    public int pictureColors[][];
     public byte bmd[][];
     public int bme[][];
-    public int bmf[];
-    public int bmg[];
-    public int bmh[];
-    public int bmi[];
     public int pictureWidth[];
     public int pictureHeight[];
-    public boolean bml[];
+    public int pictureOffsetX[];
+    public int pictureOffsetY[];
+    public int pictureAssumedWidth[];
+    public int pictureAssumedHeight[];
+    public boolean pictureRequiresShift[];
     private int bmm;
     private int bmn;
     private int bna;

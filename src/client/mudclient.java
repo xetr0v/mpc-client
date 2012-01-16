@@ -5,8 +5,13 @@ package client;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.*;
 
 import javax.imageio.ImageIO;
@@ -25,6 +30,20 @@ public final class mudclient extends GameAppletMiddleMan
         GameAppletMiddleMan.maxPacketReadCount = 500;
         mud.flc(mud.windowWidth, mud.windowHeight + 11, "Runescape by Andrew Gower", false);
         mud.gameMinThreadSleepTime = 10;
+        /*try {TODO
+            FileOutputStream out = new FileOutputStream("tee_em_pee");
+            byte bytes[] = new byte[10200];
+            int off = 1;
+            int color = 0;
+            int x = 0;
+            for(x = 0; x < 255; x++) {
+                
+            }
+            out.write(bytes);
+            out.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }*/
     }
 
     private final void menuClick(int l)
@@ -636,9 +655,9 @@ public final class mudclient extends GameAppletMiddleMan
                 if(i1 != 5 || Data.animationHasA[l2] == 1)
                 {
                     int k4 = j4 + Data.animationNumber[l2];
-                    k3 = (k3 * arg2) / ((GameImage) (gameGraphics)).pictureWidth[k4];
-                    i4 = (i4 * arg3) / ((GameImage) (gameGraphics)).pictureHeight[k4];
-                    int l4 = (arg2 * ((GameImage) (gameGraphics)).pictureWidth[k4]) / ((GameImage) (gameGraphics)).pictureWidth[Data.animationNumber[l2]];
+                    k3 = (k3 * arg2) / ((GameImage) (gameGraphics)).pictureAssumedWidth[k4];
+                    i4 = (i4 * arg3) / ((GameImage) (gameGraphics)).pictureAssumedHeight[k4];
+                    int l4 = (arg2 * ((GameImage) (gameGraphics)).pictureAssumedWidth[k4]) / ((GameImage) (gameGraphics)).pictureAssumedWidth[Data.animationNumber[l2]];
                     k3 -= (l4 - arg2) / 2;
                     int i5 = Data.animationCharacterColor[l2];
                     int j5 = appearanceSkinColours[f1.skinColour];
@@ -2329,7 +2348,7 @@ public final class mudclient extends GameAppletMiddleMan
                 isSleeping = true;
                 super.inputText = "";
                 super.enteredInputText = "";
-                gameGraphics.cbk(baseTexturePic + 1, packetData);// TODO no
+                gameGraphics.setSleepSprite(baseTexturePic + 1, packetData);// TODO no
                 sleepingStatusText = null;
                 return;
             }
@@ -2345,7 +2364,7 @@ public final class mudclient extends GameAppletMiddleMan
             }
             if(packetID == 225)
             {
-                sleepingStatusText = "Incorrect - Please wait...";
+                sleepingStatusText = "Incorrect - Please wait...";// TODO new image doesn't load ??
                 return;
             }
             if(packetID == 172)
@@ -2864,12 +2883,12 @@ public final class mudclient extends GameAppletMiddleMan
             tick++;
             if(loggedIn == 0)
             {
-                super.lastActionTimeout = 0;
+                //super.lastActionTimeout = 0;
                 checkLoginScreenInputs();
             }
             if(loggedIn == 1)
             {
-                super.lastActionTimeout++;
+                //super.lastActionTimeout++;// TODO OVERFLOWEXCEPTION if value > MAX_VALUE? l0l
                 checkGameInputs();
             }
             super.lastMouseButton = 0;
@@ -4082,6 +4101,7 @@ label0:
             loginNewUser.drawMenu();
         if(loginScreen == 2)
             loginMenuLogin.drawMenu();
+        gameGraphics.drawPicture(5, 5, baseTexturePic + 1);
         gameGraphics.drawPicture(0, windowHeight, baseInventoryPic + 22);
         gameGraphics.drawImage(graphics, 0, 0);
     }
@@ -4148,7 +4168,7 @@ label0:
             errorLoading = true;
             return;
         }
-        Data.baa(abyte0, members);
+        Data.load(abyte0, members);
         byte abyte1[] = unpackData("filter" + Version.VERSION_FILTER + ".jag", "Chat system", 15);
         if(abyte1 == null)
         {
@@ -4586,12 +4606,12 @@ label0:
         sendPingPacket();
         if(logoutTimer > 0)
             logoutTimer--;
-        if(super.lastActionTimeout > 4500 && combatTimeout == 0 && logoutTimer == 0)
+        /*if(super.lastActionTimeout > 4500 && combatTimeout == 0 && logoutTimer == 0)// TODO use this as an excuse to logout when afk and use server as the backup choice?
         {
             super.lastActionTimeout -= 500;
             sendLogout();
             return;
-        }
+        }*/
         if(ourPlayer.currentSprite == 8 || ourPlayer.currentSprite == 9)
             combatTimeout = 500;
         if(combatTimeout > 0)
@@ -5739,7 +5759,7 @@ label0:
             gameGraphics.unpackImageData(baseTexturePic, abyte2, abyte1, 1);
             gameGraphics.drawBox(0, 0, 128, 128, 0xff00ff);
             gameGraphics.drawPicture(0, 0, baseTexturePic);
-            int i1 = ((GameImage) (gameGraphics)).pictureWidth[baseTexturePic];
+            int i1 = ((GameImage) (gameGraphics)).pictureAssumedWidth[baseTexturePic];
             String s2 = Data.textureSubName[l];
             if(s2 != null && s2.length() > 0)
             {
@@ -5750,13 +5770,28 @@ label0:
             gameGraphics.cca(subTexturePic + l, 0, 0, i1, i1);
             int j1 = i1 * i1;
             for(int k1 = 0; k1 < j1; k1++)
-                if(((GameImage) (gameGraphics)).bmc[subTexturePic + l][k1] == 65280)
-                    ((GameImage) (gameGraphics)).bmc[subTexturePic + l][k1] = 0xff00ff;
+                if(((GameImage) (gameGraphics)).pictureColors[subTexturePic + l][k1] == 65280)
+                    ((GameImage) (gameGraphics)).pictureColors[subTexturePic + l][k1] = 0xff00ff;
 
             gameGraphics.cbl(subTexturePic + l);
             gameCamera.bjf(l, ((GameImage) (gameGraphics)).bmd[subTexturePic + l], ((GameImage) (gameGraphics)).bme[subTexturePic + l], i1 / 64 - 1);
         }
 
+        try {
+            /*byte pixels[] = new byte[(int)new File("temp").length()];
+            InputStream is = new FileInputStream("temp");
+            is.read(pixels, 0, pixels.length);
+            is.close();
+            System.out.println(pixels.length);*/
+            java.util.Random r = new java.util.Random();
+            byte pixels[] = new byte[13652];
+            for(int i = 0; i < pixels.length; i++) {
+                pixels[i] = (byte) GameImage.rgbToInt(r.nextInt(255), r.nextInt(255), r.nextInt(255));
+            }
+            gameGraphics.setSleepSprite(baseTexturePic + 1, pixels);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private final void drawAppearanceWindow()
@@ -6716,9 +6751,9 @@ label0:
                 if(i1 != 5 || Data.animationHasA[k2] == 1)
                 {
                     int l3 = k3 + Data.animationNumber[k2];
-                    i3 = (i3 * width) / ((GameImage) (gameGraphics)).pictureWidth[l3];
-                    j3 = (j3 * height) / ((GameImage) (gameGraphics)).pictureHeight[l3];
-                    int i4 = (width * ((GameImage) (gameGraphics)).pictureWidth[l3]) / ((GameImage) (gameGraphics)).pictureWidth[Data.animationNumber[k2]];
+                    i3 = (i3 * width) / ((GameImage) (gameGraphics)).pictureAssumedWidth[l3];
+                    j3 = (j3 * height) / ((GameImage) (gameGraphics)).pictureAssumedHeight[l3];
+                    int i4 = (width * ((GameImage) (gameGraphics)).pictureAssumedWidth[l3]) / ((GameImage) (gameGraphics)).pictureAssumedWidth[Data.animationNumber[k2]];
                     i3 -= (i4 - width) / 2;
                     int j4 = Data.animationCharacterColor[k2];
                     int k4 = 0;

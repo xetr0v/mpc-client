@@ -50,7 +50,7 @@ public class Data
         return s;
     }
 
-    public static void baa(byte arg0[], boolean arg1)
+    public static void load(byte arg0[], boolean arg1)
     {
         stringData = DataOperations.loadData("string.dat", 0, arg0);
         stringDataIndex = 0;
@@ -104,6 +104,29 @@ public class Data
 
         for(int k2 = 0; k2 < itemCount; k2++)
             itemMembers[k2] = readByte();
+        
+        /*try {
+            java.io.BufferedWriter out = new java.io.BufferedWriter(new java.io.FileWriter("ItemDef.xml"));
+            out.write("<ItemDef-array>\r\n");
+            for(int i = 0; i < itemCount; i++) {
+                out.write("    <ItemDef>\r\n");
+                out.write("        <name>" + itemName[i] + "</name>\r\n");
+                out.write("        <command>" + itemCommand[i] + "</command>\r\n");
+                out.write("        <stackable>" + (itemStackable[i] == 0) + "</stackable>\r\n");
+                out.write("        <members>" + (itemMembers[i] == 1) + "</members>\r\n");
+                out.write("        <trade>" + (itemSpecial[i] == 0) + "</trade>\r\n");
+                out.write("        <basePrice>" + itemBasePrice[i] + "</basePrice>\r\n");
+                out.write("        <wieldable>" + (itemIsEquippable[i]) + "</wieldable>\r\n");
+                out.write("        <description>" + itemDescription[i] + "</description>\r\n");
+                out.write("        <sprite>" + itemInventoryPicture[i] + "</sprite>\r\n");
+                out.write("        <mask>" + itemPictureMask[i] + "</mask>\r\n");
+                out.write("    </ItemDef>\r\n");
+            }
+            out.write("</ItemDef-array>\r\n");
+            out.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }*/
 
         for(int l2 = 0; l2 < itemCount; l2++)
             if(!arg1 && itemMembers[l2] == 1)
@@ -231,11 +254,6 @@ public class Data
 
         for(int k9 = 0; k9 < animationCount; k9++)
             animationNumber[k9] = readByte();
-
-        System.out.println(animationCount);
-        for(int i = 0; i < animationCount; i++) {
-            System.out.println(i + ": " + animationName[i] + "," + animationCharacterColor[i] + "," + animationGenderModels[i] + "," + animationHasA[i] + "," + animationHasF[i] + "," + animationNumber[i]);
-        }
 
         objectCount = readShort();
         objectName = new String[objectCount];

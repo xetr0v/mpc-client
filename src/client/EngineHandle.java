@@ -80,61 +80,60 @@ public class EngineHandle
         tiles[k][l] |= i1;
     }
 
-    public void gjh(int arg0, int arg1, int arg2, int arg3)
+    public void loadSection(int sectionX, int sectionY, int height, int sector)
     {
-        String s = "m" + arg2 + arg0 / 10 + arg0 % 10 + arg1 / 10 + arg1 % 10;
-        int k;
+        String filename = "m" + height + sectionX / 10 + sectionX % 10 + sectionY / 10 + sectionY % 10;
         try
         {
             if(landscapeFree != null)
             {
-                byte abyte0[] = DataOperations.loadData(s + ".hei", 0, landscapeFree);
+                byte abyte0[] = DataOperations.loadData(filename + ".hei", 0, landscapeFree);
                 if(abyte0 == null && landscapeMembers != null)
-                    abyte0 = DataOperations.loadData(s + ".hei", 0, landscapeMembers);
+                    abyte0 = DataOperations.loadData(filename + ".hei", 0, landscapeMembers);
                 if(abyte0 != null && abyte0.length > 0)
                 {
                     int l = 0;
                     int i2 = 0;
-                    for(int l2 = 0; l2 < 2304;)
+                    for(int tile = 0; tile < 2304;)
                     {
                         int k3 = abyte0[l++] & 0xff;
                         if(k3 < 128)
                         {
-                            gig[arg3][l2++] = (byte)k3;
+                            gig[sector][tile++] = (byte)k3;
                             i2 = k3;
                         }
                         if(k3 >= 128)
                         {
                             for(int k4 = 0; k4 < k3 - 128; k4++)
-                                gig[arg3][l2++] = (byte)i2;
+                                gig[sector][tile++] = (byte)i2;
 
                         }
                     }
 
                     i2 = 64;
-                    for(int l3 = 0; l3 < 48; l3++)
+                    for(int tile = 0; tile < 48; tile++)
                     {
                         for(int l4 = 0; l4 < 48; l4++)
                         {
-                            i2 = gig[arg3][l4 * 48 + l3] + i2 & 0x7f;
-                            gig[arg3][l4 * 48 + l3] = (byte)(i2 * 2);
+                            i2 = gig[sector][l4 * 48 + tile] + i2 & 0x7f;
+                            gig[sector][l4 * 48 + tile] = (byte)(i2 * 2);
                         }
 
                     }
 
                     i2 = 0;
-                    for(int i5 = 0; i5 < 2304;)
+                    for(int tile = 0; tile < 2304;)
                     {
                         int l5 = abyte0[l++] & 0xff;
                         if(l5 < 128)
                         {
-                            ghl[arg3][i5++] = (byte)l5;
+                            ghl[sector][tile++] = (byte)l5;
                             i2 = l5;
                         }
                         if(l5 >= 128)
                         {
                             for(int i7 = 0; i7 < l5 - 128; i7++)
-                                ghl[arg3][i5++] = (byte)i2;
+                                ghl[sector][tile++] = (byte)i2;
 
                         }
                     }
@@ -144,69 +143,69 @@ public class EngineHandle
                     {
                         for(int j7 = 0; j7 < 48; j7++)
                         {
-                            i2 = ghl[arg3][j7 * 48 + i6] + i2 & 0x7f;
-                            ghl[arg3][j7 * 48 + i6] = (byte)(i2 * 2);
+                            i2 = ghl[sector][j7 * 48 + i6] + i2 & 0x7f;
+                            ghl[sector][j7 * 48 + i6] = (byte)(i2 * 2);
                         }
 
                     }
 
                 } else
                 {
-                    for(int i1 = 0; i1 < 2304; i1++)
+                    for(int tile = 0; tile < 2304; tile++)
                     {
-                        gig[arg3][i1] = 0;
-                        ghl[arg3][i1] = 0;
+                        gig[sector][tile] = 0;
+                        ghl[sector][tile] = 0;
                     }
 
                 }
-                abyte0 = DataOperations.loadData(s + ".dat", 0, mapsFree);
+                abyte0 = DataOperations.loadData(filename + ".dat", 0, mapsFree);
                 if(abyte0 == null && mapsMembers != null)
-                    abyte0 = DataOperations.loadData(s + ".dat", 0, mapsMembers);
+                    abyte0 = DataOperations.loadData(filename + ".dat", 0, mapsMembers);
                 if(abyte0 == null || abyte0.length == 0)
                     throw new IOException();
                 int j1 = 0;
-                for(int j2 = 0; j2 < 2304; j2++)
-                    gic[arg3][j2] = abyte0[j1++];
+                for(int tile = 0; tile < 2304; tile++)
+                    gic[sector][tile] = abyte0[j1++];
 
-                for(int i3 = 0; i3 < 2304; i3++)
-                    ghb[arg3][i3] = abyte0[j1++];
+                for(int tile = 0; tile < 2304; tile++)
+                    ghb[sector][tile] = abyte0[j1++];
 
-                for(int i4 = 0; i4 < 2304; i4++)
-                    ghe[arg3][i4] = abyte0[j1++] & 0xff;
+                for(int tile = 0; tile < 2304; tile++)
+                    ghe[sector][tile] = abyte0[j1++] & 0xff;
 
-                for(int j5 = 0; j5 < 2304; j5++)
+                for(int tile = 0; tile < 2304; tile++)
                 {
                     int j6 = abyte0[j1++] & 0xff;
                     if(j6 > 0)
-                        ghe[arg3][j5] = j6 + 12000;
+                        ghe[sector][tile] = j6 + 12000;
                 }
 
-                for(int k6 = 0; k6 < 2304;)
+                for(int tile = 0; tile < 2304;)
                 {
                     int k7 = abyte0[j1++] & 0xff;
                     if(k7 < 128)
                     {
-                        gja[arg3][k6++] = (byte)k7;
+                        gja[sector][tile++] = (byte)k7;
                     } else
                     {
                         for(int j8 = 0; j8 < k7 - 128; j8++)
-                            gja[arg3][k6++] = 0;
+                            gja[sector][tile++] = 0;
 
                     }
                 }
 
                 int l7 = 0;
-                for(int k8 = 0; k8 < 2304;)
+                for(int tile = 0; tile < 2304;)
                 {
                     int i9 = abyte0[j1++] & 0xff;
                     if(i9 < 128)
                     {
-                        ghf[arg3][k8++] = (byte)i9;
+                        ghf[sector][tile++] = (byte)i9;
                         l7 = i9;
                     } else
                     {
                         for(int l9 = 0; l9 < i9 - 128; l9++)
-                            ghf[arg3][k8++] = (byte)l7;
+                            ghf[sector][tile++] = (byte)l7;
 
                     }
                 }
@@ -216,16 +215,16 @@ public class EngineHandle
                     int i10 = abyte0[j1++] & 0xff;
                     if(i10 < 128)
                     {
-                        ghg[arg3][j9++] = (byte)i10;
+                        ghg[sector][j9++] = (byte)i10;
                     } else
                     {
                         for(int l10 = 0; l10 < i10 - 128; l10++)
-                            ghg[arg3][j9++] = 0;
+                            ghg[sector][j9++] = 0;
 
                     }
                 }
 
-                abyte0 = DataOperations.loadData(s + ".loc", 0, mapsFree);
+                abyte0 = DataOperations.loadData(filename + ".loc", 0, mapsFree);
                 if(abyte0 != null && abyte0.length > 0)
                 {
                     int k1 = 0;
@@ -233,7 +232,7 @@ public class EngineHandle
                     {
                         int i11 = abyte0[k1++] & 0xff;
                         if(i11 < 128)
-                            ghe[arg3][j10++] = i11 + 48000;
+                            ghe[sector][j10++] = i11 + 48000;
                         else
                             j10 += i11 - 128;
                     }
@@ -243,64 +242,63 @@ public class EngineHandle
             } else
             {
                 byte abyte1[] = new byte[20736];
-                DataOperations.readFully("../gamedata/maps/" + s + ".jm", abyte1, 20736);
+                DataOperations.readFully("../gamedata/maps/" + filename + ".jm", abyte1, 20736);
                 int l1 = 0;
                 int k2 = 0;
                 for(int j3 = 0; j3 < 2304; j3++)
                 {
                     l1 = l1 + abyte1[k2++] & 0xff;
-                    gig[arg3][j3] = (byte)l1;
+                    gig[sector][j3] = (byte)l1;
                 }
 
                 l1 = 0;
                 for(int j4 = 0; j4 < 2304; j4++)
                 {
                     l1 = l1 + abyte1[k2++] & 0xff;
-                    ghl[arg3][j4] = (byte)l1;
+                    ghl[sector][j4] = (byte)l1;
                 }
 
                 for(int k5 = 0; k5 < 2304; k5++)
-                    gic[arg3][k5] = abyte1[k2++];
+                    gic[sector][k5] = abyte1[k2++];
 
                 for(int l6 = 0; l6 < 2304; l6++)
-                    ghb[arg3][l6] = abyte1[k2++];
+                    ghb[sector][l6] = abyte1[k2++];
 
                 for(int i8 = 0; i8 < 2304; i8++)
                 {
-                    ghe[arg3][i8] = (abyte1[k2] & 0xff) * 256 + (abyte1[k2 + 1] & 0xff);
+                    ghe[sector][i8] = (abyte1[k2] & 0xff) * 256 + (abyte1[k2 + 1] & 0xff);
                     k2 += 2;
                 }
 
                 for(int l8 = 0; l8 < 2304; l8++)
-                    gja[arg3][l8] = abyte1[k2++];
+                    gja[sector][l8] = abyte1[k2++];
 
                 for(int k9 = 0; k9 < 2304; k9++)
-                    ghf[arg3][k9] = abyte1[k2++];
+                    ghf[sector][k9] = abyte1[k2++];
 
                 for(int k10 = 0; k10 < 2304; k10++)
-                    ghg[arg3][k10] = abyte1[k2++];
+                    ghg[sector][k10] = abyte1[k2++];
 
             }
             return;
         }
         catch(IOException _ex)
         {
-            k = 0;
         }
-        for(; k < 2304; k++)
+        for(int k = 0; k < 2304; k++)
         {
-            gig[arg3][k] = 0;
-            ghl[arg3][k] = 0;
-            gic[arg3][k] = 0;
-            ghb[arg3][k] = 0;
-            ghe[arg3][k] = 0;
-            gja[arg3][k] = 0;
-            ghf[arg3][k] = 0;
-            if(arg2 == 0)
-                ghf[arg3][k] = -6;
-            if(arg2 == 3)
-                ghf[arg3][k] = 8;
-            ghg[arg3][k] = 0;
+            gig[sector][k] = 0;
+            ghl[sector][k] = 0;
+            gic[sector][k] = 0;
+            ghb[sector][k] = 0;
+            ghe[sector][k] = 0;
+            gja[sector][k] = 0;
+            ghf[sector][k] = 0;
+            if(height == 0)
+                ghf[sector][k] = -6;
+            if(height == 3)
+                ghf[sector][k] = 8;
+            ghg[sector][k] = 0;
         }
 
     }
@@ -309,10 +307,10 @@ public class EngineHandle
     {
         int k = (arg0 + 24) / 48;
         int l = (arg1 + 24) / 48;
-        gjh(k - 1, l - 1, arg2, 0);
-        gjh(k, l - 1, arg2, 1);
-        gjh(k - 1, l, arg2, 2);
-        gjh(k, l, arg2, 3);
+        loadSection(k - 1, l - 1, arg2, 0);
+        loadSection(k, l - 1, arg2, 1);
+        loadSection(k - 1, l, arg2, 2);
+        loadSection(k, l, arg2, 3);
         gjk();
         if(gia == null)
             gia = new GameObject(18688, 18688, true, true, false, false, true);
@@ -954,10 +952,10 @@ public class EngineHandle
         {
             gji(k, l, 1, false);
             gji(k, l, 2, false);
-            gjh(j1 - 1, k1 - 1, i1, 0);
-            gjh(j1, k1 - 1, i1, 1);
-            gjh(j1 - 1, k1, i1, 2);
-            gjh(j1, k1, i1, 3);
+            loadSection(j1 - 1, k1 - 1, i1, 0);
+            loadSection(j1, k1 - 1, i1, 1);
+            loadSection(j1 - 1, k1, i1, 2);
+            loadSection(j1, k1, i1, 3);
             gjk();
         }
     }

@@ -63,7 +63,7 @@ public class GameApplet extends Applet
     public final synchronized boolean keyDown(Event arg0, int key)
     {
         handleKeyDown(key);
-        lastActionTimeout = 0;
+        //lastActionTimeout = 0;
         if(key == 1006)
             keyLeftDown = true;
         if(key == 1007)
@@ -141,7 +141,7 @@ public class GameApplet extends Applet
         mouseX = i;
         mouseY = k + mouseYOffset;
         mouseButton = 0;
-        lastActionTimeout = 0;
+        //lastActionTimeout = 0;
         return true;
     }
 
@@ -159,7 +159,7 @@ public class GameApplet extends Applet
         mouseY = arg2 + mouseYOffset;
         mouseButton = arg0.metaDown() ? 2 : 1;
         lastMouseButton = mouseButton;
-        lastActionTimeout = 0;
+        //lastActionTimeout = 0;
         handleMouseDown(mouseButton, arg1, arg2);
         return true;
     }
@@ -611,7 +611,7 @@ public class GameApplet extends Applet
     private int runStatus;
     private int fij;
     public int mouseYOffset;
-    public int lastActionTimeout;
+    //public int lastActionTimeout;
     public int gameLoadingScreen;
     public String fin;
     private boolean minimalLoadingScreen;

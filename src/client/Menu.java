@@ -541,8 +541,8 @@ public class Menu
 
     public int drawArrow(int i, int k, int l)
     {
-        int i1 = gaj.bmf[l];
-        int j1 = gaj.bmg[l];
+        int i1 = gaj.pictureWidth[l];
+        int j1 = gaj.pictureHeight[l];
         gbj[gak] = 12;
         gam[gak] = true;
         gbb[gak] = false;
