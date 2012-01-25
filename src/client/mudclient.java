@@ -834,7 +834,7 @@ public final class mudclient extends GameAppletMiddleMan {
         }
     }
 
-    private final void creatLoginScreenBackgrounds() {
+    private final void createLoginScreenBackgrounds() {
         int l = 0;
         byte byte0 = 50;
         byte byte1 = 50;
@@ -922,8 +922,8 @@ public final class mudclient extends GameAppletMiddleMan {
     protected final void handlePacket(int packetID, int packetLength, byte packetData[]) {
         try {
             if(packetID == 145) {
-                //if(!hasWorldInfo)// TODO this was in the rsca client
-                //    return;
+                if(!hasWorldInfo)
+                    return;
                 lastPlayerCount = playerCount;
                 for(int l = 0; l < lastPlayerCount; l++)
                     lastPlayerArray[l] = playerArray[l];
@@ -1026,7 +1026,7 @@ public final class mudclient extends GameAppletMiddleMan {
                 return;
             }
             if(packetID == 109) {
-                /*if(needsClear) {// TODO this was in the rsca client
+                if(needsClear) {
                     for(int i = 0; i < groundItemID.length; i++) {
                         groundItemX[i] = -1;
                         groundItemY[i] = -1;
@@ -1035,7 +1035,7 @@ public final class mudclient extends GameAppletMiddleMan {
                     }
                     groundItemCount = 0;
                     needsClear = false;
-                }*/
+                }
                 for(int off = 1; off < packetLength;)
                     if(DataOperations.getByte(packetData[off]) == 255) {
                         int newCount = 0;
@@ -1205,8 +1205,8 @@ public final class mudclient extends GameAppletMiddleMan {
                 for(int current = 0; current < newMobCount; current++) {
                     int index = DataOperations.getShort(packetData, off);
                     off += 2;
-                    //if(index < 0 || index > playerBufferArray.length)// TODO this was in the rsca client
-                    //    return;
+                    if(index < 0 || index > playerBufferArray.length)
+                        return;
                     Mob mob = playerBufferArray[index];
                     byte mobUpdateType = packetData[off];
                     off++;
@@ -1527,8 +1527,8 @@ public final class mudclient extends GameAppletMiddleMan {
                 layerIndex = DataOperations.getShort(packetData, 7);
                 layerModifier = DataOperations.getShort(packetData, 9);
                 wildY -= layerIndex * layerModifier;
-                //needsClear = true;// TODO this was in the rsca client
-                //hasWorldInfo = true;// TODO this was in the rsca client
+                needsClear = true;
+                hasWorldInfo = true;
                 return;
             }
             if(packetID == 180) {
@@ -2341,7 +2341,7 @@ public final class mudclient extends GameAppletMiddleMan {
             createLoginMenus();
             createAppearanceWindow();
             setLoginVars();
-            creatLoginScreenBackgrounds();
+            createLoginScreenBackgrounds();
             return;
         }
     }
@@ -6699,7 +6699,7 @@ label0:
                     if(playerStatExp[j2] >= experienceList[l3])
                         j3 = experienceList[l3 + 1];
 
-                gameGraphics.drawString("Total xp: " + playerStatExp[j2] / 4, l + 5, l1, 1, 0xffffff);
+                gameGraphics.drawString("Total xp: " + playerStatExp[j2], l + 5, l1, 1, 0xffffff);
                 l1 += 12;
                 gameGraphics.drawString("Next level at: " + j3 / 4, l + 5, l1, 1, 0xffffff);
             } else {
@@ -7010,7 +7010,7 @@ label0:
         sleepWordDelay = true;
         configCmeraAutoAngle = true;
         cameraRotation = 128;
-        configSoundOff = false;
+        configSoundOff = true;
         menuShow = false;
         duelOpponentItems = new int[8];
         duelOpponentItemsCount = new int[8];
@@ -7119,6 +7119,8 @@ label0:
         captchaPixels = new int[0][0];
         captchaWidth = 0;
         captchaHeight = 0;
+        needsClear = false;
+        hasWorldInfo = false;
     }
 
     private String tradeOtherName;
@@ -7513,4 +7515,6 @@ label0:
     private int captchaPixels[][];
     private int captchaWidth;
     private int captchaHeight;
+    private boolean needsClear;
+    private boolean hasWorldInfo;
 }

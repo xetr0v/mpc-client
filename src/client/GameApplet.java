@@ -175,7 +175,7 @@ public class GameApplet extends Applet
     public final void destroy() {
         runStatus = -1;
         try {
-            Thread.sleep(2000L);
+            Thread.sleep(1000L);
         }
         catch(Exception _ex) { }
         if(runStatus == -1) {
