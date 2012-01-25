@@ -28,7 +28,7 @@ public final class GameImageMiddleMan extends GameImage {
             return;
         }
         if(k1 >= 5000) {
-            gameReference.emk(i, l, i1, j1, k1 - 5000, l1, i2);
+            gameReference.drawPlayer(i, l, i1, j1, k1 - 5000, l1, i2);
             return;
         } else {
             super.ccc(i, l, i1, j1, k1);

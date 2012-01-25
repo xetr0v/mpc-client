@@ -35,35 +35,41 @@ public class GameFrame extends Frame {
     }
 
     public boolean handleEvent(Event evt) {
-        if(evt.id == 401)
-            gameApplet.keyDown(evt, evt.key);
+        if(evt.id == Event.KEY_PRESS)
+            gameApplet.keyDown(evt.key);
         else
-        if(evt.id == 402)
-            gameApplet.keyUp(evt, evt.key);
+        if(evt.id == Event.KEY_RELEASE)
+            gameApplet.keyUp(evt.key);
         else
-        if(evt.id == 501)
-            gameApplet.mouseDown(evt, evt.x, evt.y - 24);
+        if(evt.id == Event.MOUSE_DOWN)
+            gameApplet.mouseDown(evt.x, evt.y - 24, evt.metaDown());
         else
-        if(evt.id == 506)
-            gameApplet.mouseDrag(evt, evt.x, evt.y - 24);
+        if(evt.id == Event.MOUSE_DRAG)
+            gameApplet.mouseDrag(evt.x, evt.y - 24, evt.metaDown());
         else
-        if(evt.id == 502)
-            gameApplet.mouseUp(evt, evt.x, evt.y - 24);
+        if(evt.id == Event.MOUSE_UP)
+            gameApplet.mouseUp(evt.x, evt.y - 24);
         else
-        if(evt.id == 503)
-            gameApplet.mouseMove(evt, evt.x, evt.y - 24);
+        if(evt.id == Event.MOUSE_MOVE)
+            gameApplet.mouseMove(evt.x, evt.y - 24);
         else
-        if(evt.id == 201)
+        if(evt.id == Event.WINDOW_DESTROY)
             gameApplet.destroy();
         else
-        if(evt.id == 1001)
+        if(evt.id == Event.END)
             gameApplet.action(evt, evt.target);
         else
-        if(evt.id == 403)
-            gameApplet.keyDown(evt, evt.key);
+        if(evt.id == Event.KEY_ACTION)
+            gameApplet.keyDown(evt.key);
         else
-        if(evt.id == 404)
-            gameApplet.keyUp(evt, evt.key);
+        if(evt.id == Event.KEY_ACTION_RELEASE)
+            gameApplet.keyUp(evt.key);
+        else
+        if(evt.id == Event.SCROLL_BEGIN)
+            gameApplet.mouseScroll(true, evt.key);
+        else
+        if(evt.id == Event.SCROLL_END)
+            gameApplet.mouseScroll(false, evt.key);
         return true;
     }
 

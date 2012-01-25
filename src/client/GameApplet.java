@@ -47,7 +47,7 @@ public class GameApplet extends Applet
 
     }
 
-    public final synchronized boolean keyDown(Event arg0, int key) {
+    public final synchronized boolean keyDown(int key) {
         handleKeyDown(key);
         //lastActionTimeout = 0;
         if(key == 1006)
@@ -96,58 +96,58 @@ public class GameApplet extends Applet
     protected void handleKeyDown(int i) {
     }
 
-    public final synchronized boolean keyUp(Event event, int i) {
-        if(i == 1006)
+    public final synchronized boolean keyUp(int key) {
+        if(key == 1006)
             keyLeftDown = false;
-        if(i == 1007)
+        if(key == 1007)
             keyRightDown = false;
-        if(i == 1004)
+        if(key == 1004)
             keyUpDown = false;
-        if(i == 1005)
+        if(key == 1005)
             keyDownDown = false;
-        if((char)i == ' ')
+        if((char)key == ' ')
             keySpaceDown = false;
-        if((char)i == 'n' || (char)i == 'm')
+        if((char)key == 'n' || (char)key == 'm')
             keyNMDown = false;
-        if((char)i == 'N' || (char)i == 'M')
+        if((char)key == 'N' || (char)key == 'M')
             keyNMDown = false;
-        if((char)i == '{')
+        if((char)key == '{')
             keyLeftBraceDown = false;
-        if((char)i == '}')
+        if((char)key == '}')
             keyRightBraceDown = false;
         return true;
     }
 
-    public final synchronized boolean mouseMove(Event event, int i, int k) {
+    public final synchronized boolean mouseMove(int i, int k) {
         mouseX = i;
         mouseY = k + mouseYOffset;
         mouseButton = 0;
         return true;
     }
 
-    public final synchronized boolean mouseUp(Event event, int i, int k) {
+    public final synchronized boolean mouseUp(int i, int k) {
         mouseX = i;
         mouseY = k + mouseYOffset;
         mouseButton = 0;
         return true;
     }
 
-    public final synchronized boolean mouseDown(Event arg0, int arg1, int arg2) {
-        mouseX = arg1;
-        mouseY = arg2 + mouseYOffset;
-        mouseButton = arg0.metaDown() ? 2 : 1;
+    public final synchronized boolean mouseDown(int x, int y, boolean metaDown) {
+        mouseX = x;
+        mouseY = y + mouseYOffset;
+        mouseButton = metaDown ? 2 : 1;
         lastMouseButton = mouseButton;
-        handleMouseDown(mouseButton, arg1, arg2);
+        handleMouseDown(mouseButton, x, y);
         return true;
     }
 
     protected void handleMouseDown(int i, int k, int l) {
     }
 
-    public final synchronized boolean mouseDrag(Event arg0, int arg1, int arg2) {
-        mouseX = arg1;
-        mouseY = arg2 + mouseYOffset;
-        mouseButton = arg0.metaDown() ? 2 : 1;
+    public final synchronized boolean mouseDrag(int x, int y, boolean metaDown) {
+        mouseX = x;
+        mouseY = y + mouseYOffset;
+        mouseButton = metaDown ? 2 : 1;
         return true;
     }
 
@@ -438,6 +438,10 @@ public class GameApplet extends Applet
         Thread thread = new Thread(runnable);
         thread.setDaemon(true);
         thread.start();
+    }
+    
+    public void mouseScroll(boolean begin, int arg) {
+        System.out.println("mouseWheel(" + begin + ", " + arg + ")");
     }
 
     public GameApplet() {

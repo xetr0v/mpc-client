@@ -470,7 +470,7 @@ public final class mudclient extends GameAppletMiddleMan {
         }
     }
 
-    final void emk(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6) {
+    final void drawPlayer(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6) {
         Mob f1 = playerArray[arg4];
         if(f1.bottomColour == 255)
             return;
@@ -507,6 +507,8 @@ public final class mudclient extends GameAppletMiddleMan {
         for(int k1 = 0; k1 < 12; k1++) {
             int l1 = animationModelArray[l][k1];
             int l2 = f1.appearanceItems[l1] - 1;
+            if(l2 > Data.animationCount - 1)// TODO fixes the crash with custom animations
+                continue;
             if(l2 >= 0) {
                 int k3 = 0;
                 int i4 = 0;

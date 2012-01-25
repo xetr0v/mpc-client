@@ -3,28 +3,28 @@ package client;
 public class Menu {
 
     public Menu(GameImage j1, int i) {
-        gcg = -1;
+        selectedComponent = -1;
         gdg = true;
         gaj = j1;
         gal = i;
-        gam = new boolean[i];
+        componentAcceptsInput = new boolean[i];
         gan = new boolean[i];
-        gba = new boolean[i];
-        gbb = new boolean[i];
-        gbg = new boolean[i];
+        componentIsPasswordField = new boolean[i];
+        componentSkip = new boolean[i];
+        componentWhiteText = new boolean[i];
         gbc = new int[i];
         listLength = new int[i];
         gbe = new int[i];
         gbf = new int[i];
-        gbh = new int[i];
-        gbi = new int[i];
-        gbj = new int[i];
-        gbk = new int[i];
-        gbl = new int[i];
-        gbm = new int[i];
-        gbn = new int[i];
-        gca = new String[i];
-        gcb = new String[i][];
+        componentX = new int[i];
+        componentY = new int[i];
+        componentType = new int[i];
+        componentWidth = new int[i];
+        componentHeight = new int[i];
+        copmonentInputMaxLength = new int[i];
+        componentTextSize = new int[i];
+        componentText = new String[i];
+        componentTextList = new String[i][];
         gci = gdn(114, 114, 176);
         gcj = gdn(14, 14, 62);
         gck = gdn(200, 208, 232);
@@ -51,9 +51,9 @@ public class Menu {
             gce = arg2;
         if(arg2 == 1) {
             for(int i = 0; i < gak; i++) {
-                if(gam[i] && gbj[i] == 10 && gcc >= gbh[i] && gcd >= gbi[i] && gcc <= gbh[i] + gbk[i] && gcd <= gbi[i] + gbl[i])
-                    gbb[i] = true;
-                if(gam[i] && gbj[i] == 14 && gcc >= gbh[i] && gcd >= gbi[i] && gcc <= gbh[i] + gbk[i] && gcd <= gbi[i] + gbl[i])
+                if(componentAcceptsInput[i] && componentType[i] == 10 && gcc >= componentX[i] && gcd >= componentY[i] && gcc <= componentX[i] + componentWidth[i] && gcd <= componentY[i] + componentHeight[i])
+                    componentSkip[i] = true;
+                if(componentAcceptsInput[i] && componentType[i] == 14 && gcc >= componentX[i] && gcd >= componentY[i] && gcc <= componentX[i] + componentWidth[i] && gcd <= componentY[i] + componentHeight[i])
                     gbe[i] = 1 - gbe[i];
             }
 
@@ -64,16 +64,16 @@ public class Menu {
             gch = 0;
         if(arg2 == 1 || gch > 20) {
             for(int k = 0; k < gak; k++)
-                if(gam[k] && gbj[k] == 15 && gcc >= gbh[k] && gcd >= gbi[k] && gcc <= gbh[k] + gbk[k] && gcd <= gbi[k] + gbl[k])
-                    gbb[k] = true;
+                if(componentAcceptsInput[k] && componentType[k] == 15 && gcc >= componentX[k] && gcd >= componentY[k] && gcc <= componentX[k] + componentWidth[k] && gcd <= componentY[k] + componentHeight[k])
+                    componentSkip[k] = true;
 
             gch -= 5;
         }
     }
 
     public boolean isClicked(int i) {
-        if(gam[i] && gbb[i]) {
-            gbb[i] = false;
+        if(componentAcceptsInput[i] && componentSkip[i]) {
+            componentSkip[i] = false;
             return true;
         } else {
             return false;
@@ -83,23 +83,23 @@ public class Menu {
     public void keyPress(int arg0) {
         if(arg0 == 0)
             return;
-        if(gcg != -1 && gca[gcg] != null && gam[gcg]) {
-            int i = gca[gcg].length();
+        if(selectedComponent != -1 && componentText[selectedComponent] != null && componentAcceptsInput[selectedComponent]) {
+            int i = componentText[selectedComponent].length();
             if(arg0 == 8 && i > 0)
-                gca[gcg] = gca[gcg].substring(0, i - 1);
+                componentText[selectedComponent] = componentText[selectedComponent].substring(0, i - 1);
             if((arg0 == 10 || arg0 == 13) && i > 0)
-                gbb[gcg] = true;
+                componentSkip[selectedComponent] = true;
             String s = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
-            if(i < gbm[gcg]) {
+            if(i < copmonentInputMaxLength[selectedComponent]) {
                 for(int k = 0; k < s.length(); k++)
                     if(arg0 == s.charAt(k))
-                        gca[gcg] += (char)arg0;
+                        componentText[selectedComponent] += (char)arg0;
 
             }
             if(arg0 == 9) {
                 do
-                    gcg = (gcg + 1) % gak;
-                while(gbj[gcg] != 5 && gbj[gcg] != 6);
+                    selectedComponent = (selectedComponent + 1) % gak;
+                while(componentType[selectedComponent] != 5 && componentType[selectedComponent] != 6);
                 return;
             }
         }
@@ -107,42 +107,42 @@ public class Menu {
 
     public void drawMenu() {
         for(int i = 0; i < gak; i++)
-            if(gam[i])
-                if(gbj[i] == 0)
-                    gef(i, gbh[i], gbi[i], gca[i], gbn[i]);
+            if(componentAcceptsInput[i])
+                if(componentType[i] == 0)
+                    gef(i, componentX[i], componentY[i], componentText[i], componentTextSize[i]);
                 else
-                if(gbj[i] == 1)
-                    gef(i, gbh[i] - gaj.textWidth(gca[i], gbn[i]) / 2, gbi[i], gca[i], gbn[i]);
+                if(componentType[i] == 1)
+                    gef(i, componentX[i] - gaj.textWidth(componentText[i], componentTextSize[i]) / 2, componentY[i], componentText[i], componentTextSize[i]);
                 else
-                if(gbj[i] == 2)
-                    gei(gbh[i], gbi[i], gbk[i], gbl[i]);
+                if(componentType[i] == 2)
+                    gei(componentX[i], componentY[i], componentWidth[i], componentHeight[i]);
                 else
-                if(gbj[i] == 3)
-                    gel(gbh[i], gbi[i], gbk[i]);
+                if(componentType[i] == 3)
+                    gel(componentX[i], componentY[i], componentWidth[i]);
                 else
-                if(gbj[i] == 4)
-                    gem(i, gbh[i], gbi[i], gbk[i], gbl[i], gbn[i], gcb[i], listLength[i], gbc[i]);
+                if(componentType[i] == 4)
+                    gem(i, componentX[i], componentY[i], componentWidth[i], componentHeight[i], componentTextSize[i], componentTextList[i], listLength[i], gbc[i]);
                 else
-                if(gbj[i] == 5 || gbj[i] == 6)
-                    geh(i, gbh[i], gbi[i], gbk[i], gbl[i], gca[i], gbn[i]);
+                if(componentType[i] == 5 || componentType[i] == 6)
+                    geh(i, componentX[i], componentY[i], componentWidth[i], componentHeight[i], componentText[i], componentTextSize[i]);
                 else
-                if(gbj[i] == 7)
-                    gfa(i, gbh[i], gbi[i], gbn[i], gcb[i]);
+                if(componentType[i] == 7)
+                    gfa(i, componentX[i], componentY[i], componentTextSize[i], componentTextList[i]);
                 else
-                if(gbj[i] == 8)
-                    gfb(i, gbh[i], gbi[i], gbn[i], gcb[i]);
+                if(componentType[i] == 8)
+                    gfb(i, componentX[i], componentY[i], componentTextSize[i], componentTextList[i]);
                 else
-                if(gbj[i] == 9)
-                    gfc(i, gbh[i], gbi[i], gbk[i], gbl[i], gbn[i], gcb[i], listLength[i], gbc[i]);
+                if(componentType[i] == 9)
+                    gfc(i, componentX[i], componentY[i], componentWidth[i], componentHeight[i], componentTextSize[i], componentTextList[i], listLength[i], gbc[i]);
                 else
-                if(gbj[i] == 11)
-                    gej(gbh[i], gbi[i], gbk[i], gbl[i]);
+                if(componentType[i] == 11)
+                    gej(componentX[i], componentY[i], componentWidth[i], componentHeight[i]);
                 else
-                if(gbj[i] == 12)
-                    gek(gbh[i], gbi[i], gbn[i]);
+                if(componentType[i] == 12)
+                    gek(componentX[i], componentY[i], componentTextSize[i]);
                 else
-                if(gbj[i] == 14)
-                    gee(i, gbh[i], gbi[i], gbk[i], gbl[i]);
+                if(componentType[i] == 14)
+                    gee(i, componentX[i], componentY[i], componentWidth[i], componentHeight[i]);
 
         gce = 0;
     }
@@ -169,7 +169,7 @@ public class Menu {
 
     protected void geg(int arg0, int arg1, int arg2, String arg3, int arg4) {
         int i;
-        if(gbg[arg0])
+        if(componentWhiteText[arg0])
             i = 0xffffff;
         else
             i = 0;
@@ -177,23 +177,23 @@ public class Menu {
     }
 
     protected void geh(int arg0, int arg1, int arg2, int arg3, int arg4, String arg5, int arg6) {
-        if(gba[arg0]) {
+        if(componentIsPasswordField[arg0]) {
             int i = arg5.length();
             arg5 = "";
             for(int l = 0; l < i; l++)
                 arg5 = arg5 + "X";
 
         }
-        if(gbj[arg0] == 5) {
+        if(componentType[arg0] == 5) {
             if(gce == 1 && gcc >= arg1 && gcd >= arg2 - arg4 / 2 && gcc <= arg1 + arg3 && gcd <= arg2 + arg4 / 2)
-                gcg = arg0;
+                selectedComponent = arg0;
         } else
-        if(gbj[arg0] == 6) {
+        if(componentType[arg0] == 6) {
             if(gce == 1 && gcc >= arg1 - arg3 / 2 && gcd >= arg2 - arg4 / 2 && gcc <= arg1 + arg3 / 2 && gcd <= arg2 + arg4 / 2)
-                gcg = arg0;
+                selectedComponent = arg0;
             arg1 -= gaj.textWidth(arg5, arg6) / 2;
         }
-        if(gcg == arg0)
+        if(selectedComponent == arg0)
             arg5 = arg5 + "*";
         int k = arg2 + gaj.textHeightNumber(arg6) / 3;
         geg(arg0, arg1, k, arg5, arg6);
@@ -319,22 +319,22 @@ public class Menu {
         int j1 = arg2 + gaj.textHeightNumber(arg3) / 3;
         for(int k1 = 0; k1 < k; k1++) {
             int l1;
-            if(gbg[arg0])
+            if(componentWhiteText[arg0])
                 l1 = 0xffffff;
             else
                 l1 = 0;
             if(gcc >= i1 && gcc <= i1 + gaj.textWidth(arg4[k1], arg3) && gcd <= j1 && gcd > j1 - gaj.textHeightNumber(arg3)) {
-                if(gbg[arg0])
+                if(componentWhiteText[arg0])
                     l1 = 0x808080;
                 else
                     l1 = 0xffffff;
                 if(gce == 1) {
                     gbe[arg0] = k1;
-                    gbb[arg0] = true;
+                    componentSkip[arg0] = true;
                 }
             }
             if(gbe[arg0] == k1)
-                if(gbg[arg0])
+                if(componentWhiteText[arg0])
                     l1 = 0xff0000;
                 else
                     l1 = 0xc00000;
@@ -349,23 +349,23 @@ public class Menu {
         int k = arg2 - (gaj.textHeightNumber(arg3) * (i - 1)) / 2;
         for(int l = 0; l < i; l++) {
             int i1;
-            if(gbg[arg0])
+            if(componentWhiteText[arg0])
                 i1 = 0xffffff;
             else
                 i1 = 0;
             int j1 = gaj.textWidth(arg4[l], arg3);
             if(gcc >= arg1 - j1 / 2 && gcc <= arg1 + j1 / 2 && gcd - 2 <= k && gcd - 2 > k - gaj.textHeightNumber(arg3)) {
-                if(gbg[arg0])
+                if(componentWhiteText[arg0])
                     i1 = 0x808080;
                 else
                     i1 = 0xffffff;
                 if(gce == 1) {
                     gbe[arg0] = l;
-                    gbb[arg0] = true;
+                    componentSkip[arg0] = true;
                 }
             }
             if(gbe[arg0] == l)
-                if(gbg[arg0])
+                if(componentWhiteText[arg0])
                     i1 = 0xff0000;
                 else
                     i1 = 0xc00000;
@@ -416,19 +416,19 @@ public class Menu {
         int j1 = arg2 + (gaj.textHeightNumber(arg5) * 5) / 6 + l / 2;
         for(int l1 = arg8; l1 < arg7; l1++) {
             int j2;
-            if(gbg[arg0])
+            if(componentWhiteText[arg0])
                 j2 = 0xffffff;
             else
                 j2 = 0;
             if(gcc >= arg1 + 2 && gcc <= arg1 + 2 + gaj.textWidth(arg6[l1], arg5) && gcd - 2 <= j1 && gcd - 2 > j1 - gaj.textHeightNumber(arg5)) {
-                if(gbg[arg0])
+                if(componentWhiteText[arg0])
                     j2 = 0x808080;
                 else
                     j2 = 0xffffff;
                 gbf[arg0] = l1;
                 if(gce == 1) {
                     gbe[arg0] = l1;
-                    gbb[arg0] = true;
+                    componentSkip[arg0] = true;
                 }
             }
             if(gbe[arg0] == l1 && gdg)
@@ -442,116 +442,116 @@ public class Menu {
     }
 
     public int drawText(int i, int k, String s, int l, boolean flag) {
-        gbj[gak] = 1;
-        gam[gak] = true;
-        gbb[gak] = false;
-        gbn[gak] = l;
-        gbg[gak] = flag;
-        gbh[gak] = i;
-        gbi[gak] = k;
-        gca[gak] = s;
+        componentType[gak] = 1;
+        componentAcceptsInput[gak] = true;
+        componentSkip[gak] = false;
+        componentTextSize[gak] = l;
+        componentWhiteText[gak] = flag;
+        componentX[gak] = i;
+        componentY[gak] = k;
+        componentText[gak] = s;
         return gak++;
     }
 
     public int drawButton(int i, int k, int l, int i1) {
-        gbj[gak] = 2;
-        gam[gak] = true;
-        gbb[gak] = false;
-        gbh[gak] = i - l / 2;
-        gbi[gak] = k - i1 / 2;
-        gbk[gak] = l;
-        gbl[gak] = i1;
+        componentType[gak] = 2;
+        componentAcceptsInput[gak] = true;
+        componentSkip[gak] = false;
+        componentX[gak] = i - l / 2;
+        componentY[gak] = k - i1 / 2;
+        componentWidth[gak] = l;
+        componentHeight[gak] = i1;
         return gak++;
     }
 
     public int drawCurvedBox(int i, int k, int l, int i1) {
-        gbj[gak] = 11;
-        gam[gak] = true;
-        gbb[gak] = false;
-        gbh[gak] = i - l / 2;
-        gbi[gak] = k - i1 / 2;
-        gbk[gak] = l;
-        gbl[gak] = i1;
+        componentType[gak] = 11;
+        componentAcceptsInput[gak] = true;
+        componentSkip[gak] = false;
+        componentX[gak] = i - l / 2;
+        componentY[gak] = k - i1 / 2;
+        componentWidth[gak] = l;
+        componentHeight[gak] = i1;
         return gak++;
     }
 
     public int drawArrow(int i, int k, int l) {
         int i1 = gaj.pictureWidth[l];
         int j1 = gaj.pictureHeight[l];
-        gbj[gak] = 12;
-        gam[gak] = true;
-        gbb[gak] = false;
-        gbh[gak] = i - i1 / 2;
-        gbi[gak] = k - j1 / 2;
-        gbk[gak] = i1;
-        gbl[gak] = j1;
-        gbn[gak] = l;
+        componentType[gak] = 12;
+        componentAcceptsInput[gak] = true;
+        componentSkip[gak] = false;
+        componentX[gak] = i - i1 / 2;
+        componentY[gak] = k - j1 / 2;
+        componentWidth[gak] = i1;
+        componentHeight[gak] = j1;
+        componentTextSize[gak] = l;
         return gak++;
     }
 
     public int gfh(int i, int k, int l, int i1, int j1, int k1, boolean flag) {
-        gbj[gak] = 4;
-        gam[gak] = true;
-        gbb[gak] = false;
-        gbh[gak] = i;
-        gbi[gak] = k;
-        gbk[gak] = l;
-        gbl[gak] = i1;
-        gbg[gak] = flag;
-        gbn[gak] = j1;
-        gbm[gak] = k1;
+        componentType[gak] = 4;
+        componentAcceptsInput[gak] = true;
+        componentSkip[gak] = false;
+        componentX[gak] = i;
+        componentY[gak] = k;
+        componentWidth[gak] = l;
+        componentHeight[gak] = i1;
+        componentWhiteText[gak] = flag;
+        componentTextSize[gak] = j1;
+        copmonentInputMaxLength[gak] = k1;
         listLength[gak] = 0;
         gbc[gak] = 0;
-        gcb[gak] = new String[k1];
+        componentTextList[gak] = new String[k1];
         return gak++;
     }
 
     public int gfi(int i, int k, int l, int i1, int j1, int k1, boolean flag, 
             boolean flag1) {
-        gbj[gak] = 5;
-        gam[gak] = true;
-        gba[gak] = flag;
-        gbb[gak] = false;
-        gbn[gak] = j1;
-        gbg[gak] = flag1;
-        gbh[gak] = i;
-        gbi[gak] = k;
-        gbk[gak] = l;
-        gbl[gak] = i1;
-        gbm[gak] = k1;
-        gca[gak] = "";
+        componentType[gak] = 5;
+        componentAcceptsInput[gak] = true;
+        componentIsPasswordField[gak] = flag;
+        componentSkip[gak] = false;
+        componentTextSize[gak] = j1;
+        componentWhiteText[gak] = flag1;
+        componentX[gak] = i;
+        componentY[gak] = k;
+        componentWidth[gak] = l;
+        componentHeight[gak] = i1;
+        copmonentInputMaxLength[gak] = k1;
+        componentText[gak] = "";
         return gak++;
     }
 
     public int createInput(int i, int k, int l, int i1, int j1, int k1, boolean flag, 
             boolean flag1) {
-        gbj[gak] = 6;
-        gam[gak] = true;
-        gba[gak] = flag;
-        gbb[gak] = false;
-        gbn[gak] = j1;
-        gbg[gak] = flag1;
-        gbh[gak] = i;
-        gbi[gak] = k;
-        gbk[gak] = l;
-        gbl[gak] = i1;
-        gbm[gak] = k1;
-        gca[gak] = "";
+        componentType[gak] = 6;
+        componentAcceptsInput[gak] = true;
+        componentIsPasswordField[gak] = flag;
+        componentSkip[gak] = false;
+        componentTextSize[gak] = j1;
+        componentWhiteText[gak] = flag1;
+        componentX[gak] = i;
+        componentY[gak] = k;
+        componentWidth[gak] = l;
+        componentHeight[gak] = i1;
+        copmonentInputMaxLength[gak] = k1;
+        componentText[gak] = "";
         return gak++;
     }
 
     public int createList(int i, int k, int l, int i1, int j1, int k1, boolean flag) {
-        gbj[gak] = 9;
-        gam[gak] = true;
-        gbb[gak] = false;
-        gbn[gak] = j1;
-        gbg[gak] = flag;
-        gbh[gak] = i;
-        gbi[gak] = k;
-        gbk[gak] = l;
-        gbl[gak] = i1;
-        gbm[gak] = k1;
-        gcb[gak] = new String[k1];
+        componentType[gak] = 9;
+        componentAcceptsInput[gak] = true;
+        componentSkip[gak] = false;
+        componentTextSize[gak] = j1;
+        componentWhiteText[gak] = flag;
+        componentX[gak] = i;
+        componentY[gak] = k;
+        componentWidth[gak] = l;
+        componentHeight[gak] = i1;
+        copmonentInputMaxLength[gak] = k1;
+        componentTextList[gak] = new String[k1];
         listLength[gak] = 0;
         gbc[gak] = 0;
         gbe[gak] = -1;
@@ -560,13 +560,13 @@ public class Menu {
     }
 
     public int createButton(int i, int k, int l, int i1) {
-        gbj[gak] = 10;
-        gam[gak] = true;
-        gbb[gak] = false;
-        gbh[gak] = i - l / 2;
-        gbi[gak] = k - i1 / 2;
-        gbk[gak] = l;
-        gbl[gak] = i1;
+        componentType[gak] = 10;
+        componentAcceptsInput[gak] = true;
+        componentSkip[gak] = false;
+        componentX[gak] = i - l / 2;
+        componentY[gak] = k - i1 / 2;
+        componentWidth[gak] = l;
+        componentHeight[gak] = i1;
         return gak++;
     }
 
@@ -580,46 +580,46 @@ public class Menu {
     }
 
     public void addListItem(int i, int k, String s) {
-        gcb[i][k] = s;
+        componentTextList[i][k] = s;
         if(k + 1 > listLength[i])
             listLength[i] = k + 1;
     }
 
     public void addMessage(int arg0, String arg1, boolean arg2) {
         int i = listLength[arg0]++;
-        if(i >= gbm[arg0]) {
+        if(i >= copmonentInputMaxLength[arg0]) {
             i--;
             listLength[arg0]--;
             for(int k = 0; k < i; k++)
-                gcb[arg0][k] = gcb[arg0][k + 1];
+                componentTextList[arg0][k] = componentTextList[arg0][k + 1];
 
         }
-        gcb[arg0][i] = arg1;
+        componentTextList[arg0][i] = arg1;
         if(arg2)
             gbc[arg0] = 0xf423f;
     }
 
     public void updateText(int i, String s) {
-        gca[i] = s;
+        componentText[i] = s;
     }
 
     public String getText(int i) {
-        if(gca[i] == null)
+        if(componentText[i] == null)
             return "null";
         else
-            return gca[i];
+            return componentText[i];
     }
 
     public void gge(int i) {
-        gam[i] = true;
+        componentAcceptsInput[i] = true;
     }
 
     public void ggf(int i) {
-        gam[i] = false;
+        componentAcceptsInput[i] = false;
     }
 
     public void setFocus(int i) {
-        gcg = i;
+        selectedComponent = i;
     }
 
     public int getEntryHighlighted(int i) {
@@ -630,29 +630,29 @@ public class Menu {
     protected GameImage gaj;
     int gak;
     int gal;
-    public boolean gam[];
+    public boolean componentAcceptsInput[];
     public boolean gan[];
-    public boolean gba[];
-    public boolean gbb[];
+    public boolean componentIsPasswordField[];
+    public boolean componentSkip[];
     public int gbc[];
     public int listLength[];
     public int gbe[];
     public int gbf[];
-    boolean gbg[];
-    int gbh[];
-    int gbi[];
-    int gbj[];
-    int gbk[];
-    int gbl[];
-    int gbm[];
-    int gbn[];
-    String gca[];
-    String gcb[][];
+    boolean componentWhiteText[];
+    int componentX[];
+    int componentY[];
+    int componentType[];
+    int componentWidth[];
+    int componentHeight[];
+    int copmonentInputMaxLength[];
+    int componentTextSize[];
+    String componentText[];
+    String componentTextList[][];
     int gcc;
     int gcd;
     int gce;
     int gcf;
-    int gcg;
+    int selectedComponent;
     int gch;
     int gci;
     int gcj;
