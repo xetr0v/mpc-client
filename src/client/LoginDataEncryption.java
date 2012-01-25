@@ -1,73 +1,59 @@
 package client;
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
 
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.zip.CRC32;
 
 import javax.crypto.Cipher;
 
-@SuppressWarnings("all")
-public class LoginDataEncryption
-{
+public class LoginDataEncryption {
 
-    public void addByte(int i)
-    {
+    public void addByte(int i) {
         packet[offset++] = (byte)i;
     }
 
-    public void addInt(int i)
-    {
+    public void addInt(int i) {
         packet[offset++] = (byte)(i >> 24);
         packet[offset++] = (byte)(i >> 16);
         packet[offset++] = (byte)(i >> 8);
         packet[offset++] = (byte)i;
     }
 
-    public void addString(String s)
-    {
+    @SuppressWarnings("deprecation")
+    public void addString(String s) {
         s.getBytes(0, s.length(), packet, offset);
         offset += s.length();
         packet[offset++] = 10;
     }
 
-    public void addBytes(byte bytes[], int offset, int length)
-    {
+    public void addBytes(byte bytes[], int offset, int length) {
         for(int i = offset; i < offset + length; i++)
             packet[this.offset++] = bytes[i];
 
     }
 
-    public int getByte()
-    {
+    public int getByte() {
         return packet[offset++] & 0xff;
     }
 
-    public int getShort()
-    {
+    public int getShort() {
         offset += 2;
         return ((packet[offset - 2] & 0xff) << 8) + (packet[offset - 1] & 0xff);
     }
 
-    public int getInt()
-    {
+    public int getInt() {
         offset += 4;
         return ((packet[offset - 4] & 0xff) << 24) + ((packet[offset - 3] & 0xff) << 16) + ((packet[offset - 2] & 0xff) << 8) + (packet[offset - 1] & 0xff);
     }
 
-    public void getBytes(byte arg0[], int arg1, int arg2)
-    {
+    public void getBytes(byte arg0[], int arg1, int arg2) {
         for(int i = arg1; i < arg1 + arg2; i++)
             arg0[i] = packet[offset++];
 
     }
 
-    public byte[] encrypt(byte text[]) throws Exception
-    {
+    public byte[] encrypt(byte text[]) throws Exception {
         byte cipherText[] = null;
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.ENCRYPT_MODE, pubKey);
@@ -75,8 +61,7 @@ public class LoginDataEncryption
         return cipherText;
     }
 
-    public LoginDataEncryption(byte abyte0[])
-    {
+    public LoginDataEncryption(byte abyte0[]) {
         packet = abyte0;
         offset = 0;
         try {

@@ -1,23 +1,16 @@
 package client;
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
 
 import java.io.*;
 import java.net.URL;
 
-public class DataOperations
-{
+public class DataOperations {
 
     public static InputStream openInputStream(String arg0)
-        throws IOException
-    {
+        throws IOException {
         Object obj;
-        if(codeBase == null)
-        {
+        if(codeBase == null) {
             obj = new BufferedInputStream(new FileInputStream(arg0));
-        } else
-        {
+        } else {
             URL url = new URL(codeBase, arg0);
             obj = url.openStream();
         }
@@ -25,61 +18,51 @@ public class DataOperations
     }
 
     public static void readFully(String s, byte abyte0[], int i)
-        throws IOException
-    {
+        throws IOException {
         InputStream inputstream = openInputStream(s);
         DataInputStream datainputstream = new DataInputStream(inputstream);
-        try
-        {
+        try {
             datainputstream.readFully(abyte0, 0, i);
         }
         catch(EOFException _ex) { }
         datainputstream.close();
     }
 
-    public static int getByte(byte byte0)
-    {
+    public static int getByte(byte byte0) {
         return byte0 & 0xff;
     }
 
-    public static int getShort(byte abyte0[], int i)
-    {
+    public static int getShort(byte abyte0[], int i) {
         return ((abyte0[i] & 0xff) << 8) + (abyte0[i + 1] & 0xff);
     }
 
-    public static int getInt(byte abyte0[], int i)
-    {
+    public static int getInt(byte abyte0[], int i) {
         return ((abyte0[i] & 0xff) << 24) + ((abyte0[i + 1] & 0xff) << 16) + ((abyte0[i + 2] & 0xff) << 8) + (abyte0[i + 3] & 0xff);
     }
 
-    public static long getLong(byte abyte0[], int i)
-    {
+    public static long getLong(byte abyte0[], int i) {
         return (((long)getInt(abyte0, i) & 0xffffffffL) << 32) + ((long)getInt(abyte0, i + 4) & 0xffffffffL);
     }
 
-    public static int getShortSigned(byte abyte0[], int i)
-    {
+    public static int getShort2(byte abyte0[], int i) {
         int j = getByte(abyte0[i]) * 256 + getByte(abyte0[i + 1]);
         if(j > 32767)
             j -= 0x10000;
         return j;
     }
 
-    public static int getInt2(byte abyte0[], int i)
-    {
+    public static int getInt2(byte abyte0[], int i) {
         if((abyte0[i] & 0xff) < 128)
             return abyte0[i];
         else
             return ((abyte0[i] & 0xff) - 128 << 24) + ((abyte0[i + 1] & 0xff) << 16) + ((abyte0[i + 2] & 0xff) << 8) + (abyte0[i + 3] & 0xff);
     }
 
-    public static int getBits(byte arg0[], int arg1, int arg2)
-    {
+    public static int getBits(byte arg0[], int arg1, int arg2) {
         int i = arg1 >> 3;
         int j = 8 - (arg1 & 7);
         int k = 0;
-        for(; arg2 > j; j = 8)
-        {
+        for(; arg2 > j; j = 8) {
             k += (arg0[i++] & bitMask[j]) << arg2 - j;
             arg2 -= j;
         }
@@ -91,15 +74,12 @@ public class DataOperations
         return k;
     }
 
-    public static String formatString(String arg0, int arg1)
-    {
+    public static String formatString(String arg0, int arg1) {
         String s = "";
         for(int i = 0; i < arg1; i++)
-            if(i >= arg0.length())
-            {
+            if(i >= arg0.length()) {
                 s = s + " ";
-            } else
-            {
+            } else {
                 char c = arg0.charAt(i);
                 if(c >= 'a' && c <= 'z')
                     s = s + c;
@@ -116,16 +96,13 @@ public class DataOperations
         return s;
     }
 
-    public static String ipToString(int i)
-    {
+    public static String ipToString(int i) {
         return (i >> 24 & 0xff) + "." + (i >> 16 & 0xff) + "." + (i >> 8 & 0xff) + "." + (i & 0xff);
     }
 
-    public static long nameToHash(String arg0)
-    {
+    public static long nameToHash(String arg0) {
         String s = "";
-        for(int i = 0; i < arg0.length(); i++)
-        {
+        for(int i = 0; i < arg0.length(); i++) {
             char c = arg0.charAt(i);
             if(c >= 'a' && c <= 'z')
                 s = s + c;
@@ -143,8 +120,7 @@ public class DataOperations
         if(s.length() > 12)
             s = s.substring(0, 12);
         long l = 0L;
-        for(int j = 0; j < s.length(); j++)
-        {
+        for(int j = 0; j < s.length(); j++) {
             char c1 = s.charAt(j);
             l *= 37L;
             if(c1 >= 'a' && c1 <= 'z')
@@ -157,34 +133,29 @@ public class DataOperations
         return l;
     }
 
-    public static String hashToName(long arg0)
-    {
+    public static String hashToName(long arg0) {
         if(arg0 < 0L)
             return "invalid_name";
         String s = "";
-        while(arg0 != 0L) 
-        {
+        while(arg0 != 0L)  {
             int i = (int)(arg0 % 37L);
             arg0 /= 37L;
             if(i == 0)
                 s = " " + s;
             else
-            if(i < 27)
-            {
+            if(i < 27) {
                 if(arg0 % 37L == 0L)
                     s = (char)((i + 65) - 1) + s;
                 else
                     s = (char)((i + 97) - 1) + s;
-            } else
-            {
+            } else {
                 s = (char)((i + 48) - 27) + s;
             }
         }
         return s;
     }
 
-    public static int getSoundOffset(String arg0, byte arg1[])
-    {
+    public static int getSoundOffset(String arg0, byte arg1[]) {
         int i = getShort(arg1, 0);
         int j = 0;
         arg0 = arg0.toUpperCase();
@@ -192,8 +163,7 @@ public class DataOperations
             j = (j * 61 + arg0.charAt(k)) - 32;
 
         int l = 2 + i * 10;
-        for(int i1 = 0; i1 < i; i1++)
-        {
+        for(int i1 = 0; i1 < i; i1++) {
             int j1 = (arg1[i1 * 10 + 2] & 0xff) * 0x1000000 + (arg1[i1 * 10 + 3] & 0xff) * 0x10000 + (arg1[i1 * 10 + 4] & 0xff) * 256 + (arg1[i1 * 10 + 5] & 0xff);
             int k1 = (arg1[i1 * 10 + 9] & 0xff) * 0x10000 + (arg1[i1 * 10 + 10] & 0xff) * 256 + (arg1[i1 * 10 + 11] & 0xff);
             if(j1 == j)
@@ -204,35 +174,28 @@ public class DataOperations
         return 0;
     }
 
-    public static int getSoundLength(String arg0, byte arg1[])
-    {
+    public static int getSoundLength(String arg0, byte arg1[]) {
         int i = getShort(arg1, 0);
         int j = 0;
         arg0 = arg0.toUpperCase();
         for(int k = 0; k < arg0.length(); k++)
             j = (j * 61 + arg0.charAt(k)) - 32;
 
-        int l = 2 + i * 10;
-        for(int i1 = 0; i1 < i; i1++)
-        {
+        for(int i1 = 0; i1 < i; i1++) {
             int j1 = (arg1[i1 * 10 + 2] & 0xff) * 0x1000000 + (arg1[i1 * 10 + 3] & 0xff) * 0x10000 + (arg1[i1 * 10 + 4] & 0xff) * 256 + (arg1[i1 * 10 + 5] & 0xff);
             int k1 = (arg1[i1 * 10 + 6] & 0xff) * 0x10000 + (arg1[i1 * 10 + 7] & 0xff) * 256 + (arg1[i1 * 10 + 8] & 0xff);
-            int l1 = (arg1[i1 * 10 + 9] & 0xff) * 0x10000 + (arg1[i1 * 10 + 10] & 0xff) * 256 + (arg1[i1 * 10 + 11] & 0xff);
             if(j1 == j)
                 return k1;
-            l += l1;
         }
 
         return 0;
     }
 
-    public static byte[] loadData(String s, int i, byte abyte0[])
-    {
+    public static byte[] loadData(String s, int i, byte abyte0[]) {
         return loadData(s, i, abyte0, null);
     }
 
-    public static byte[] loadData(String arg0, int arg1, byte arg2[], byte arg3[])
-    {
+    public static byte[] loadData(String arg0, int arg1, byte arg2[], byte arg3[]) {
         int i = (arg2[0] & 0xff) * 256 + (arg2[1] & 0xff);
         int j = 0;
         arg0 = arg0.toUpperCase();
@@ -240,20 +203,16 @@ public class DataOperations
             j = (j * 61 + arg0.charAt(k)) - 32;
 
         int l = 2 + i * 10;
-        for(int i1 = 0; i1 < i; i1++)
-        {
+        for(int i1 = 0; i1 < i; i1++) {
             int j1 = (arg2[i1 * 10 + 2] & 0xff) * 0x1000000 + (arg2[i1 * 10 + 3] & 0xff) * 0x10000 + (arg2[i1 * 10 + 4] & 0xff) * 256 + (arg2[i1 * 10 + 5] & 0xff);
             int k1 = (arg2[i1 * 10 + 6] & 0xff) * 0x10000 + (arg2[i1 * 10 + 7] & 0xff) * 256 + (arg2[i1 * 10 + 8] & 0xff);
             int l1 = (arg2[i1 * 10 + 9] & 0xff) * 0x10000 + (arg2[i1 * 10 + 10] & 0xff) * 256 + (arg2[i1 * 10 + 11] & 0xff);
-            if(j1 == j)
-            {
+            if(j1 == j) {
                 if(arg3 == null)
                     arg3 = new byte[k1 + arg1];
-                if(k1 != l1)
-                {
+                if(k1 != l1) {
                     DataFileDecrypter.unpackData(arg3, k1, arg2, l1, l);
-                } else
-                {
+                } else {
                     for(int i2 = 0; i2 < k1; i2++)
                         arg3[i2] = arg2[l + i2];
 

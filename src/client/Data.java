@@ -1,14 +1,8 @@
 package client;
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
 
+public class Data {
 
-public class Data
-{
-
-    public static int getModelNameIndex(String arg0)
-    {
+    public static int getModelNameIndex(String arg0) {
         if(arg0.equalsIgnoreCase("na"))
             return 0;
         for(int i = 0; i < modelCount; i++)
@@ -19,22 +13,19 @@ public class Data
         return modelCount - 1;
     }
 
-    public static int readByte()
-    {
+    public static int readByte() {
         int i = integerData[integerDataIndex] & 0xff;
         integerDataIndex++;
         return i;
     }
 
-    public static int readShort()
-    {
+    public static int readShort() {
         int i = DataOperations.getShort(integerData, integerDataIndex);
         integerDataIndex += 2;
         return i;
     }
 
-    public static int readInt()
-    {
+    public static int readInt() {
         int i = DataOperations.getInt(integerData, integerDataIndex);
         integerDataIndex += 4;
         if(i > 0x5f5e0ff)
@@ -42,16 +33,14 @@ public class Data
         return i;
     }
 
-    public static String readString()
-    {
+    public static String readString() {
         String s;
         for(s = ""; stringData[stringDataIndex] != 0; s = s + (char)stringData[stringDataIndex++]);
         stringDataIndex++;
         return s;
     }
 
-    public static void load(byte arg0[], boolean arg1)
-    {
+    public static void load(byte arg0[], boolean arg1) {
         stringData = DataOperations.loadData("string.dat", 0, arg0);
         stringDataIndex = 0;
         integerData = DataOperations.loadData("integer.dat", 0, arg0);
@@ -77,8 +66,7 @@ public class Data
         for(int k = 0; k < itemCount; k++)
             itemCommand[k] = readString();
 
-        for(int l = 0; l < itemCount; l++)
-        {
+        for(int l = 0; l < itemCount; l++) {
             itemInventoryPicture[l] = readShort();
             if(itemInventoryPicture[l] + 1 > highestLoadedPicture)
                 highestLoadedPicture = itemInventoryPicture[l] + 1;
@@ -129,8 +117,7 @@ public class Data
         }*/
 
         for(int l2 = 0; l2 < itemCount; l2++)
-            if(!arg1 && itemMembers[l2] == 1)
-            {
+            if(!arg1 && itemMembers[l2] == 1) {
                 itemName[l2] = "Members object";
                 itemDescription[l2] = "You need to be a member to use this object";
                 itemBasePrice[l2] = 0;
@@ -180,10 +167,8 @@ public class Data
         for(int k4 = 0; k4 < npcCount; k4++)
             npcAttackable[k4] = readByte();
 
-        for(int l4 = 0; l4 < npcCount; l4++)
-        {
-            for(int i5 = 0; i5 < 12; i5++)
-            {
+        for(int l4 = 0; l4 < npcCount; l4++) {
+            for(int i5 = 0; i5 < 12; i5++) {
                 npcAnimationCount[l4][i5] = readByte();
                 if(npcAnimationCount[l4][i5] == 255)
                     npcAnimationCount[l4][i5] = -1;
@@ -375,8 +360,7 @@ public class Data
         for(int k16 = 0; k16 < spellCount; k16++)
             spellType[k16] = readByte();
 
-        for(int l16 = 0; l16 < spellCount; l16++)
-        {
+        for(int l16 = 0; l16 < spellCount; l16++) {
             int i17 = readByte();
             spelRequiredRuneID[l16] = new int[i17];
             for(int k17 = 0; k17 < i17; k17++)
@@ -384,8 +368,7 @@ public class Data
 
         }
 
-        for(int j17 = 0; j17 < spellCount; j17++)
-        {
+        for(int j17 = 0; j17 < spellCount; j17++) {
             int l17 = readByte();
             spellRequiredRuneCount[j17] = new int[l17];
             for(int j18 = 0; j18 < l17; j18++)

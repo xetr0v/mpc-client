@@ -1,37 +1,27 @@
 package client;
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
 
 import java.applet.Applet;
 import java.awt.*;
-import java.awt.image.IndexColorModel;
-import java.awt.image.MemoryImageSource;
 import java.io.*;
 import java.net.*;
 
+@SuppressWarnings("serial")
 public class GameApplet extends Applet
-    implements Runnable
-{
+    implements Runnable {
 
-    protected void loadGame()
-    {
+    protected void loadGame() {
     }
 
-    protected synchronized void checkInputs()
-    {
+    protected synchronized void checkInputs() {
     }
 
-    protected void close()
-    {
+    protected void close() {
     }
 
-    protected synchronized void drawWindow()
-    {
+    protected synchronized void drawWindow() {
     }
 
-    protected final void flc(int width, int height, String title, boolean resizable)
-    {
+    protected final void flc(int width, int height, String title, boolean resizable) {
         inBrowser = false;
         System.out.println("Started application");
         appletWidth = width;
@@ -43,25 +33,21 @@ public class GameApplet extends Applet
         gameWindowThread.setPriority(1);
     }
 
-    protected final boolean inBrowser()
-    {
+    protected final boolean inBrowser() {
         return inBrowser;
     }
 
-    protected final void setRefreshRate(int i)
-    {
+    protected final void setRefreshRate(int i) {
         refreshRate = 1000 / i;
     }
 
-    protected final void resetTimings()
-    {
+    protected final void resetTimings() {
         for(int i = 0; i < 10; i++)
             timeArray[i] = 0L;
 
     }
 
-    public final synchronized boolean keyDown(Event arg0, int key)
-    {
+    public final synchronized boolean keyDown(Event arg0, int key) {
         handleKeyDown(key);
         //lastActionTimeout = 0;
         if(key == 1006)
@@ -85,8 +71,7 @@ public class GameApplet extends Applet
         if((char)key == '\u03F0')
             keyF1Toggle = !keyF1Toggle;
         boolean flag = false;
-        for(int i = 0; i < allowedChars.length(); i++)
-        {
+        for(int i = 0; i < allowedChars.length(); i++) {
             if(key != allowedChars.charAt(i))
                 continue;
             flag = true;
@@ -101,20 +86,17 @@ public class GameApplet extends Applet
             inputText = inputText.substring(0, inputText.length() - 1);
         if(key == 8 && pmText.length() > 0)
             pmText = pmText.substring(0, pmText.length() - 1);
-        if(key == 10 || key == 13)
-        {
+        if(key == 10 || key == 13) {
             enteredInputText = inputText;
             enteredPMText = pmText;
         }
         return true;
     }
 
-    protected void handleKeyDown(int i)
-    {
+    protected void handleKeyDown(int i) {
     }
 
-    public final synchronized boolean keyUp(Event event, int i)
-    {
+    public final synchronized boolean keyUp(Event event, int i) {
         if(i == 1006)
             keyLeftDown = false;
         if(i == 1007)
@@ -136,48 +118,40 @@ public class GameApplet extends Applet
         return true;
     }
 
-    public final synchronized boolean mouseMove(Event event, int i, int k)
-    {
-        mouseX = i;
-        mouseY = k + mouseYOffset;
-        mouseButton = 0;
-        //lastActionTimeout = 0;
-        return true;
-    }
-
-    public final synchronized boolean mouseUp(Event event, int i, int k)
-    {
+    public final synchronized boolean mouseMove(Event event, int i, int k) {
         mouseX = i;
         mouseY = k + mouseYOffset;
         mouseButton = 0;
         return true;
     }
 
-    public final synchronized boolean mouseDown(Event arg0, int arg1, int arg2)
-    {
+    public final synchronized boolean mouseUp(Event event, int i, int k) {
+        mouseX = i;
+        mouseY = k + mouseYOffset;
+        mouseButton = 0;
+        return true;
+    }
+
+    public final synchronized boolean mouseDown(Event arg0, int arg1, int arg2) {
         mouseX = arg1;
         mouseY = arg2 + mouseYOffset;
         mouseButton = arg0.metaDown() ? 2 : 1;
         lastMouseButton = mouseButton;
-        //lastActionTimeout = 0;
         handleMouseDown(mouseButton, arg1, arg2);
         return true;
     }
 
-    protected void handleMouseDown(int i, int k, int l)
-    {
+    protected void handleMouseDown(int i, int k, int l) {
     }
 
-    public final synchronized boolean mouseDrag(Event arg0, int arg1, int arg2)
-    {
+    public final synchronized boolean mouseDrag(Event arg0, int arg1, int arg2) {
         mouseX = arg1;
         mouseY = arg2 + mouseYOffset;
         mouseButton = arg0.metaDown() ? 2 : 1;
         return true;
     }
 
-    public final void init()
-    {
+    public final void init() {
         inBrowser = true;
         System.out.println("Started applet");
         appletWidth = 512;
@@ -187,45 +161,38 @@ public class GameApplet extends Applet
         startThread(this);
     }
 
-    public final void start()
-    {
+    public final void start() {
         if(runStatus >= 0)
             runStatus = 0;
     }
 
-    public final void stop()
-    {
+    public final void stop() {
         if(runStatus >= 0)
             runStatus = 4000 / refreshRate;
     }
 
-    public final void destroy()
-    {
+    @SuppressWarnings("deprecation")
+    public final void destroy() {
         runStatus = -1;
-        try
-        {
+        try {
             Thread.sleep(2000L);
         }
         catch(Exception _ex) { }
-        if(runStatus == -1)
-        {
+        if(runStatus == -1) {
             System.out.println("2 seconds expired, forcing kill");
             closeProgram();
-            if(gameWindowThread != null)
-            {
+            if(gameWindowThread != null) {
                 gameWindowThread.stop();
                 gameWindowThread = null;
             }
         }
     }
 
-    private final void closeProgram()
-    {
+    private final void closeProgram() {
         runStatus = -2;
         System.out.println("Closing program");
         close();
-        try
-        {
+        try {
             Thread.sleep(1000L);
         }
         catch(Exception _ex) { }
@@ -235,10 +202,8 @@ public class GameApplet extends Applet
             System.exit(0);
     }
 
-    public final void run()
-    {
-        if(gameLoadingScreen == 1)
-        {
+    public final void run() {
+        if(gameLoadingScreen == 1) {
             gameLoadingScreen = 2;
             graphics = getGraphics();
             loadLoadingScreen();
@@ -253,14 +218,10 @@ public class GameApplet extends Applet
         for(int k1 = 0; k1 < 10; k1++)
             timeArray[k1] = System.currentTimeMillis();
 
-        long l = System.currentTimeMillis();
-        while(runStatus >= 0) 
-        {
-            if(runStatus > 0)
-            {
+        while(runStatus >= 0)  {
+            if(runStatus > 0) {
                 runStatus--;
-                if(runStatus == 0)
-                {
+                if(runStatus == 0) {
                     closeProgram();
                     gameWindowThread = null;
                     return;
@@ -271,8 +232,7 @@ public class GameApplet extends Applet
             k = 300;
             sleepTime = 1;
             long l1 = System.currentTimeMillis();
-            if(timeArray[i] == 0L)
-            {
+            if(timeArray[i] == 0L) {
                 k = i2;
                 sleepTime = j2;
             } else
@@ -280,38 +240,32 @@ public class GameApplet extends Applet
                 k = (int)((long)(2560 * refreshRate) / (l1 - timeArray[i]));
             if(k < 25)
                 k = 25;
-            if(k > 256)
-            {
+            if(k > 256) {
                 k = 256;
                 sleepTime = (int)((long)refreshRate - (l1 - timeArray[i]) / 10L);
                 if(sleepTime < gameMinThreadSleepTime)
                     sleepTime = gameMinThreadSleepTime;
             }
-            try
-            {
+            try {
                 Thread.sleep(sleepTime);
             }
             catch(InterruptedException _ex) { }
             timeArray[i] = l1;
             i = (i + 1) % 10;
-            if(sleepTime > 1)
-            {
+            if(sleepTime > 1) {
                 for(int k2 = 0; k2 < 10; k2++)
                     if(timeArray[k2] != 0L)
                         timeArray[k2] += sleepTime;
 
             }
             int l2 = 0;
-            while(j1 < 256) 
-            {
+            while(j1 < 256)  {
                 checkInputs();
                 j1 += k;
-                if(++l2 > fie)
-                {
+                if(++l2 > fie) {
                     j1 = 0;
                     fij += 6;
-                    if(fij > 25)
-                    {
+                    if(fij > 25) {
                         fij = 0;
                         keyF1Toggle = true;
                     }
@@ -327,90 +281,52 @@ public class GameApplet extends Applet
         gameWindowThread = null;
     }
 
-    public final void update(Graphics g1)
-    {
+    public final void update(Graphics g1) {
         paint(g1);
     }
 
-    public final void paint(Graphics g1)
-    {
-        if(gameLoadingScreen == 2 && logoImage != null)
-        {
+    public final void paint(Graphics g1) {
+        if(gameLoadingScreen == 2) {
             drawLoadingScreen(gameLoadingPercentage, gameLoadingFileTitle);
             return;
         }
     }
 
-    private final void loadLoadingScreen()
-    {
+    private final void loadLoadingScreen() {
         graphics.setColor(Color.black);
         graphics.fillRect(0, 0, appletWidth, appletHeight);
-        byte abyte0[] = unpackData("jagex.jag", "Jagex library", 0);
-        if(abyte0 == null)
-        {
-            return;
-        } else
-        {
-            byte logo[] = DataOperations.loadData("logo.tga", 0, abyte0);
-            logoImage = getImage(logo);
-            GameImage.loadFont("h11p", 0, this);
-            GameImage.loadFont("h12b", 1, this);
-            GameImage.loadFont("h12p", 2, this);
-            GameImage.loadFont("h13b", 3, this);
-            GameImage.loadFont("h14b", 4, this);
-            GameImage.loadFont("h16b", 5, this);
-            GameImage.loadFont("h20b", 6, this);
-            GameImage.loadFont("h24b", 7, this);
-            return;
-        }
+        byte bytes[] = unpackData("fonts.jag", "Game fonts", 0);
+        GameImage.addFont(DataOperations.loadData("h11p.jf", 0, bytes));
+        GameImage.addFont(DataOperations.loadData("h12b.jf", 0, bytes));
+        GameImage.addFont(DataOperations.loadData("h12p.jf", 0, bytes));
+        GameImage.addFont(DataOperations.loadData("h13b.jf", 0, bytes));
+        GameImage.addFont(DataOperations.loadData("h14b.jf", 0, bytes));
+        GameImage.addFont(DataOperations.loadData("h16b.jf", 0, bytes));
+        GameImage.addFont(DataOperations.loadData("h20b.jf", 0, bytes));
+        GameImage.addFont(DataOperations.loadData("h24b.jf", 0, bytes));
     }
 
-    private final void drawLoadingScreen(int percentage, String fileTitle)
-    {
-        try
-        {
+    private final void drawLoadingScreen(int percentage, String fileTitle) {
+        try {
             int i = (appletWidth - 281) / 2;
             int k = (appletHeight - 148) / 2;
             graphics.setColor(Color.black);
             graphics.fillRect(0, 0, appletWidth, appletHeight);
-            if(!minimalLoadingScreen)
-                graphics.drawImage(logoImage, i, k, this);
             i += 2;
             k += 90;
             gameLoadingPercentage = percentage;
             gameLoadingFileTitle = fileTitle;
             graphics.setColor(new Color(132, 132, 132));
-            if(minimalLoadingScreen)
-                graphics.setColor(new Color(220, 0, 0));
             graphics.drawRect(i - 2, k - 2, 280, 23);
             graphics.fillRect(i, k, (277 * percentage) / 100, 20);
             graphics.setColor(new Color(198, 198, 198));
-            if(minimalLoadingScreen)
-                graphics.setColor(new Color(255, 255, 255));
             drawString(graphics, fileTitle, gameLoadingFont, i + 138, k + 10);
-            if(!minimalLoadingScreen)
-            {
-                drawString(graphics, "Created by JAGeX - visit www.jagex.com", gameLoadingCopyrightFont1, i + 138, k + 30);
-                drawString(graphics, "\2512001-2002 Andrew Gower and Jagex Ltd", gameLoadingCopyrightFont1, i + 138, k + 44);
-            } else
-            {
-                graphics.setColor(new Color(132, 132, 152));
-                drawString(graphics, "\2512001-2002 Andrew Gower and Jagex Ltd", gameLoadingCopyrightFont2, i + 138, appletHeight - 20);
-            }
-            if(fin != null)// TODO ???
-            {
-                graphics.setColor(Color.white);
-                drawString(graphics, fin, gameLoadingCopyrightFont1, i + 138, k - 120);
-                return;
-            }
         }
         catch(Exception _ex) { }
     }
 
-    protected final void drawLoadingBarText(int i, String s)
-    {
-        try
-        {
+    protected final void drawLoadingBarText(int i, String s) {
+        try {
             int k = (appletWidth - 281) / 2;
             int l = (appletHeight - 148) / 2;
             k += 2;
@@ -419,25 +335,19 @@ public class GameApplet extends Applet
             gameLoadingFileTitle = s;
             int i1 = (277 * i) / 100;
             graphics.setColor(new Color(132, 132, 132));
-            if(minimalLoadingScreen)
-                graphics.setColor(new Color(220, 0, 0));
             graphics.fillRect(k, l, i1, 20);
             graphics.setColor(Color.black);
             graphics.fillRect(k + i1, l, 277 - i1, 20);
             graphics.setColor(new Color(198, 198, 198));
-            if(minimalLoadingScreen)
-                graphics.setColor(new Color(255, 255, 255));
             drawString(graphics, s, gameLoadingFont, k + 138, l + 10);
             return;
         }
-        catch(Exception _ex)
-        {
+        catch(Exception _ex) {
             return;
         }
     }
 
-    protected final void drawString(Graphics arg0, String arg1, Font arg2, int arg3, int arg4)
-    {
+    protected final void drawString(Graphics arg0, String arg1, Font arg2, int arg3, int arg4) {
         Object obj;
         if(gameFrame == null)
             obj = this;
@@ -449,43 +359,12 @@ public class GameApplet extends Applet
         arg0.drawString(arg1, arg3 - fontmetrics.stringWidth(arg1) / 2, arg4 + fontmetrics.getHeight() / 4);
     }
 
-    private final Image getImage(byte arg0[])
-    {
-        int i = arg0[13] * 256 + arg0[12];
-        int k = arg0[15] * 256 + arg0[14];
-        byte abyte0[] = new byte[256];
-        byte abyte1[] = new byte[256];
-        byte abyte2[] = new byte[256];
-        for(int l = 0; l < 256; l++)
-        {
-            abyte0[l] = arg0[20 + l * 3];
-            abyte1[l] = arg0[19 + l * 3];
-            abyte2[l] = arg0[18 + l * 3];
-        }
-
-        IndexColorModel indexcolormodel = new IndexColorModel(8, 256, abyte0, abyte1, abyte2);
-        byte abyte3[] = new byte[i * k];
-        int i1 = 0;
-        for(int j1 = k - 1; j1 >= 0; j1--)
-        {
-            for(int k1 = 0; k1 < i; k1++)
-                abyte3[i1++] = arg0[786 + k1 + j1 * i];
-
-        }
-
-        MemoryImageSource memoryimagesource = new MemoryImageSource(i, k, indexcolormodel, abyte3, 0, i);
-        Image image = createImage(memoryimagesource);
-        return image;
-    }
-
-    protected byte[] unpackData(String filename, String fileTitle, int startPercentage)
-    {
+    protected byte[] unpackData(String filename, String fileTitle, int startPercentage) {
         System.out.println("Using default load");
         int i = 0;
         int k = 0;
         byte abyte0[] = null;
-        try
-        {
+        try {
             drawLoadingBarText(startPercentage, "Loading " + fileTitle + " - 0%");
             java.io.InputStream inputstream = DataOperations.openInputStream(filename);
             DataInputStream datainputstream = new DataInputStream(inputstream);
@@ -496,8 +375,7 @@ public class GameApplet extends Applet
             drawLoadingBarText(startPercentage, "Loading " + fileTitle + " - 5%");
             int l = 0;
             abyte0 = new byte[k];
-            while(l < k) 
-            {
+            while(l < k)  {
                 int i1 = k - l;
                 if(i1 > 1000)
                     i1 = 1000;
@@ -509,51 +387,43 @@ public class GameApplet extends Applet
         }
         catch(IOException _ex) { }
         drawLoadingBarText(startPercentage, "Unpacking " + fileTitle);
-        if(k != i)
-        {
+        if(k != i) {
             byte abyte1[] = new byte[i];
             DataFileDecrypter.unpackData(abyte1, i, abyte0, k, 0);
             return abyte1;
-        } else
-        {
+        } else {
             return abyte0;
         }
     }
 
-    public Graphics getGraphics()
-    {
+    public Graphics getGraphics() {
         if(gameFrame != null)
             return gameFrame.getGraphics();
         else
             return super.getGraphics();
     }
 
-    public Image createImage(int i, int k)
-    {
+    public Image createImage(int i, int k) {
         if(gameFrame != null)
             return gameFrame.createImage(i, k);
         else
             return super.createImage(i, k);
     }
 
-    public URL getCodeBase()
-    {
+    public URL getCodeBase() {
         return super.getCodeBase();
     }
 
-    public URL getDocumentBase()
-    {
+    public URL getDocumentBase() {
         return super.getDocumentBase();
     }
 
-    public String getParameter(String s)
-    {
+    public String getParameter(String s) {
         return super.getParameter(s);
     }
 
     protected Socket makeSocket(String arg0, int arg1)
-        throws IOException
-    {
+        throws IOException {
         Socket socket;
         if(inBrowser())
             socket = new Socket(InetAddress.getByName(getCodeBase().getHost()), arg1);
@@ -564,26 +434,21 @@ public class GameApplet extends Applet
         return socket;
     }
 
-    protected void startThread(Runnable runnable)
-    {
+    protected void startThread(Runnable runnable) {
         Thread thread = new Thread(runnable);
         thread.setDaemon(true);
         thread.start();
     }
 
-    public GameApplet()
-    {
+    public GameApplet() {
         appletWidth = 512;
         appletHeight = 384;
         refreshRate = 20;
         fie = 1000;
         timeArray = new long[10];
         gameLoadingScreen = 1;
-        minimalLoadingScreen = false;
         gameLoadingFileTitle = "Loading";
         gameLoadingFont = new Font("TimesRoman", 0, 15);
-        gameLoadingCopyrightFont1 = new Font("Helvetica", 1, 13);
-        gameLoadingCopyrightFont2 = new Font("Helvetica", 0, 12);
         keyLeftBraceDown = false;
         keyRightBraceDown = false;
         keyLeftDown = false;
@@ -613,14 +478,9 @@ public class GameApplet extends Applet
     public int mouseYOffset;
     //public int lastActionTimeout;
     public int gameLoadingScreen;
-    public String fin;
-    private boolean minimalLoadingScreen;
     private int gameLoadingPercentage;
     private String gameLoadingFileTitle;
     private Font gameLoadingFont;
-    private Font gameLoadingCopyrightFont1;
-    private Font gameLoadingCopyrightFont2;
-    private Image logoImage;
     private Graphics graphics;
     private static String allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
     public boolean keyLeftBraceDown;

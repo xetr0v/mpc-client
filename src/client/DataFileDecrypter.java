@@ -1,15 +1,8 @@
 package client;
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
 
-import java.io.PrintStream;
+public class DataFileDecrypter {
 
-public class DataFileDecrypter
-{
-
-    public static int unpackData(byte abyte0[], int i, byte abyte1[], int j, int k)
-    {
+    public static int unpackData(byte abyte0[], int i, byte abyte1[], int j, int k) {
         DataFileVariables o1 = new DataFileVariables();
         o1.aee = abyte1;
         o1.aef = k;
@@ -29,8 +22,7 @@ public class DataFileDecrypter
         return i;
     }
 
-    private static void glk(DataFileVariables arg0)
-    {
+    private static void glk(DataFileVariables arg0) {
         byte byte4 = arg0.afa;
         int i = arg0.afb;
         int j = arg0.afl;
@@ -43,12 +35,9 @@ public class DataFileDecrypter
         int k1 = j1;
         int l1 = arg0.aha + 1;
 label0:
-        do
-        {
-            if(i > 0)
-            {
-                do
-                {
+        do {
+            if(i > 0) {
+                do {
                     if(j1 == 0)
                         break label0;
                     if(i == 1)
@@ -58,8 +47,7 @@ label0:
                     i1++;
                     j1--;
                 } while(true);
-                if(j1 == 0)
-                {
+                if(j1 == 0) {
                     i = 1;
                     break;
                 }
@@ -68,11 +56,9 @@ label0:
                 j1--;
             }
             boolean flag = true;
-            while(flag) 
-            {
+            while(flag)  {
                 flag = false;
-                if(j == l1)
-                {
+                if(j == l1) {
                     i = 0;
                     break label0;
                 }
@@ -81,14 +67,11 @@ label0:
                 byte byte0 = (byte)(l & 0xff);
                 l >>= 8;
                 j++;
-                if(byte0 != k)
-                {
+                if(byte0 != k) {
                     k = byte0;
-                    if(j1 == 0)
-                    {
+                    if(j1 == 0) {
                         i = 1;
-                    } else
-                    {
+                    } else {
                         abyte0[i1] = byte4;
                         i1++;
                         j1--;
@@ -99,8 +82,7 @@ label0:
                 }
                 if(j != l1)
                     continue;
-                if(j1 == 0)
-                {
+                if(j1 == 0) {
                     i = 1;
                     break label0;
                 }
@@ -114,21 +96,17 @@ label0:
             byte byte1 = (byte)(l & 0xff);
             l >>= 8;
             if(++j != l1)
-                if(byte1 != k)
-                {
+                if(byte1 != k) {
                     k = byte1;
-                } else
-                {
+                } else {
                     i = 3;
                     l = ai[l];
                     byte byte2 = (byte)(l & 0xff);
                     l >>= 8;
                     if(++j != l1)
-                        if(byte2 != k)
-                        {
+                        if(byte2 != k) {
                             k = byte2;
-                        } else
-                        {
+                        } else {
                             l = ai[l];
                             byte byte3 = (byte)(l & 0xff);
                             l >>= 8;
@@ -156,27 +134,7 @@ label0:
         arg0.ael = j1;
     }
 
-    private static void gll(DataFileVariables arg0)
-    {
-        boolean flag = false;
-        boolean flag1 = false;
-        boolean flag2 = false;
-        boolean flag3 = false;
-        boolean flag4 = false;
-        boolean flag5 = false;
-        boolean flag6 = false;
-        boolean flag7 = false;
-        boolean flag8 = false;
-        boolean flag9 = false;
-        boolean flag10 = false;
-        boolean flag11 = false;
-        boolean flag12 = false;
-        boolean flag13 = false;
-        boolean flag14 = false;
-        boolean flag15 = false;
-        boolean flag16 = false;
-        boolean flag17 = false;
-        boolean flag18 = false;
+    private static void gll(DataFileVariables arg0) {
         int k8 = 0;
         int ai[] = null;
         int ai1[] = null;
@@ -185,8 +143,7 @@ label0:
         if(DataFileVariables.aga == null)
             DataFileVariables.aga = new int[arg0.aff * 0x186a0];
         boolean flag19 = true;
-        while(flag19) 
-        {
+        while(flag19)  {
             byte byte0 = glm(arg0);
             if(byte0 == 23)
                 return;
@@ -214,8 +171,7 @@ label0:
             arg0.afh = arg0.afh << 8 | byte0 & 0xff;
             byte0 = glm(arg0);
             arg0.afh = arg0.afh << 8 | byte0 & 0xff;
-            for(int j = 0; j < 16; j++)
-            {
+            for(int j = 0; j < 16; j++) {
                 byte byte1 = gln(arg0);
                 if(byte1 == 1)
                     arg0.agd[j] = true;
@@ -227,10 +183,8 @@ label0:
                 arg0.agc[k] = false;
 
             for(int l = 0; l < 16; l++)
-                if(arg0.agd[l])
-                {
-                    for(int i3 = 0; i3 < 16; i3++)
-                    {
+                if(arg0.agd[l]) {
+                    for(int i3 = 0; i3 < 16; i3++) {
                         byte byte2 = gln(arg0);
                         if(byte2 == 1)
                             arg0.agc[l * 16 + i3] = true;
@@ -242,11 +196,9 @@ label0:
             int i4 = arg0.agb + 2;
             int j4 = gma(3, arg0);
             int k4 = gma(15, arg0);
-            for(int i1 = 0; i1 < k4; i1++)
-            {
+            for(int i1 = 0; i1 < k4; i1++) {
                 int j3 = 0;
-                do
-                {
+                do {
                     byte byte3 = gln(arg0);
                     if(byte3 == 0)
                         break;
@@ -259,8 +211,7 @@ label0:
             for(byte byte16 = 0; byte16 < j4; byte16++)
                 abyte0[byte16] = byte16;
 
-            for(int j1 = 0; j1 < k4; j1++)
-            {
+            for(int j1 = 0; j1 < k4; j1++) {
                 byte byte17 = arg0.agi[j1];
                 byte byte15 = abyte0[byte17];
                 for(; byte17 > 0; byte17--)
@@ -270,13 +221,10 @@ label0:
                 arg0.agh[j1] = byte15;
             }
 
-            for(int k3 = 0; k3 < j4; k3++)
-            {
+            for(int k3 = 0; k3 < j4; k3++) {
                 int l6 = gma(5, arg0);
-                for(int k1 = 0; k1 < i4; k1++)
-                {
-                    do
-                    {
+                for(int k1 = 0; k1 < i4; k1++) {
+                    do {
                         byte byte4 = gln(arg0);
                         if(byte4 == 0)
                             break;
@@ -291,12 +239,10 @@ label0:
 
             }
 
-            for(int l3 = 0; l3 < j4; l3++)
-            {
+            for(int l3 = 0; l3 < j4; l3++) {
                 byte byte8 = 32;
                 int i = 0;
-                for(int l1 = 0; l1 < i4; l1++)
-                {
+                for(int l1 = 0; l1 < i4; l1++) {
                     if(arg0.agj[l3][l1] > i)
                         i = arg0.agj[l3][l1];
                     if(arg0.agj[l3][l1] < byte8)
@@ -308,17 +254,14 @@ label0:
             }
 
             int l4 = arg0.agb + 1;
-            int l5 = 0x186a0 * arg0.aff;
             int i5 = -1;
             int j5 = 0;
             for(int i2 = 0; i2 <= 255; i2++)
                 arg0.afk[i2] = 0;
 
             int j9 = 4095;
-            for(int l8 = 15; l8 >= 0; l8--)
-            {
-                for(int i9 = 15; i9 >= 0; i9--)
-                {
+            for(int l8 = 15; l8 >= 0; l8--) {
+                for(int i9 = 15; i9 >= 0; i9--) {
                     arg0.agf[j9] = (byte)(l8 * 16 + i9);
                     j9--;
                 }
@@ -327,8 +270,7 @@ label0:
             }
 
             int i6 = 0;
-            if(j5 == 0)
-            {
+            if(j5 == 0) {
                 i5++;
                 j5 = 50;
                 byte byte12 = arg0.agh[i5];
@@ -341,27 +283,23 @@ label0:
             int i7 = k8;
             int l7;
             byte byte9;
-            for(l7 = gma(i7, arg0); l7 > ai[i7]; l7 = l7 << 1 | byte9)
-            {
+            for(l7 = gma(i7, arg0); l7 > ai[i7]; l7 = l7 << 1 | byte9) {
                 i7++;
                 byte9 = gln(arg0);
             }
 
             for(int k5 = ai2[l7 - ai1[i7]]; k5 != l4;)
-                if(k5 == 0 || k5 == 1)
-                {
+                if(k5 == 0 || k5 == 1) {
                     int j6 = -1;
                     int k6 = 1;
-                    do
-                    {
+                    do {
                         if(k5 == 0)
                             j6 += k6;
                         else
                         if(k5 == 1)
                             j6 += 2 * k6;
                         k6 *= 2;
-                        if(j5 == 0)
-                        {
+                        if(j5 == 0) {
                             i5++;
                             j5 = 50;
                             byte byte13 = arg0.agh[i5];
@@ -374,8 +312,7 @@ label0:
                         int j7 = k8;
                         int i8;
                         byte byte10;
-                        for(i8 = gma(j7, arg0); i8 > ai[j7]; i8 = i8 << 1 | byte10)
-                        {
+                        for(i8 = gma(j7, arg0); i8 > ai[j7]; i8 = i8 << 1 | byte10) {
                             j7++;
                             byte10 = gln(arg0);
                         }
@@ -385,22 +322,18 @@ label0:
                     j6++;
                     byte byte5 = arg0.age[arg0.agf[arg0.agg[0]] & 0xff];
                     arg0.afk[byte5 & 0xff] += j6;
-                    for(; j6 > 0; j6--)
-                    {
+                    for(; j6 > 0; j6--) {
                         DataFileVariables.aga[i6] = byte5 & 0xff;
                         i6++;
                     }
 
-                } else
-                {
+                } else {
                     int j11 = k5 - 1;
                     byte byte6;
-                    if(j11 < 16)
-                    {
+                    if(j11 < 16) {
                         int j10 = arg0.agg[0];
                         byte6 = arg0.agf[j10 + j11];
-                        for(; j11 > 3; j11 -= 4)
-                        {
+                        for(; j11 > 3; j11 -= 4) {
                             int k11 = j10 + j11;
                             arg0.agf[k11] = arg0.agf[k11 - 1];
                             arg0.agf[k11 - 1] = arg0.agf[k11 - 2];
@@ -412,8 +345,7 @@ label0:
                             arg0.agf[j10 + j11] = arg0.agf[(j10 + j11) - 1];
 
                         arg0.agf[j10] = byte6;
-                    } else
-                    {
+                    } else {
                         int l10 = j11 / 16;
                         int i11 = j11 % 16;
                         int k10 = arg0.agg[l10] + i11;
@@ -422,21 +354,17 @@ label0:
                             arg0.agf[k10] = arg0.agf[k10 - 1];
 
                         arg0.agg[l10]++;
-                        for(; l10 > 0; l10--)
-                        {
+                        for(; l10 > 0; l10--) {
                             arg0.agg[l10]--;
                             arg0.agf[arg0.agg[l10]] = arg0.agf[(arg0.agg[l10 - 1] + 16) - 1];
                         }
 
                         arg0.agg[0]--;
                         arg0.agf[arg0.agg[0]] = byte6;
-                        if(arg0.agg[0] == 0)
-                        {
+                        if(arg0.agg[0] == 0) {
                             int i10 = 4095;
-                            for(int k9 = 15; k9 >= 0; k9--)
-                            {
-                                for(int l9 = 15; l9 >= 0; l9--)
-                                {
+                            for(int k9 = 15; k9 >= 0; k9--) {
+                                for(int l9 = 15; l9 >= 0; l9--) {
                                     arg0.agf[i10] = arg0.agf[arg0.agg[k9] + l9];
                                     i10--;
                                 }
@@ -449,8 +377,7 @@ label0:
                     arg0.afk[arg0.age[byte6 & 0xff] & 0xff]++;
                     DataFileVariables.aga[i6] = arg0.age[byte6 & 0xff] & 0xff;
                     i6++;
-                    if(j5 == 0)
-                    {
+                    if(j5 == 0) {
                         i5++;
                         j5 = 50;
                         byte byte14 = arg0.agh[i5];
@@ -463,8 +390,7 @@ label0:
                     int k7 = k8;
                     int j8;
                     byte byte11;
-                    for(j8 = gma(k7, arg0); j8 > ai[k7]; j8 = j8 << 1 | byte11)
-                    {
+                    for(j8 = gma(k7, arg0); j8 > ai[k7]; j8 = j8 << 1 | byte11) {
                         k7++;
                         byte11 = gln(arg0);
                     }
@@ -481,8 +407,7 @@ label0:
             for(int k2 = 1; k2 <= 256; k2++)
                 arg0.afm[k2] += arg0.afm[k2 - 1];
 
-            for(int l2 = 0; l2 < i6; l2++)
-            {
+            for(int l2 = 0; l2 < i6; l2++) {
                 byte byte7 = (byte)(DataFileVariables.aga[l2] & 0xff);
                 DataFileVariables.aga[arg0.afm[byte7 & 0xff]] |= l2 << 8;
                 arg0.afm[byte7 & 0xff]++;
@@ -503,23 +428,18 @@ label0:
         }
     }
 
-    private static byte glm(DataFileVariables o1)
-    {
+    private static byte glm(DataFileVariables o1) {
         return (byte)gma(8, o1);
     }
 
-    private static byte gln(DataFileVariables o1)
-    {
+    private static byte gln(DataFileVariables o1) {
         return (byte)gma(1, o1);
     }
 
-    private static int gma(int arg0, DataFileVariables arg1)
-    {
+    private static int gma(int arg0, DataFileVariables arg1) {
         int i;
-        do
-        {
-            if(arg1.afe >= arg0)
-            {
+        do {
+            if(arg1.afe >= arg0) {
                 int j = arg1.afd >> arg1.afe - arg0 & (1 << arg0) - 1;
                 arg1.afe -= arg0;
                 i = j;
@@ -536,26 +456,21 @@ label0:
         return i;
     }
 
-    private static void gmb(DataFileVariables arg0)
-    {
+    private static void gmb(DataFileVariables arg0) {
         arg0.agb = 0;
         for(int i = 0; i < 256; i++)
-            if(arg0.agc[i])
-            {
+            if(arg0.agc[i]) {
                 arg0.age[arg0.agb] = (byte)i;
                 arg0.agb++;
             }
 
     }
 
-    private static void gmc(int arg0[], int arg1[], int arg2[], byte arg3[], int arg4, int arg5, int arg6)
-    {
+    private static void gmc(int arg0[], int arg1[], int arg2[], byte arg3[], int arg4, int arg5, int arg6) {
         int i = 0;
-        for(int j = arg4; j <= arg5; j++)
-        {
+        for(int j = arg4; j <= arg5; j++) {
             for(int i2 = 0; i2 < arg6; i2++)
-                if(arg3[i2] == j)
-                {
+                if(arg3[i2] == j) {
                     arg2[i] = i2;
                     i++;
                 }
@@ -575,8 +490,7 @@ label0:
             arg0[j1] = 0;
 
         int j2 = 0;
-        for(int k1 = arg4; k1 <= arg5; k1++)
-        {
+        for(int k1 = arg4; k1 <= arg5; k1++) {
             j2 += arg1[k1 + 1] - arg1[k1];
             arg0[k1] = j2 - 1;
             j2 <<= 1;

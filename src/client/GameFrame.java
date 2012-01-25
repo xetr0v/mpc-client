@@ -1,16 +1,11 @@
 package client;
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
 
 import java.awt.*;
 
-@SuppressWarnings("all")
-public class GameFrame extends Frame
-{
+@SuppressWarnings({ "deprecation", "serial" })
+public class GameFrame extends Frame {
 
-    public GameFrame(GameApplet arg0, int width, int height, String title, boolean resizable, boolean translate)
-    {
+    public GameFrame(GameApplet arg0, int width, int height, String title, boolean resizable, boolean translate) {
         yOffset = 28;
         frameWidth = width;
         frameHeight = height;
@@ -26,8 +21,7 @@ public class GameFrame extends Frame
         resize(frameWidth, frameHeight);
     }
 
-    public Graphics getGraphics()
-    {
+    public Graphics getGraphics() {
         Graphics g = super.getGraphics();
         if(fej == 0)
             g.translate(0, 24);
@@ -36,13 +30,11 @@ public class GameFrame extends Frame
         return g;
     }
 
-    public void resize(int i, int j)
-    {
+    public void resize(int i, int j) {
         super.resize(i, j + yOffset);
     }
 
-    public boolean handleEvent(Event evt)
-    {
+    public boolean handleEvent(Event evt) {
         if(evt.id == 401)
             gameApplet.keyDown(evt, evt.key);
         else
@@ -75,8 +67,7 @@ public class GameFrame extends Frame
         return true;
     }
 
-    public final void paint(Graphics g)
-    {
+    public final void paint(Graphics g) {
         gameApplet.paint(g);
     }
 

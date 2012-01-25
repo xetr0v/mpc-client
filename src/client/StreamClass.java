@@ -1,18 +1,13 @@
 package client;
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
 
 import java.io.*;
 import java.net.Socket;
 
 public class StreamClass extends PacketConstruction
-    implements Runnable
-{
+    implements Runnable {
 
     public StreamClass(Socket socket, GameApplet a1)
-        throws IOException
-    {
+        throws IOException {
         socketClosing = false;
         socketClosed = true;
         this.socket = socket;
@@ -22,12 +17,10 @@ public class StreamClass extends PacketConstruction
         a1.startThread(this);
     }
 
-    public void closeStream()
-    {
+    public void closeStream() {
         super.closeStream();
         socketClosing = true;
-        try
-        {
+        try {
             if(inputStream != null)
                 inputStream.close();
             if(outputStream != null)
@@ -35,21 +28,18 @@ public class StreamClass extends PacketConstruction
             if(socket != null)
                 socket.close();
         }
-        catch(IOException _ex)
-        {
+        catch(IOException _ex) {
             System.out.println("Error closing stream");
         }
         socketClosed = true;
-        synchronized(this)
-        {
+        synchronized(this) {
             notify();
         }
         buffer = null;
     }
 
     public int read()
-        throws IOException
-    {
+        throws IOException {
         if(socketClosing)
             return 0;
         else
@@ -57,8 +47,7 @@ public class StreamClass extends PacketConstruction
     }
 
     public int available()
-        throws IOException
-    {
+        throws IOException {
         if(socketClosing)
             return 0;
         else
@@ -66,8 +55,7 @@ public class StreamClass extends PacketConstruction
     }
 
     public void readInputStream(int arg0, int arg1, byte arg2[])
-        throws IOException
-    {
+        throws IOException {
         if(socketClosing)
             return;
         int i = 0;
@@ -79,16 +67,13 @@ public class StreamClass extends PacketConstruction
     }
 
     public void writeToBuffer(byte arg0[], int arg1, int arg2)
-        throws IOException
-    {
+        throws IOException {
         if(socketClosing)
             return;
         if(buffer == null)
             buffer = new byte[5000];
-        synchronized(this)
-        {
-            for(int i = 0; i < arg2; i++)
-            {
+        synchronized(this) {
+            for(int i = 0; i < arg2; i++) {
                 buffer[offset] = arg0[i + arg1];
                 offset = (offset + 1) % 5000;
                 if(offset == (dataWritten + 4900) % 5000)
@@ -99,17 +84,13 @@ public class StreamClass extends PacketConstruction
         }
     }
 
-    public void run()
-    {
-        while(!socketClosed) 
-        {
+    public void run() {
+        while(!socketClosed)  {
             int i;
             int j;
-            synchronized(this)
-            {
+            synchronized(this) {
                 if(offset == dataWritten)
-                    try
-                    {
+                    try {
                         wait();
                     }
                     catch(InterruptedException _ex) { }
@@ -121,25 +102,20 @@ public class StreamClass extends PacketConstruction
                 else
                     i = 5000 - dataWritten;
             }
-            if(i > 0)
-            {
-                try
-                {
+            if(i > 0) {
+                try {
                     outputStream.write(buffer, j, i);
                 }
-                catch(IOException ioexception)
-                {
+                catch(IOException ioexception) {
                     super.error = true;
                     super.errorText = "Twriter:" + ioexception;
                 }
                 dataWritten = (dataWritten + i) % 5000;
-                try
-                {
+                try {
                     if(offset == dataWritten)
                         outputStream.flush();
                 }
-                catch(IOException ioexception1)
-                {
+                catch(IOException ioexception1) {
                     super.error = true;
                     super.errorText = "Twriter:" + ioexception1;
                 }

@@ -1,15 +1,10 @@
 package client;
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
 
 import java.io.IOException;
 
-public class EngineHandle
-{
+public class EngineHandle {
 
-    public void gjd(int k, int l, int i1)
-    {
+    public void gjd(int k, int l, int i1) {
         int j1 = k / 12;
         int k1 = l / 12;
         int l1 = (k - 1) / 12;
@@ -23,23 +18,19 @@ public class EngineHandle
             glh(l1, i2, k, l, i1);
     }
 
-    public int gje(int arg0, int arg1)
-    {
+    public int gje(int arg0, int arg1) {
         if(arg0 < 0 || arg0 >= 96 || arg1 < 0 || arg1 >= 96)
             return 0;
         byte byte0 = 0;
-        if(arg0 >= 48 && arg1 < 48)
-        {
+        if(arg0 >= 48 && arg1 < 48) {
             byte0 = 1;
             arg0 -= 48;
         } else
-        if(arg0 < 48 && arg1 >= 48)
-        {
+        if(arg0 < 48 && arg1 >= 48) {
             byte0 = 2;
             arg1 -= 48;
         } else
-        if(arg0 >= 48 && arg1 >= 48)
-        {
+        if(arg0 >= 48 && arg1 >= 48) {
             byte0 = 3;
             arg0 -= 48;
             arg1 -= 48;
@@ -47,8 +38,7 @@ public class EngineHandle
         return ghl[byte0][arg0 * 48 + arg1] & 0xff;
     }
 
-    public int getAveragedElevation(int arg0, int arg1)
-    {
+    public int getAveragedElevation(int arg0, int arg1) {
         int k = arg0 >> 7;
         int l = arg1 >> 7;
         int i1 = arg0 & 0x7f;
@@ -58,13 +48,11 @@ public class EngineHandle
         int k1;
         int l1;
         int i2;
-        if(i1 <= 128 - j1)
-        {
+        if(i1 <= 128 - j1) {
             k1 = gkn(k, l);
             l1 = gkn(k + 1, l) - k1;
             i2 = gkn(k, l + 1) - k1;
-        } else
-        {
+        } else {
             k1 = gkn(k + 1, l + 1);
             l1 = gkn(k, l + 1) - k1;
             i2 = gkn(k + 1, l) - k1;
@@ -75,35 +63,27 @@ public class EngineHandle
         return j2;
     }
 
-    public void gjg(int k, int l, int i1)
-    {
+    public void gjg(int k, int l, int i1) {
         tiles[k][l] |= i1;
     }
 
-    public void loadSection(int sectionX, int sectionY, int height, int sector)
-    {
+    public void loadSection(int sectionX, int sectionY, int height, int sector) {
         String filename = "m" + height + sectionX / 10 + sectionX % 10 + sectionY / 10 + sectionY % 10;
-        try
-        {
-            if(landscapeFree != null)
-            {
+        try {
+            if(landscapeFree != null) {
                 byte abyte0[] = DataOperations.loadData(filename + ".hei", 0, landscapeFree);
                 if(abyte0 == null && landscapeMembers != null)
                     abyte0 = DataOperations.loadData(filename + ".hei", 0, landscapeMembers);
-                if(abyte0 != null && abyte0.length > 0)
-                {
+                if(abyte0 != null && abyte0.length > 0) {
                     int l = 0;
                     int i2 = 0;
-                    for(int tile = 0; tile < 2304;)
-                    {
+                    for(int tile = 0; tile < 2304;) {
                         int k3 = abyte0[l++] & 0xff;
-                        if(k3 < 128)
-                        {
+                        if(k3 < 128) {
                             gig[sector][tile++] = (byte)k3;
                             i2 = k3;
                         }
-                        if(k3 >= 128)
-                        {
+                        if(k3 >= 128) {
                             for(int k4 = 0; k4 < k3 - 128; k4++)
                                 gig[sector][tile++] = (byte)i2;
 
@@ -111,10 +91,8 @@ public class EngineHandle
                     }
 
                     i2 = 64;
-                    for(int tile = 0; tile < 48; tile++)
-                    {
-                        for(int l4 = 0; l4 < 48; l4++)
-                        {
+                    for(int tile = 0; tile < 48; tile++) {
+                        for(int l4 = 0; l4 < 48; l4++) {
                             i2 = gig[sector][l4 * 48 + tile] + i2 & 0x7f;
                             gig[sector][l4 * 48 + tile] = (byte)(i2 * 2);
                         }
@@ -122,16 +100,13 @@ public class EngineHandle
                     }
 
                     i2 = 0;
-                    for(int tile = 0; tile < 2304;)
-                    {
+                    for(int tile = 0; tile < 2304;) {
                         int l5 = abyte0[l++] & 0xff;
-                        if(l5 < 128)
-                        {
+                        if(l5 < 128) {
                             ghl[sector][tile++] = (byte)l5;
                             i2 = l5;
                         }
-                        if(l5 >= 128)
-                        {
+                        if(l5 >= 128) {
                             for(int i7 = 0; i7 < l5 - 128; i7++)
                                 ghl[sector][tile++] = (byte)i2;
 
@@ -139,20 +114,16 @@ public class EngineHandle
                     }
 
                     i2 = 35;
-                    for(int i6 = 0; i6 < 48; i6++)
-                    {
-                        for(int j7 = 0; j7 < 48; j7++)
-                        {
+                    for(int i6 = 0; i6 < 48; i6++) {
+                        for(int j7 = 0; j7 < 48; j7++) {
                             i2 = ghl[sector][j7 * 48 + i6] + i2 & 0x7f;
                             ghl[sector][j7 * 48 + i6] = (byte)(i2 * 2);
                         }
 
                     }
 
-                } else
-                {
-                    for(int tile = 0; tile < 2304; tile++)
-                    {
+                } else {
+                    for(int tile = 0; tile < 2304; tile++) {
                         gig[sector][tile] = 0;
                         ghl[sector][tile] = 0;
                     }
@@ -173,21 +144,17 @@ public class EngineHandle
                 for(int tile = 0; tile < 2304; tile++)
                     ghe[sector][tile] = abyte0[j1++] & 0xff;
 
-                for(int tile = 0; tile < 2304; tile++)
-                {
+                for(int tile = 0; tile < 2304; tile++) {
                     int j6 = abyte0[j1++] & 0xff;
                     if(j6 > 0)
                         ghe[sector][tile] = j6 + 12000;
                 }
 
-                for(int tile = 0; tile < 2304;)
-                {
+                for(int tile = 0; tile < 2304;) {
                     int k7 = abyte0[j1++] & 0xff;
-                    if(k7 < 128)
-                    {
+                    if(k7 < 128) {
                         gja[sector][tile++] = (byte)k7;
-                    } else
-                    {
+                    } else {
                         for(int j8 = 0; j8 < k7 - 128; j8++)
                             gja[sector][tile++] = 0;
 
@@ -195,29 +162,23 @@ public class EngineHandle
                 }
 
                 int l7 = 0;
-                for(int tile = 0; tile < 2304;)
-                {
+                for(int tile = 0; tile < 2304;) {
                     int i9 = abyte0[j1++] & 0xff;
-                    if(i9 < 128)
-                    {
+                    if(i9 < 128) {
                         ghf[sector][tile++] = (byte)i9;
                         l7 = i9;
-                    } else
-                    {
+                    } else {
                         for(int l9 = 0; l9 < i9 - 128; l9++)
                             ghf[sector][tile++] = (byte)l7;
 
                     }
                 }
 
-                for(int j9 = 0; j9 < 2304;)
-                {
+                for(int j9 = 0; j9 < 2304;) {
                     int i10 = abyte0[j1++] & 0xff;
-                    if(i10 < 128)
-                    {
+                    if(i10 < 128) {
                         ghg[sector][j9++] = (byte)i10;
-                    } else
-                    {
+                    } else {
                         for(int l10 = 0; l10 < i10 - 128; l10++)
                             ghg[sector][j9++] = 0;
 
@@ -225,11 +186,9 @@ public class EngineHandle
                 }
 
                 abyte0 = DataOperations.loadData(filename + ".loc", 0, mapsFree);
-                if(abyte0 != null && abyte0.length > 0)
-                {
+                if(abyte0 != null && abyte0.length > 0) {
                     int k1 = 0;
-                    for(int j10 = 0; j10 < 2304;)
-                    {
+                    for(int j10 = 0; j10 < 2304;) {
                         int i11 = abyte0[k1++] & 0xff;
                         if(i11 < 128)
                             ghe[sector][j10++] = i11 + 48000;
@@ -239,21 +198,18 @@ public class EngineHandle
 
                     return;
                 }
-            } else
-            {
+            } else {
                 byte abyte1[] = new byte[20736];
                 DataOperations.readFully("../gamedata/maps/" + filename + ".jm", abyte1, 20736);
                 int l1 = 0;
                 int k2 = 0;
-                for(int j3 = 0; j3 < 2304; j3++)
-                {
+                for(int j3 = 0; j3 < 2304; j3++) {
                     l1 = l1 + abyte1[k2++] & 0xff;
                     gig[sector][j3] = (byte)l1;
                 }
 
                 l1 = 0;
-                for(int j4 = 0; j4 < 2304; j4++)
-                {
+                for(int j4 = 0; j4 < 2304; j4++) {
                     l1 = l1 + abyte1[k2++] & 0xff;
                     ghl[sector][j4] = (byte)l1;
                 }
@@ -264,8 +220,7 @@ public class EngineHandle
                 for(int l6 = 0; l6 < 2304; l6++)
                     ghb[sector][l6] = abyte1[k2++];
 
-                for(int i8 = 0; i8 < 2304; i8++)
-                {
+                for(int i8 = 0; i8 < 2304; i8++) {
                     ghe[sector][i8] = (abyte1[k2] & 0xff) * 256 + (abyte1[k2 + 1] & 0xff);
                     k2 += 2;
                 }
@@ -282,11 +237,9 @@ public class EngineHandle
             }
             return;
         }
-        catch(IOException _ex)
-        {
+        catch(IOException _ex) {
         }
-        for(int k = 0; k < 2304; k++)
-        {
+        for(int k = 0; k < 2304; k++) {
             gig[sector][k] = 0;
             ghl[sector][k] = 0;
             gic[sector][k] = 0;
@@ -303,8 +256,7 @@ public class EngineHandle
 
     }
 
-    public void gji(int arg0, int arg1, int arg2, boolean arg3)
-    {
+    public void gji(int arg0, int arg1, int arg2, boolean arg3) {
         int k = (arg0 + 24) / 48;
         int l = (arg1 + 24) / 48;
         loadSection(k - 1, l - 1, arg2, 0);
@@ -314,11 +266,9 @@ public class EngineHandle
         gjk();
         if(gia == null)
             gia = new GameObject(18688, 18688, true, true, false, false, true);
-        if(arg3)
-        {
+        if(arg3) {
             ghi.clearScreen();
-            for(int i1 = 0; i1 < 96; i1++)
-            {
+            for(int i1 = 0; i1 < 96; i1++) {
                 for(int k1 = 0; k1 < 96; k1++)
                     tiles[i1][k1] = 0;
 
@@ -326,10 +276,8 @@ public class EngineHandle
 
             GameObject l1 = gia;
             l1.clk();
-            for(int j2 = 0; j2 < 96; j2++)
-            {
-                for(int i3 = 0; i3 < 96; i3++)
-                {
+            for(int j2 = 0; j2 < 96; j2++) {
+                for(int i3 = 0; i3 < 96; i3++) {
                     int i4 = -gkn(j2, i3);
                     if(gki(j2, i3, arg2) > 0 && Data.akh[gki(j2, i3, arg2) - 1] == 4)
                         i4 = 0;
@@ -346,79 +294,64 @@ public class EngineHandle
 
             }
 
-            for(int j3 = 0; j3 < 95; j3++)
-            {
-                for(int j4 = 0; j4 < 95; j4++)
-                {
+            for(int j3 = 0; j3 < 95; j3++) {
+                for(int j4 = 0; j4 < 95; j4++) {
                     int k5 = gje(j3, j4);
                     int k7 = ghm[k5];
                     int i10 = k7;
                     int k12 = k7;
                     int l14 = 0;
-                    if(arg2 == 1 || arg2 == 2)
-                    {
+                    if(arg2 == 1 || arg2 == 2) {
                         k7 = 0xbc614e;
                         i10 = 0xbc614e;
                         k12 = 0xbc614e;
                     }
-                    if(gki(j3, j4, arg2) > 0)
-                    {
+                    if(gki(j3, j4, arg2) > 0) {
                         int l16 = gki(j3, j4, arg2);
                         int l5 = Data.akh[l16 - 1];
                         int i19 = gkd(j3, j4, arg2);
                         k7 = i10 = Data.akg[l16 - 1];
-                        if(l5 == 4)
-                        {
+                        if(l5 == 4) {
                             k7 = 1;
                             i10 = 1;
-                            if(l16 == 12)
-                            {
+                            if(l16 == 12) {
                                 k7 = 31;
                                 i10 = 31;
                             }
                         }
-                        if(l5 == 5)
-                        {
+                        if(l5 == 5) {
                             if(glf(j3, j4) > 0 && glf(j3, j4) < 24000)
-                                if(gjn(j3 - 1, j4, arg2, k12) != 0xbc614e && gjn(j3, j4 - 1, arg2, k12) != 0xbc614e)
-                                {
+                                if(gjn(j3 - 1, j4, arg2, k12) != 0xbc614e && gjn(j3, j4 - 1, arg2, k12) != 0xbc614e) {
                                     k7 = gjn(j3 - 1, j4, arg2, k12);
                                     l14 = 0;
                                 } else
-                                if(gjn(j3 + 1, j4, arg2, k12) != 0xbc614e && gjn(j3, j4 + 1, arg2, k12) != 0xbc614e)
-                                {
+                                if(gjn(j3 + 1, j4, arg2, k12) != 0xbc614e && gjn(j3, j4 + 1, arg2, k12) != 0xbc614e) {
                                     i10 = gjn(j3 + 1, j4, arg2, k12);
                                     l14 = 0;
                                 } else
-                                if(gjn(j3 + 1, j4, arg2, k12) != 0xbc614e && gjn(j3, j4 - 1, arg2, k12) != 0xbc614e)
-                                {
+                                if(gjn(j3 + 1, j4, arg2, k12) != 0xbc614e && gjn(j3, j4 - 1, arg2, k12) != 0xbc614e) {
                                     i10 = gjn(j3 + 1, j4, arg2, k12);
                                     l14 = 1;
                                 } else
-                                if(gjn(j3 - 1, j4, arg2, k12) != 0xbc614e && gjn(j3, j4 + 1, arg2, k12) != 0xbc614e)
-                                {
+                                if(gjn(j3 - 1, j4, arg2, k12) != 0xbc614e && gjn(j3, j4 + 1, arg2, k12) != 0xbc614e) {
                                     k7 = gjn(j3 - 1, j4, arg2, k12);
                                     l14 = 1;
                                 }
                         } else
                         if(l5 != 2 || glf(j3, j4) > 0 && glf(j3, j4) < 24000)
-                            if(gkd(j3 - 1, j4, arg2) != i19 && gkd(j3, j4 - 1, arg2) != i19)
-                            {
+                            if(gkd(j3 - 1, j4, arg2) != i19 && gkd(j3, j4 - 1, arg2) != i19) {
                                 k7 = k12;
                                 l14 = 0;
                             } else
-                            if(gkd(j3 + 1, j4, arg2) != i19 && gkd(j3, j4 + 1, arg2) != i19)
-                            {
+                            if(gkd(j3 + 1, j4, arg2) != i19 && gkd(j3, j4 + 1, arg2) != i19) {
                                 i10 = k12;
                                 l14 = 0;
                             } else
-                            if(gkd(j3 + 1, j4, arg2) != i19 && gkd(j3, j4 - 1, arg2) != i19)
-                            {
+                            if(gkd(j3 + 1, j4, arg2) != i19 && gkd(j3, j4 - 1, arg2) != i19) {
                                 i10 = k12;
                                 l14 = 1;
                             } else
-                            if(gkd(j3 - 1, j4, arg2) != i19 && gkd(j3, j4 + 1, arg2) != i19)
-                            {
+                            if(gkd(j3 - 1, j4, arg2) != i19 && gkd(j3, j4 + 1, arg2) != i19) {
                                 k7 = k12;
                                 l14 = 1;
                             }
@@ -429,14 +362,11 @@ public class EngineHandle
                     }
                     gkg(j3, j4, l14, k7, i10);
                     int i17 = ((gkn(j3 + 1, j4 + 1) - gkn(j3 + 1, j4)) + gkn(j3, j4 + 1)) - gkn(j3, j4);
-                    if(k7 != i10 || i17 != 0)
-                    {
+                    if(k7 != i10 || i17 != 0) {
                         int ai[] = new int[3];
                         int ai7[] = new int[3];
-                        if(l14 == 0)
-                        {
-                            if(k7 != 0xbc614e)
-                            {
+                        if(l14 == 0) {
+                            if(k7 != 0xbc614e) {
                                 ai[0] = j4 + j3 * 96 + 96;
                                 ai[1] = j4 + j3 * 96;
                                 ai[2] = j4 + j3 * 96 + 1;
@@ -445,8 +375,7 @@ public class EngineHandle
                                 selectedY[l21] = j4;
                                 l1.entityType[l21] = 0x30d40 + l21;
                             }
-                            if(i10 != 0xbc614e)
-                            {
+                            if(i10 != 0xbc614e) {
                                 ai7[0] = j4 + j3 * 96 + 1;
                                 ai7[1] = j4 + j3 * 96 + 96 + 1;
                                 ai7[2] = j4 + j3 * 96 + 96;
@@ -455,10 +384,8 @@ public class EngineHandle
                                 selectedY[i22] = j4;
                                 l1.entityType[i22] = 0x30d40 + i22;
                             }
-                        } else
-                        {
-                            if(k7 != 0xbc614e)
-                            {
+                        } else {
+                            if(k7 != 0xbc614e) {
                                 ai[0] = j4 + j3 * 96 + 1;
                                 ai[1] = j4 + j3 * 96 + 96 + 1;
                                 ai[2] = j4 + j3 * 96;
@@ -467,8 +394,7 @@ public class EngineHandle
                                 selectedY[j22] = j4;
                                 l1.entityType[j22] = 0x30d40 + j22;
                             }
-                            if(i10 != 0xbc614e)
-                            {
+                            if(i10 != 0xbc614e) {
                                 ai7[0] = j4 + j3 * 96 + 96;
                                 ai7[1] = j4 + j3 * 96;
                                 ai7[2] = j4 + j3 * 96 + 96 + 1;
@@ -479,8 +405,7 @@ public class EngineHandle
                             }
                         }
                     } else
-                    if(k7 != 0xbc614e)
-                    {
+                    if(k7 != 0xbc614e) {
                         int ai1[] = new int[4];
                         ai1[0] = j4 + j3 * 96 + 96;
                         ai1[1] = j4 + j3 * 96;
@@ -495,11 +420,9 @@ public class EngineHandle
 
             }
 
-            for(int k4 = 1; k4 < 95; k4++)
-            {
+            for(int k4 = 1; k4 < 95; k4++) {
                 for(int i6 = 1; i6 < 95; i6++)
-                    if(gki(k4, i6, arg2) > 0 && Data.akh[gki(k4, i6, arg2) - 1] == 4)
-                    {
+                    if(gki(k4, i6, arg2) > 0 && Data.akh[gki(k4, i6, arg2) - 1] == 4) {
                         int l7 = Data.akg[gki(k4, i6, arg2) - 1];
                         int j10 = l1.cln(k4 * 128, -gkn(k4, i6), i6 * 128);
                         int l12 = l1.cln((k4 + 1) * 128, -gkn(k4 + 1, i6), i6 * 128);
@@ -514,10 +437,8 @@ public class EngineHandle
                         l1.entityType[i20] = 0x30d40 + i20;
                         gkg(k4, i6, 0, l7, l7);
                     } else
-                    if(gki(k4, i6, arg2) == 0 || Data.akh[gki(k4, i6, arg2) - 1] != 3)
-                    {
-                        if(gki(k4, i6 + 1, arg2) > 0 && Data.akh[gki(k4, i6 + 1, arg2) - 1] == 4)
-                        {
+                    if(gki(k4, i6, arg2) == 0 || Data.akh[gki(k4, i6, arg2) - 1] != 3) {
+                        if(gki(k4, i6 + 1, arg2) > 0 && Data.akh[gki(k4, i6 + 1, arg2) - 1] == 4) {
                             int i8 = Data.akg[gki(k4, i6 + 1, arg2) - 1];
                             int k10 = l1.cln(k4 * 128, -gkn(k4, i6), i6 * 128);
                             int i13 = l1.cln((k4 + 1) * 128, -gkn(k4 + 1, i6), i6 * 128);
@@ -532,8 +453,7 @@ public class EngineHandle
                             l1.entityType[j20] = 0x30d40 + j20;
                             gkg(k4, i6, 0, i8, i8);
                         }
-                        if(gki(k4, i6 - 1, arg2) > 0 && Data.akh[gki(k4, i6 - 1, arg2) - 1] == 4)
-                        {
+                        if(gki(k4, i6 - 1, arg2) > 0 && Data.akh[gki(k4, i6 - 1, arg2) - 1] == 4) {
                             int j8 = Data.akg[gki(k4, i6 - 1, arg2) - 1];
                             int l10 = l1.cln(k4 * 128, -gkn(k4, i6), i6 * 128);
                             int j13 = l1.cln((k4 + 1) * 128, -gkn(k4 + 1, i6), i6 * 128);
@@ -548,8 +468,7 @@ public class EngineHandle
                             l1.entityType[k20] = 0x30d40 + k20;
                             gkg(k4, i6, 0, j8, j8);
                         }
-                        if(gki(k4 + 1, i6, arg2) > 0 && Data.akh[gki(k4 + 1, i6, arg2) - 1] == 4)
-                        {
+                        if(gki(k4 + 1, i6, arg2) > 0 && Data.akh[gki(k4 + 1, i6, arg2) - 1] == 4) {
                             int k8 = Data.akg[gki(k4 + 1, i6, arg2) - 1];
                             int i11 = l1.cln(k4 * 128, -gkn(k4, i6), i6 * 128);
                             int k13 = l1.cln((k4 + 1) * 128, -gkn(k4 + 1, i6), i6 * 128);
@@ -564,8 +483,7 @@ public class EngineHandle
                             l1.entityType[l20] = 0x30d40 + l20;
                             gkg(k4, i6, 0, k8, k8);
                         }
-                        if(gki(k4 - 1, i6, arg2) > 0 && Data.akh[gki(k4 - 1, i6, arg2) - 1] == 4)
-                        {
+                        if(gki(k4 - 1, i6, arg2) > 0 && Data.akh[gki(k4 - 1, i6, arg2) - 1] == 4) {
                             int l8 = Data.akg[gki(k4 - 1, i6, arg2) - 1];
                             int j11 = l1.cln(k4 * 128, -gkn(k4, i6), i6 * 128);
                             int l13 = l1.cln((k4 + 1) * 128, -gkn(k4 + 1, i6), i6 * 128);
@@ -589,8 +507,7 @@ public class EngineHandle
             for(int j6 = 0; j6 < 64; j6++)
                 ghj.addModel(ghn[j6]);
 
-            for(int i9 = 0; i9 < 96; i9++)
-            {
+            for(int i9 = 0; i9 < 96; i9++) {
                 for(int k11 = 0; k11 < 96; k11++)
                     gib[i9][k11] = gkn(i9, k11);
 
@@ -599,16 +516,12 @@ public class EngineHandle
         }
         gia.clk();
         int j1 = 0x606060;
-        for(int i2 = 0; i2 < 95; i2++)
-        {
-            for(int k2 = 0; k2 < 95; k2++)
-            {
+        for(int i2 = 0; i2 < 95; i2++) {
+            for(int k2 = 0; k2 < 95; k2++) {
                 int k3 = gle(i2, k2);
-                if(k3 > 0 && (Data.wallObjectUnknown[k3 - 1] == 0 || ghh))
-                {
+                if(k3 > 0 && (Data.wallObjectUnknown[k3 - 1] == 0 || ghh)) {
                     gli(gia, k3 - 1, i2, k2, i2 + 1, k2);
-                    if(arg3 && Data.wallObjectType[k3 - 1] != 0)
-                    {
+                    if(arg3 && Data.wallObjectType[k3 - 1] != 0) {
                         tiles[i2][k2] |= 1;
                         if(k2 > 0)
                             gjg(i2, k2 - 1, 4);
@@ -617,11 +530,9 @@ public class EngineHandle
                         ghi.drawLineX(i2 * 3, k2 * 3, 3, j1);
                 }
                 k3 = gld(i2, k2);
-                if(k3 > 0 && (Data.wallObjectUnknown[k3 - 1] == 0 || ghh))
-                {
+                if(k3 > 0 && (Data.wallObjectUnknown[k3 - 1] == 0 || ghh)) {
                     gli(gia, k3 - 1, i2, k2, i2, k2 + 1);
-                    if(arg3 && Data.wallObjectType[k3 - 1] != 0)
-                    {
+                    if(arg3 && Data.wallObjectType[k3 - 1] != 0) {
                         tiles[i2][k2] |= 2;
                         if(i2 > 0)
                             gjg(i2 - 1, k2, 8);
@@ -630,25 +541,21 @@ public class EngineHandle
                         ghi.drawLineY(i2 * 3, k2 * 3, 3, j1);
                 }
                 k3 = glf(i2, k2);
-                if(k3 > 0 && k3 < 12000 && (Data.wallObjectUnknown[k3 - 1] == 0 || ghh))
-                {
+                if(k3 > 0 && k3 < 12000 && (Data.wallObjectUnknown[k3 - 1] == 0 || ghh)) {
                     gli(gia, k3 - 1, i2, k2, i2 + 1, k2 + 1);
                     if(arg3 && Data.wallObjectType[k3 - 1] != 0)
                         tiles[i2][k2] |= 0x20;
-                    if(arg3)
-                    {
+                    if(arg3) {
                         ghi.drawMinimapPixel(i2 * 3, k2 * 3, j1);
                         ghi.drawMinimapPixel(i2 * 3 + 1, k2 * 3 + 1, j1);
                         ghi.drawMinimapPixel(i2 * 3 + 2, k2 * 3 + 2, j1);
                     }
                 }
-                if(k3 > 12000 && k3 < 24000 && (Data.wallObjectUnknown[k3 - 12001] == 0 || ghh))
-                {
+                if(k3 > 12000 && k3 < 24000 && (Data.wallObjectUnknown[k3 - 12001] == 0 || ghh)) {
                     gli(gia, k3 - 12001, i2 + 1, k2, i2, k2 + 1);
                     if(arg3 && Data.wallObjectType[k3 - 12001] != 0)
                         tiles[i2][k2] |= 0x10;
-                    if(arg3)
-                    {
+                    if(arg3) {
                         ghi.drawMinimapPixel(i2 * 3 + 2, k2 * 3, j1);
                         ghi.drawMinimapPixel(i2 * 3 + 1, k2 * 3 + 1, j1);
                         ghi.drawMinimapPixel(i2 * 3, k2 * 3 + 2, j1);
@@ -665,10 +572,8 @@ public class EngineHandle
         for(int l2 = 0; l2 < 64; l2++)
             ghj.addModel(gim[arg2][l2]);
 
-        for(int l3 = 0; l3 < 95; l3++)
-        {
-            for(int l4 = 0; l4 < 95; l4++)
-            {
+        for(int l3 = 0; l3 < 95; l3++) {
+            for(int l4 = 0; l4 < 95; l4++) {
                 int k6 = gle(l3, l4);
                 if(k6 > 0)
                     gkh(k6 - 1, l3, l4, l3 + 1, l4);
@@ -684,13 +589,10 @@ public class EngineHandle
 
         }
 
-        for(int i5 = 1; i5 < 95; i5++)
-        {
-            for(int l6 = 1; l6 < 95; l6++)
-            {
+        for(int i5 = 1; i5 < 95; i5++) {
+            for(int l6 = 1; l6 < 95; l6++) {
                 int j9 = glb(i5, l6);
-                if(j9 > 0)
-                {
+                if(j9 > 0) {
                     int l11 = i5;
                     int i14 = l6;
                     int j16 = i5 + 1;
@@ -744,13 +646,10 @@ public class EngineHandle
         }
 
         gia.clk();
-        for(int i7 = 1; i7 < 95; i7++)
-        {
-            for(int k9 = 1; k9 < 95; k9++)
-            {
+        for(int i7 = 1; i7 < 95; i7++) {
+            for(int k9 = 1; k9 < 95; k9++) {
                 int i12 = glb(i7, k9);
-                if(i12 > 0)
-                {
+                if(i12 > 0) {
                     int j14 = i7;
                     int k16 = k9;
                     int l18 = i7 + 1;
@@ -772,23 +671,19 @@ public class EngineHandle
                     int l27 = gib[k21][i23];
                     int i28 = gib[k23][i24];
                     int j28 = Data.alm[i12 - 1];
-                    if(gkm(j14, k16) && j27 < 0x13880)
-                    {
+                    if(gkm(j14, k16) && j27 < 0x13880) {
                         j27 += j28 + 0x13880;
                         gib[j14][k16] = j27;
                     }
-                    if(gkm(l18, k19) && k27 < 0x13880)
-                    {
+                    if(gkm(l18, k19) && k27 < 0x13880) {
                         k27 += j28 + 0x13880;
                         gib[l18][k19] = k27;
                     }
-                    if(gkm(k21, i23) && l27 < 0x13880)
-                    {
+                    if(gkm(k21, i23) && l27 < 0x13880) {
                         l27 += j28 + 0x13880;
                         gib[k21][i23] = l27;
                     }
-                    if(gkm(k23, i24) && i28 < 0x13880)
-                    {
+                    if(gkm(k23, i24) && i28 < 0x13880) {
                         i28 += j28 + 0x13880;
                         gib[k23][i24] = i28;
                     }
@@ -838,40 +733,35 @@ public class EngineHandle
                     k27 = -k27;
                     l27 = -l27;
                     i28 = -i28;
-                    if(glf(i7, k9) > 12000 && glf(i7, k9) < 24000 && glb(i7 - 1, k9 - 1) == 0)
-                    {
+                    if(glf(i7, k9) > 12000 && glf(i7, k9) < 24000 && glb(i7 - 1, k9 - 1) == 0) {
                         int ai8[] = new int[3];
                         ai8[0] = gia.cln(l26, l27, i26);
                         ai8[1] = gia.cln(j26, i28, i27);
                         ai8[2] = gia.cln(k25, k27, k26);
                         gia.cmb(3, ai8, i12, 0xbc614e);
                     } else
-                    if(glf(i7, k9) > 12000 && glf(i7, k9) < 24000 && glb(i7 + 1, k9 + 1) == 0)
-                    {
+                    if(glf(i7, k9) > 12000 && glf(i7, k9) < 24000 && glb(i7 + 1, k9 + 1) == 0) {
                         int ai9[] = new int[3];
                         ai9[0] = gia.cln(k24, j27, i25);
                         ai9[1] = gia.cln(k25, k27, k26);
                         ai9[2] = gia.cln(j26, i28, i27);
                         gia.cmb(3, ai9, i12, 0xbc614e);
                     } else
-                    if(glf(i7, k9) > 0 && glf(i7, k9) < 12000 && glb(i7 + 1, k9 - 1) == 0)
-                    {
+                    if(glf(i7, k9) > 0 && glf(i7, k9) < 12000 && glb(i7 + 1, k9 - 1) == 0) {
                         int ai10[] = new int[3];
                         ai10[0] = gia.cln(j26, i28, i27);
                         ai10[1] = gia.cln(k24, j27, i25);
                         ai10[2] = gia.cln(l26, l27, i26);
                         gia.cmb(3, ai10, i12, 0xbc614e);
                     } else
-                    if(glf(i7, k9) > 0 && glf(i7, k9) < 12000 && glb(i7 - 1, k9 + 1) == 0)
-                    {
+                    if(glf(i7, k9) > 0 && glf(i7, k9) < 12000 && glb(i7 - 1, k9 + 1) == 0) {
                         int ai11[] = new int[3];
                         ai11[0] = gia.cln(k25, k27, k26);
                         ai11[1] = gia.cln(l26, l27, i26);
                         ai11[2] = gia.cln(k24, j27, i25);
                         gia.cmb(3, ai11, i12, 0xbc614e);
                     } else
-                    if(j27 == k27 && l27 == i28)
-                    {
+                    if(j27 == k27 && l27 == i28) {
                         int ai12[] = new int[4];
                         ai12[0] = gia.cln(k24, j27, i25);
                         ai12[1] = gia.cln(k25, k27, k26);
@@ -879,23 +769,20 @@ public class EngineHandle
                         ai12[3] = gia.cln(j26, i28, i27);
                         gia.cmb(4, ai12, i12, 0xbc614e);
                     } else
-                    if(j27 == i28 && k27 == l27)
-                    {
+                    if(j27 == i28 && k27 == l27) {
                         int ai13[] = new int[4];
                         ai13[0] = gia.cln(j26, i28, i27);
                         ai13[1] = gia.cln(k24, j27, i25);
                         ai13[2] = gia.cln(k25, k27, k26);
                         ai13[3] = gia.cln(l26, l27, i26);
                         gia.cmb(4, ai13, i12, 0xbc614e);
-                    } else
-                    {
+                    } else {
                         boolean flag = true;
                         if(glb(i7 - 1, k9 - 1) > 0)
                             flag = false;
                         if(glb(i7 + 1, k9 + 1) > 0)
                             flag = false;
-                        if(!flag)
-                        {
+                        if(!flag) {
                             int ai14[] = new int[3];
                             ai14[0] = gia.cln(k25, k27, k26);
                             ai14[1] = gia.cln(l26, l27, i26);
@@ -906,8 +793,7 @@ public class EngineHandle
                             ai16[1] = gia.cln(k24, j27, i25);
                             ai16[2] = gia.cln(l26, l27, i26);
                             gia.cmb(3, ai16, i12, 0xbc614e);
-                        } else
-                        {
+                        } else {
                             int ai15[] = new int[3];
                             ai15[0] = gia.cln(k24, j27, i25);
                             ai15[1] = gia.cln(k25, k27, k26);
@@ -932,8 +818,7 @@ public class EngineHandle
 
         if(gih[arg2][0] == null)
             throw new RuntimeException("null roof!");
-        for(int j12 = 0; j12 < 96; j12++)
-        {
+        for(int j12 = 0; j12 < 96; j12++) {
             for(int k14 = 0; k14 < 96; k14++)
                 if(gib[j12][k14] >= 0x13880)
                     gib[j12][k14] -= 0x13880;
@@ -942,14 +827,12 @@ public class EngineHandle
 
     }
 
-    public void loadSection(int k, int l, int i1)
-    {
+    public void loadSection(int k, int l, int i1) {
         gkk();
         int j1 = (k + 24) / 48;
         int k1 = (l + 24) / 48;
         gji(k, l, i1, true);
-        if(i1 == 0)
-        {
+        if(i1 == 0) {
             gji(k, l, 1, false);
             gji(k, l, 2, false);
             loadSection(j1 - 1, k1 - 1, i1, 0);
@@ -960,10 +843,8 @@ public class EngineHandle
         }
     }
 
-    public void gjk()
-    {
-        for(int k = 0; k < 96; k++)
-        {
+    public void gjk() {
+        for(int k = 0; k < 96; k++) {
             for(int l = 0; l < 96; l++)
                 if(gki(k, l, 0) == 250)
                     if(k == 47 && gki(k + 1, l, 0) != 250 && gki(k + 1, l, 0) != 2)
@@ -979,10 +860,8 @@ public class EngineHandle
     }
 
     public int generatePath(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6[], 
-            int arg7[], boolean arg8)
-    {
-        for(int k = 0; k < 96; k++)
-        {
+            int arg7[], boolean arg8) {
+        for(int k = 0; k < 96; k++) {
             for(int l = 0; l < 96; l++)
                 gid[k][l] = 0;
 
@@ -997,90 +876,75 @@ public class EngineHandle
         arg7[i1++] = arg1;
         int i2 = arg6.length;
         boolean flag = false;
-        while(j1 != i1) 
-        {
+        while(j1 != i1)  {
             k1 = arg6[j1];
             l1 = arg7[j1];
             j1 = (j1 + 1) % i2;
-            if(k1 >= arg2 && k1 <= arg4 && l1 >= arg3 && l1 <= arg5)
-            {
+            if(k1 >= arg2 && k1 <= arg4 && l1 >= arg3 && l1 <= arg5) {
                 flag = true;
                 break;
             }
-            if(arg8)
-            {
-                if(k1 > 0 && k1 - 1 >= arg2 && k1 - 1 <= arg4 && l1 >= arg3 && l1 <= arg5 && (tiles[k1 - 1][l1] & 8) == 0)
-                {
+            if(arg8) {
+                if(k1 > 0 && k1 - 1 >= arg2 && k1 - 1 <= arg4 && l1 >= arg3 && l1 <= arg5 && (tiles[k1 - 1][l1] & 8) == 0) {
                     flag = true;
                     break;
                 }
-                if(k1 < 95 && k1 + 1 >= arg2 && k1 + 1 <= arg4 && l1 >= arg3 && l1 <= arg5 && (tiles[k1 + 1][l1] & 2) == 0)
-                {
+                if(k1 < 95 && k1 + 1 >= arg2 && k1 + 1 <= arg4 && l1 >= arg3 && l1 <= arg5 && (tiles[k1 + 1][l1] & 2) == 0) {
                     flag = true;
                     break;
                 }
-                if(l1 > 0 && k1 >= arg2 && k1 <= arg4 && l1 - 1 >= arg3 && l1 - 1 <= arg5 && (tiles[k1][l1 - 1] & 4) == 0)
-                {
+                if(l1 > 0 && k1 >= arg2 && k1 <= arg4 && l1 - 1 >= arg3 && l1 - 1 <= arg5 && (tiles[k1][l1 - 1] & 4) == 0) {
                     flag = true;
                     break;
                 }
-                if(l1 < 95 && k1 >= arg2 && k1 <= arg4 && l1 + 1 >= arg3 && l1 + 1 <= arg5 && (tiles[k1][l1 + 1] & 1) == 0)
-                {
+                if(l1 < 95 && k1 >= arg2 && k1 <= arg4 && l1 + 1 >= arg3 && l1 + 1 <= arg5 && (tiles[k1][l1 + 1] & 1) == 0) {
                     flag = true;
                     break;
                 }
             }
-            if(k1 > 0 && gid[k1 - 1][l1] == 0 && (tiles[k1 - 1][l1] & 0x78) == 0)
-            {
+            if(k1 > 0 && gid[k1 - 1][l1] == 0 && (tiles[k1 - 1][l1] & 0x78) == 0) {
                 arg6[i1] = k1 - 1;
                 arg7[i1] = l1;
                 i1 = (i1 + 1) % i2;
                 gid[k1 - 1][l1] = 2;
             }
-            if(k1 < 95 && gid[k1 + 1][l1] == 0 && (tiles[k1 + 1][l1] & 0x72) == 0)
-            {
+            if(k1 < 95 && gid[k1 + 1][l1] == 0 && (tiles[k1 + 1][l1] & 0x72) == 0) {
                 arg6[i1] = k1 + 1;
                 arg7[i1] = l1;
                 i1 = (i1 + 1) % i2;
                 gid[k1 + 1][l1] = 8;
             }
-            if(l1 > 0 && gid[k1][l1 - 1] == 0 && (tiles[k1][l1 - 1] & 0x74) == 0)
-            {
+            if(l1 > 0 && gid[k1][l1 - 1] == 0 && (tiles[k1][l1 - 1] & 0x74) == 0) {
                 arg6[i1] = k1;
                 arg7[i1] = l1 - 1;
                 i1 = (i1 + 1) % i2;
                 gid[k1][l1 - 1] = 1;
             }
-            if(l1 < 95 && gid[k1][l1 + 1] == 0 && (tiles[k1][l1 + 1] & 0x71) == 0)
-            {
+            if(l1 < 95 && gid[k1][l1 + 1] == 0 && (tiles[k1][l1 + 1] & 0x71) == 0) {
                 arg6[i1] = k1;
                 arg7[i1] = l1 + 1;
                 i1 = (i1 + 1) % i2;
                 gid[k1][l1 + 1] = 4;
             }
-            if(k1 > 0 && l1 > 0 && (tiles[k1][l1 - 1] & 0x74) == 0 && (tiles[k1 - 1][l1] & 0x78) == 0 && (tiles[k1 - 1][l1 - 1] & 0x7c) == 0 && gid[k1 - 1][l1 - 1] == 0)
-            {
+            if(k1 > 0 && l1 > 0 && (tiles[k1][l1 - 1] & 0x74) == 0 && (tiles[k1 - 1][l1] & 0x78) == 0 && (tiles[k1 - 1][l1 - 1] & 0x7c) == 0 && gid[k1 - 1][l1 - 1] == 0) {
                 arg6[i1] = k1 - 1;
                 arg7[i1] = l1 - 1;
                 i1 = (i1 + 1) % i2;
                 gid[k1 - 1][l1 - 1] = 3;
             }
-            if(k1 < 95 && l1 > 0 && (tiles[k1][l1 - 1] & 0x74) == 0 && (tiles[k1 + 1][l1] & 0x72) == 0 && (tiles[k1 + 1][l1 - 1] & 0x76) == 0 && gid[k1 + 1][l1 - 1] == 0)
-            {
+            if(k1 < 95 && l1 > 0 && (tiles[k1][l1 - 1] & 0x74) == 0 && (tiles[k1 + 1][l1] & 0x72) == 0 && (tiles[k1 + 1][l1 - 1] & 0x76) == 0 && gid[k1 + 1][l1 - 1] == 0) {
                 arg6[i1] = k1 + 1;
                 arg7[i1] = l1 - 1;
                 i1 = (i1 + 1) % i2;
                 gid[k1 + 1][l1 - 1] = 9;
             }
-            if(k1 > 0 && l1 < 95 && (tiles[k1][l1 + 1] & 0x71) == 0 && (tiles[k1 - 1][l1] & 0x78) == 0 && (tiles[k1 - 1][l1 + 1] & 0x79) == 0 && gid[k1 - 1][l1 + 1] == 0)
-            {
+            if(k1 > 0 && l1 < 95 && (tiles[k1][l1 + 1] & 0x71) == 0 && (tiles[k1 - 1][l1] & 0x78) == 0 && (tiles[k1 - 1][l1 + 1] & 0x79) == 0 && gid[k1 - 1][l1 + 1] == 0) {
                 arg6[i1] = k1 - 1;
                 arg7[i1] = l1 + 1;
                 i1 = (i1 + 1) % i2;
                 gid[k1 - 1][l1 + 1] = 6;
             }
-            if(k1 < 95 && l1 < 95 && (tiles[k1][l1 + 1] & 0x71) == 0 && (tiles[k1 + 1][l1] & 0x72) == 0 && (tiles[k1 + 1][l1 + 1] & 0x73) == 0 && gid[k1 + 1][l1 + 1] == 0)
-            {
+            if(k1 < 95 && l1 < 95 && (tiles[k1][l1 + 1] & 0x71) == 0 && (tiles[k1 + 1][l1] & 0x72) == 0 && (tiles[k1 + 1][l1 + 1] & 0x73) == 0 && gid[k1 + 1][l1 + 1] == 0) {
                 arg6[i1] = k1 + 1;
                 arg7[i1] = l1 + 1;
                 i1 = (i1 + 1) % i2;
@@ -1093,10 +957,8 @@ public class EngineHandle
         arg6[j1] = k1;
         arg7[j1++] = l1;
         int k2;
-        for(int j2 = k2 = gid[k1][l1]; k1 != arg0 || l1 != arg1; j2 = gid[k1][l1])
-        {
-            if(j2 != k2)
-            {
+        for(int j2 = k2 = gid[k1][l1]; k1 != arg0 || l1 != arg1; j2 = gid[k1][l1]) {
+            if(j2 != k2) {
                 k2 = j2;
                 arg6[j1] = k1;
                 arg7[j1++] = l1;
@@ -1116,13 +978,11 @@ public class EngineHandle
         return j1;
     }
 
-    public void gjm(int k, int l, int i1)
-    {
+    public void gjm(int k, int l, int i1) {
         tiles[k][l] &= 65535 - i1;
     }
 
-    public int gjn(int k, int l, int i1, int j1)
-    {
+    public int gjn(int k, int l, int i1, int j1) {
         int k1 = gki(k, l, i1);
         if(k1 == 0)
             return j1;
@@ -1130,12 +990,10 @@ public class EngineHandle
             return Data.akg[k1 - 1];
     }
 
-    public void gka(int arg0, int arg1, int arg2, int arg3)
-    {
+    public void gka(int arg0, int arg1, int arg2, int arg3) {
         if(arg0 < 1 || arg1 < 1 || arg0 + arg2 >= 96 || arg1 + arg3 >= 96)
             return;
-        for(int k = arg0; k <= arg0 + arg2; k++)
-        {
+        for(int k = arg0; k <= arg0 + arg2; k++) {
             for(int l = arg1; l <= arg1 + arg3; l++)
                 if((gkj(k, l) & 0x63) != 0 || (gkj(k - 1, l) & 0x59) != 0 || (gkj(k, l - 1) & 0x56) != 0 || (gkj(k - 1, l - 1) & 0x6c) != 0)
                     gjd(k, l, 35);
@@ -1146,20 +1004,16 @@ public class EngineHandle
 
     }
 
-    public void removeWallObject(int arg0, int arg1, int arg2, int arg3)
-    {
+    public void removeWallObject(int arg0, int arg1, int arg2, int arg3) {
         if(arg0 < 0 || arg1 < 0 || arg0 >= 95 || arg1 >= 95)
             return;
-        if(Data.wallObjectType[arg3] == 1)
-        {
-            if(arg2 == 0)
-            {
+        if(Data.wallObjectType[arg3] == 1) {
+            if(arg2 == 0) {
                 tiles[arg0][arg1] &= 0xfffe;
                 if(arg1 > 0)
                     gjm(arg0, arg1 - 1, 4);
             } else
-            if(arg2 == 1)
-            {
+            if(arg2 == 1) {
                 tiles[arg0][arg1] &= 0xfffd;
                 if(arg0 > 0)
                     gjm(arg0 - 1, arg1, 8);
@@ -1173,20 +1027,16 @@ public class EngineHandle
         }
     }
 
-    public void gkc(int arg0, int arg1, int arg2, int arg3)
-    {
+    public void gkc(int arg0, int arg1, int arg2, int arg3) {
         if(arg0 < 0 || arg1 < 0 || arg0 >= 95 || arg1 >= 95)
             return;
-        if(Data.wallObjectType[arg3] == 1)
-        {
-            if(arg2 == 0)
-            {
+        if(Data.wallObjectType[arg3] == 1) {
+            if(arg2 == 0) {
                 tiles[arg0][arg1] |= 1;
                 if(arg1 > 0)
                     gjg(arg0, arg1 - 1, 4);
             } else
-            if(arg2 == 1)
-            {
+            if(arg2 == 1) {
                 tiles[arg0][arg1] |= 2;
                 if(arg0 > 0)
                     gjg(arg0 - 1, arg1, 8);
@@ -1200,8 +1050,7 @@ public class EngineHandle
         }
     }
 
-    public int gkd(int k, int l, int i1)
-    {
+    public int gkd(int k, int l, int i1) {
         int j1 = gki(k, l, i1);
         if(j1 == 0)
             return -1;
@@ -1209,23 +1058,19 @@ public class EngineHandle
         return k1 != 2 ? 0 : 1;
     }
 
-    public int getTileRotation(int arg0, int arg1)
-    {
+    public int getTileRotation(int arg0, int arg1) {
         if(arg0 < 0 || arg0 >= 96 || arg1 < 0 || arg1 >= 96)
             return 0;
         byte byte0 = 0;
-        if(arg0 >= 48 && arg1 < 48)
-        {
+        if(arg0 >= 48 && arg1 < 48) {
             byte0 = 1;
             arg0 -= 48;
         } else
-        if(arg0 < 48 && arg1 >= 48)
-        {
+        if(arg0 < 48 && arg1 >= 48) {
             byte0 = 2;
             arg1 -= 48;
         } else
-        if(arg0 >= 48 && arg1 >= 48)
-        {
+        if(arg0 >= 48 && arg1 >= 48) {
             byte0 = 3;
             arg0 -= 48;
             arg1 -= 48;
@@ -1239,50 +1084,41 @@ public class EngineHandle
         objectDirs[x][y] = dir;
     }
 
-    public void removeObject(int arg0, int arg1, int arg2, int k)
-    {
+    public void removeObject(int arg0, int arg1, int arg2, int k) {
         if(arg0 < 0 || arg1 < 0 || arg0 >= 95 || arg1 >= 95)
             return;
-        if(Data.objectType[arg2] == 1 || Data.objectType[arg2] == 2)
-        {
+        if(Data.objectType[arg2] == 1 || Data.objectType[arg2] == 2) {
             //int k = getTileRotation(arg0, arg1);
             int l;
             int i1;
-            if(k == 0 || k == 4)
-            {
+            if(k == 0 || k == 4) {
                 l = Data.objectWidth[arg2];
                 i1 = Data.objectHeight[arg2];
-            } else
-            {
+            } else {
                 i1 = Data.objectWidth[arg2];
                 l = Data.objectHeight[arg2];
             }
-            for(int j1 = arg0; j1 < arg0 + l; j1++)
-            {
+            for(int j1 = arg0; j1 < arg0 + l; j1++) {
                 for(int k1 = arg1; k1 < arg1 + i1; k1++)
                     if(Data.objectType[arg2] == 1)
                         tiles[j1][k1] &= 0xffbf;
                     else
-                    if(k == 0)
-                    {
+                    if(k == 0) {
                         tiles[j1][k1] &= 0xfffd;
                         if(j1 > 0)
                             gjm(j1 - 1, k1, 8);
                     } else
-                    if(k == 2)
-                    {
+                    if(k == 2) {
                         tiles[j1][k1] &= 0xfffb;
                         if(k1 < 95)
                             gjm(j1, k1 + 1, 1);
                     } else
-                    if(k == 4)
-                    {
+                    if(k == 4) {
                         tiles[j1][k1] &= 0xfff7;
                         if(j1 < 95)
                             gjm(j1 + 1, k1, 2);
                     } else
-                    if(k == 6)
-                    {
+                    if(k == 6) {
                         tiles[j1][k1] &= 0xfffe;
                         if(k1 > 0)
                             gjm(j1, k1 - 1, 4);
@@ -1294,16 +1130,14 @@ public class EngineHandle
         }
     }
 
-    public void gkg(int k, int l, int i1, int j1, int k1)
-    {
+    public void gkg(int k, int l, int i1, int j1, int k1) {
         int l1 = k * 3;
         int i2 = l * 3;
         int j2 = ghj.bjj(j1);
         int k2 = ghj.bjj(k1);
         j2 = j2 >> 1 & 0x7f7f7f;
         k2 = k2 >> 1 & 0x7f7f7f;
-        if(i1 == 0)
-        {
+        if(i1 == 0) {
             ghi.drawLineX(l1, i2, 3, j2);
             ghi.drawLineX(l1, i2 + 1, 2, j2);
             ghi.drawLineX(l1, i2 + 2, 1, j2);
@@ -1311,8 +1145,7 @@ public class EngineHandle
             ghi.drawLineX(l1 + 1, i2 + 2, 2, k2);
             return;
         }
-        if(i1 == 1)
-        {
+        if(i1 == 1) {
             ghi.drawLineX(l1, i2, 3, k2);
             ghi.drawLineX(l1 + 1, i2 + 1, 2, k2);
             ghi.drawLineX(l1 + 2, i2 + 2, 1, k2);
@@ -1321,8 +1154,7 @@ public class EngineHandle
         }
     }
 
-    public void gkh(int k, int l, int i1, int j1, int k1)
-    {
+    public void gkh(int k, int l, int i1, int j1, int k1) {
         int l1 = Data.wallObjectModelVar1[k];
         if(gib[l][i1] < 0x13880)
             gib[l][i1] += 0x13880 + l1;
@@ -1330,23 +1162,19 @@ public class EngineHandle
             gib[j1][k1] += 0x13880 + l1;
     }
 
-    public int gki(int arg0, int arg1, int arg2)
-    {
+    public int gki(int arg0, int arg1, int arg2) {
         if(arg0 < 0 || arg0 >= 96 || arg1 < 0 || arg1 >= 96)
             return 0;
         byte byte0 = 0;
-        if(arg0 >= 48 && arg1 < 48)
-        {
+        if(arg0 >= 48 && arg1 < 48) {
             byte0 = 1;
             arg0 -= 48;
         } else
-        if(arg0 < 48 && arg1 >= 48)
-        {
+        if(arg0 < 48 && arg1 >= 48) {
             byte0 = 2;
             arg1 -= 48;
         } else
-        if(arg0 >= 48 && arg1 >= 48)
-        {
+        if(arg0 >= 48 && arg1 >= 48) {
             byte0 = 3;
             arg0 -= 48;
             arg1 -= 48;
@@ -1354,20 +1182,17 @@ public class EngineHandle
         return ghf[byte0][arg0 * 48 + arg1] & 0xff;
     }
 
-    public int gkj(int k, int l)
-    {
+    public int gkj(int k, int l) {
         if(k < 0 || l < 0 || k >= 96 || l >= 96)
             return 0;
         else
             return tiles[k][l];
     }
 
-    public void gkk()
-    {
+    public void gkk() {
         if(gjb)
             ghj.cleanUp();
-        for(int k = 0; k < 64; k++)
-        {
+        for(int k = 0; k < 64; k++) {
             ghn[k] = null;
             for(int l = 0; l < 4; l++)
                 gim[l][k] = null;
@@ -1380,13 +1205,11 @@ public class EngineHandle
         System.gc();
     }
 
-    public boolean gkl(int k, int l)
-    {
+    public boolean gkl(int k, int l) {
         return glb(k, l) > 0 || glb(k - 1, l) > 0 || glb(k - 1, l - 1) > 0 || glb(k, l - 1) > 0;
     }
 
-    public EngineHandle(Camera arg0, GameImage arg1)
-    {
+    public EngineHandle(Camera arg0, GameImage arg1) {
         ghb = new byte[4][2304];
         ghe = new int[4][2304];
         ghf = new byte[4][2304];
@@ -1426,28 +1249,23 @@ public class EngineHandle
 
     }
 
-    public boolean gkm(int k, int l)
-    {
+    public boolean gkm(int k, int l) {
         return glb(k, l) > 0 && glb(k - 1, l) > 0 && glb(k - 1, l - 1) > 0 && glb(k, l - 1) > 0;
     }
 
-    public int gkn(int arg0, int arg1)
-    {
+    public int gkn(int arg0, int arg1) {
         if(arg0 < 0 || arg0 >= 96 || arg1 < 0 || arg1 >= 96)
             return 0;
         byte byte0 = 0;
-        if(arg0 >= 48 && arg1 < 48)
-        {
+        if(arg0 >= 48 && arg1 < 48) {
             byte0 = 1;
             arg0 -= 48;
         } else
-        if(arg0 < 48 && arg1 >= 48)
-        {
+        if(arg0 < 48 && arg1 >= 48) {
             byte0 = 2;
             arg1 -= 48;
         } else
-        if(arg0 >= 48 && arg1 >= 48)
-        {
+        if(arg0 >= 48 && arg1 >= 48) {
             byte0 = 3;
             arg0 -= 48;
             arg1 -= 48;
@@ -1455,50 +1273,41 @@ public class EngineHandle
         return (gig[byte0][arg0 * 48 + arg1] & 0xff) * 3;
     }
 
-    public void gla(int arg0, int arg1, int arg2, int k)
-    {
+    public void gla(int arg0, int arg1, int arg2, int k) {
         if(arg0 < 0 || arg1 < 0 || arg0 >= 95 || arg1 >= 95)
             return;
-        if(Data.objectType[arg2] == 1 || Data.objectType[arg2] == 2)
-        {
+        if(Data.objectType[arg2] == 1 || Data.objectType[arg2] == 2) {
             //int k = getTileRotation(arg0, arg1);
             int l;
             int i1;
-            if(k == 0 || k == 4)
-            {
+            if(k == 0 || k == 4) {
                 l = Data.objectWidth[arg2];
                 i1 = Data.objectHeight[arg2];
-            } else
-            {
+            } else {
                 i1 = Data.objectWidth[arg2];
                 l = Data.objectHeight[arg2];
             }
-            for(int j1 = arg0; j1 < arg0 + l; j1++)
-            {
+            for(int j1 = arg0; j1 < arg0 + l; j1++) {
                 for(int k1 = arg1; k1 < arg1 + i1; k1++)
                     if(Data.objectType[arg2] == 1)
                         tiles[j1][k1] |= 0x40;
                     else
-                    if(k == 0)
-                    {
+                    if(k == 0) {
                         tiles[j1][k1] |= 2;
                         if(j1 > 0)
                             gjg(j1 - 1, k1, 8);
                     } else
-                    if(k == 2)
-                    {
+                    if(k == 2) {
                         tiles[j1][k1] |= 4;
                         if(k1 < 95)
                             gjg(j1, k1 + 1, 1);
                     } else
-                    if(k == 4)
-                    {
+                    if(k == 4) {
                         tiles[j1][k1] |= 8;
                         if(j1 < 95)
                             gjg(j1 + 1, k1, 2);
                     } else
-                    if(k == 6)
-                    {
+                    if(k == 6) {
                         tiles[j1][k1] |= 1;
                         if(k1 > 0)
                             gjg(j1, k1 - 1, 4);
@@ -1510,23 +1319,19 @@ public class EngineHandle
         }
     }
 
-    public int glb(int arg0, int arg1)
-    {
+    public int glb(int arg0, int arg1) {
         if(arg0 < 0 || arg0 >= 96 || arg1 < 0 || arg1 >= 96)
             return 0;
         byte byte0 = 0;
-        if(arg0 >= 48 && arg1 < 48)
-        {
+        if(arg0 >= 48 && arg1 < 48) {
             byte0 = 1;
             arg0 -= 48;
         } else
-        if(arg0 < 48 && arg1 >= 48)
-        {
+        if(arg0 < 48 && arg1 >= 48) {
             byte0 = 2;
             arg1 -= 48;
         } else
-        if(arg0 >= 48 && arg1 >= 48)
-        {
+        if(arg0 >= 48 && arg1 >= 48) {
             byte0 = 3;
             arg0 -= 48;
             arg1 -= 48;
@@ -1534,23 +1339,19 @@ public class EngineHandle
         return gja[byte0][arg0 * 48 + arg1];
     }
 
-    public void glc(int arg0, int arg1, int arg2)
-    {
+    public void glc(int arg0, int arg1, int arg2) {
         if(arg0 < 0 || arg0 >= 96 || arg1 < 0 || arg1 >= 96)
             return;
         byte byte0 = 0;
-        if(arg0 >= 48 && arg1 < 48)
-        {
+        if(arg0 >= 48 && arg1 < 48) {
             byte0 = 1;
             arg0 -= 48;
         } else
-        if(arg0 < 48 && arg1 >= 48)
-        {
+        if(arg0 < 48 && arg1 >= 48) {
             byte0 = 2;
             arg1 -= 48;
         } else
-        if(arg0 >= 48 && arg1 >= 48)
-        {
+        if(arg0 >= 48 && arg1 >= 48) {
             byte0 = 3;
             arg0 -= 48;
             arg1 -= 48;
@@ -1558,23 +1359,19 @@ public class EngineHandle
         ghf[byte0][arg0 * 48 + arg1] = (byte)arg2;
     }
 
-    public int gld(int arg0, int arg1)
-    {
+    public int gld(int arg0, int arg1) {
         if(arg0 < 0 || arg0 >= 96 || arg1 < 0 || arg1 >= 96)
             return 0;
         byte byte0 = 0;
-        if(arg0 >= 48 && arg1 < 48)
-        {
+        if(arg0 >= 48 && arg1 < 48) {
             byte0 = 1;
             arg0 -= 48;
         } else
-        if(arg0 < 48 && arg1 >= 48)
-        {
+        if(arg0 < 48 && arg1 >= 48) {
             byte0 = 2;
             arg1 -= 48;
         } else
-        if(arg0 >= 48 && arg1 >= 48)
-        {
+        if(arg0 >= 48 && arg1 >= 48) {
             byte0 = 3;
             arg0 -= 48;
             arg1 -= 48;
@@ -1582,23 +1379,19 @@ public class EngineHandle
         return gic[byte0][arg0 * 48 + arg1] & 0xff;
     }
 
-    public int gle(int arg0, int arg1)
-    {
+    public int gle(int arg0, int arg1) {
         if(arg0 < 0 || arg0 >= 96 || arg1 < 0 || arg1 >= 96)
             return 0;
         byte byte0 = 0;
-        if(arg0 >= 48 && arg1 < 48)
-        {
+        if(arg0 >= 48 && arg1 < 48) {
             byte0 = 1;
             arg0 -= 48;
         } else
-        if(arg0 < 48 && arg1 >= 48)
-        {
+        if(arg0 < 48 && arg1 >= 48) {
             byte0 = 2;
             arg1 -= 48;
         } else
-        if(arg0 >= 48 && arg1 >= 48)
-        {
+        if(arg0 >= 48 && arg1 >= 48) {
             byte0 = 3;
             arg0 -= 48;
             arg1 -= 48;
@@ -1606,23 +1399,19 @@ public class EngineHandle
         return ghb[byte0][arg0 * 48 + arg1] & 0xff;
     }
 
-    public int glf(int arg0, int arg1)
-    {
+    public int glf(int arg0, int arg1) {
         if(arg0 < 0 || arg0 >= 96 || arg1 < 0 || arg1 >= 96)
             return 0;
         byte byte0 = 0;
-        if(arg0 >= 48 && arg1 < 48)
-        {
+        if(arg0 >= 48 && arg1 < 48) {
             byte0 = 1;
             arg0 -= 48;
         } else
-        if(arg0 < 48 && arg1 >= 48)
-        {
+        if(arg0 < 48 && arg1 >= 48) {
             byte0 = 2;
             arg1 -= 48;
         } else
-        if(arg0 >= 48 && arg1 >= 48)
-        {
+        if(arg0 >= 48 && arg1 >= 48) {
             byte0 = 3;
             arg0 -= 48;
             arg1 -= 48;
@@ -1630,23 +1419,18 @@ public class EngineHandle
         return ghe[byte0][arg0 * 48 + arg1];
     }
 
-    public void glg(GameObject arg0[])
-    {
-        for(int k = 0; k < 94; k++)
-        {
+    public void glg(GameObject arg0[]) {
+        for(int k = 0; k < 94; k++) {
             for(int l = 0; l < 94; l++)
-                if(glf(k, l) > 48000 && glf(k, l) < 60000)
-                {
+                if(glf(k, l) > 48000 && glf(k, l) < 60000) {
                     int i1 = glf(k, l) - 48001;
                     int j1 = objectDirs[k][l];//getTileRotation(k, l);
                     int k1;
                     int l1;
-                    if(j1 == 0 || j1 == 4)
-                    {
+                    if(j1 == 0 || j1 == 4) {
                         k1 = Data.objectWidth[i1];
                         l1 = Data.objectHeight[i1];
-                    } else
-                    {
+                    } else {
                         l1 = Data.objectWidth[i1];
                         k1 = Data.objectHeight[i1];
                     }
@@ -1659,28 +1443,22 @@ public class EngineHandle
                     i2.cmj(0, j1 * 32, 0);
                     ghj.addModel(i2);
                     i2.cmf(48, 48, -50, -10, -50);
-                    if(k1 > 1 || l1 > 1)
-                    {
-                        for(int j3 = k; j3 < k + k1; j3++)
-                        {
+                    if(k1 > 1 || l1 > 1) {
+                        for(int j3 = k; j3 < k + k1; j3++) {
                             for(int k3 = l; k3 < l + l1; k3++)
-                                if((j3 > k || k3 > l) && glf(j3, k3) - 48001 == i1)
-                                {
+                                if((j3 > k || k3 > l) && glf(j3, k3) - 48001 == i1) {
                                     int k2 = j3;
                                     int i3 = k3;
                                     byte byte0 = 0;
-                                    if(k2 >= 48 && i3 < 48)
-                                    {
+                                    if(k2 >= 48 && i3 < 48) {
                                         byte0 = 1;
                                         k2 -= 48;
                                     } else
-                                    if(k2 < 48 && i3 >= 48)
-                                    {
+                                    if(k2 < 48 && i3 >= 48) {
                                         byte0 = 2;
                                         i3 -= 48;
                                     } else
-                                    if(k2 >= 48 && i3 >= 48)
-                                    {
+                                    if(k2 >= 48 && i3 >= 48) {
                                         byte0 = 3;
                                         k2 -= 48;
                                         i3 -= 48;
@@ -1697,20 +1475,17 @@ public class EngineHandle
 
     }
 
-    public void glh(int arg0, int arg1, int arg2, int arg3, int arg4)
-    {
+    public void glh(int arg0, int arg1, int arg2, int arg3, int arg4) {
         GameObject k = ghn[arg0 + arg1 * 8];
         for(int l = 0; l < k.cfh; l++)
-            if(k.cil[l] == arg2 * 128 && k.cin[l] == arg3 * 128)
-            {
+            if(k.cil[l] == arg2 * 128 && k.cin[l] == arg3 * 128) {
                 k.cmh(l, arg4);
                 return;
             }
 
     }
 
-    public void gli(GameObject k, int l, int i1, int j1, int k1, int l1)
-    {
+    public void gli(GameObject k, int l, int i1, int j1, int k1, int l1) {
         gjd(i1, j1, 40);
         gjd(k1, l1, 40);
         int i2 = Data.wallObjectModelVar1[l];
@@ -1728,12 +1503,10 @@ public class EngineHandle
             l3, i4, j4, k4
         };
         int l4 = k.cmb(4, ai, j2, k2);
-        if(Data.wallObjectUnknown[l] == 5)
-        {
+        if(Data.wallObjectUnknown[l] == 5) {
             k.entityType[l4] = 30000 + l;
             return;
-        } else
-        {
+        } else {
             k.entityType[l4] = 0;
             return;
         }

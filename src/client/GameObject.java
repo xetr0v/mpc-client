@@ -1,15 +1,10 @@
 package client;
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
 
 import java.io.*;
 
-public class GameObject
-{
+public class GameObject {
 
-    public GameObject(int arg0, int arg1)
-    {
+    public GameObject(int arg0, int arg1) {
         cgn = 1;
         cha = true;
         chh = true;
@@ -21,7 +16,6 @@ public class GameObject
         cib = false;
         cic = false;
         cid = false;
-        cii = 4;
         cij = 0xbc614e;
         ckn = 0xbc614e;
         cla = 180;
@@ -37,8 +31,7 @@ public class GameObject
 
     }
 
-    public GameObject(int j, int k, boolean flag, boolean flag1, boolean flag2, boolean flag3, boolean flag4)
-    {
+    public GameObject(int j, int k, boolean flag, boolean flag1, boolean flag2, boolean flag3, boolean flag4) {
         cgn = 1;
         cha = true;
         chh = true;
@@ -50,7 +43,6 @@ public class GameObject
         cib = false;
         cic = false;
         cid = false;
-        cii = 4;
         cij = 0xbc614e;
         ckn = 0xbc614e;
         cla = 180;
@@ -67,8 +59,7 @@ public class GameObject
         cli(j, k);
     }
 
-    private void cli(int arg0, int arg1)
-    {
+    private void cli(int arg0, int arg1) {
         cil = new int[arg0];
         cim = new int[arg0];
         cin = new int[arg0];
@@ -81,38 +72,32 @@ public class GameObject
         cgi = new int[arg1];
         cgh = new int[arg1];
         cgg = new int[arg1];
-        if(!cid)
-        {
+        if(!cid) {
             cfi = new int[arg0];
             cfj = new int[arg0];
             cfk = new int[arg0];
             cfl = new int[arg0];
             cfm = new int[arg0];
         }
-        if(!cic)
-        {
+        if(!cic) {
             chm = new byte[arg1];
             entityType = new int[arg1];
         }
-        if(chn)
-        {
+        if(chn) {
             cja = cil;
             cjb = cim;
             cjc = cin;
-        } else
-        {
+        } else {
             cja = new int[arg0];
             cjb = new int[arg0];
             cjc = new int[arg0];
         }
-        if(!cib || !cia)
-        {
+        if(!cib || !cia) {
             cgj = new int[arg1];
             cgk = new int[arg1];
             cgl = new int[arg1];
         }
-        if(!cia)
-        {
+        if(!cia) {
             cjf = new int[arg1];
             cjg = new int[arg1];
             cjh = new int[arg1];
@@ -131,8 +116,7 @@ public class GameObject
         ckm = 0;
     }
 
-    public void clj()
-    {
+    public void clj() {
         cfi = new int[cfh];
         cfj = new int[cfh];
         cfk = new int[cfh];
@@ -140,14 +124,12 @@ public class GameObject
         cfm = new int[cfh];
     }
 
-    public void clk()
-    {
+    public void clk() {
         cgb = 0;
         cfh = 0;
     }
 
-    public void cll(int j, int k)
-    {
+    public void cll(int j, int k) {
         cgb -= j;
         if(cgb < 0)
             cgb = 0;
@@ -156,8 +138,7 @@ public class GameObject
             cfh = 0;
     }
 
-    public GameObject(byte arg0[], int arg1, boolean arg2)
-    {
+    public GameObject(byte arg0[], int arg1, boolean arg2) {
         cgn = 1;
         cha = true;
         chh = true;
@@ -169,7 +150,6 @@ public class GameObject
         cib = false;
         cic = false;
         cid = false;
-        cii = 4;
         cij = 0xbc614e;
         ckn = 0xbc614e;
         cla = 180;
@@ -184,21 +164,18 @@ public class GameObject
         arg1 += 2;
         cli(j, k);
         cje = new int[k][1];
-        for(int l = 0; l < j; l++)
-        {
-            cil[l] = DataOperations.getShortSigned(arg0, arg1);
+        for(int l = 0; l < j; l++) {
+            cil[l] = DataOperations.getShort2(arg0, arg1);
             arg1 += 2;
         }
 
-        for(int i1 = 0; i1 < j; i1++)
-        {
-            cim[i1] = DataOperations.getShortSigned(arg0, arg1);
+        for(int i1 = 0; i1 < j; i1++) {
+            cim[i1] = DataOperations.getShort2(arg0, arg1);
             arg1 += 2;
         }
 
-        for(int j1 = 0; j1 < j; j1++)
-        {
-            cin[j1] = DataOperations.getShortSigned(arg0, arg1);
+        for(int j1 = 0; j1 < j; j1++) {
+            cin[j1] = DataOperations.getShort2(arg0, arg1);
             arg1 += 2;
         }
 
@@ -206,24 +183,21 @@ public class GameObject
         for(int k1 = 0; k1 < k; k1++)
             cgc[k1] = arg0[arg1++] & 0xff;
 
-        for(int l1 = 0; l1 < k; l1++)
-        {
-            cge[l1] = DataOperations.getShortSigned(arg0, arg1);
+        for(int l1 = 0; l1 < k; l1++) {
+            cge[l1] = DataOperations.getShort2(arg0, arg1);
             arg1 += 2;
             if(cge[l1] == 32767)
                 cge[l1] = cij;
         }
 
-        for(int i2 = 0; i2 < k; i2++)
-        {
-            cgf[i2] = DataOperations.getShortSigned(arg0, arg1);
+        for(int i2 = 0; i2 < k; i2++) {
+            cgf[i2] = DataOperations.getShort2(arg0, arg1);
             arg1 += 2;
             if(cgf[i2] == 32767)
                 cgf[i2] = cij;
         }
 
-        for(int j2 = 0; j2 < k; j2++)
-        {
+        for(int j2 = 0; j2 < k; j2++) {
             int k2 = arg0[arg1++] & 0xff;
             if(k2 == 0)
                 cgi[j2] = 0;
@@ -231,15 +205,12 @@ public class GameObject
                 cgi[j2] = cij;
         }
 
-        for(int l2 = 0; l2 < k; l2++)
-        {
+        for(int l2 = 0; l2 < k; l2++) {
             cgd[l2] = new int[cgc[l2]];
             for(int i3 = 0; i3 < cgc[l2]; i3++)
-                if(j < 256)
-                {
+                if(j < 256) {
                     cgd[l2][i3] = arg0[arg1++] & 0xff;
-                } else
-                {
+                } else {
                     cgd[l2][i3] = DataOperations.getShort(arg0, arg1);
                     arg1 += 2;
                 }
@@ -250,8 +221,7 @@ public class GameObject
         cgn = 1;
     }
 
-    public GameObject(String arg0)
-    {
+    public GameObject(String arg0) {
         cgn = 1;
         cha = true;
         chh = true;
@@ -263,7 +233,6 @@ public class GameObject
         cib = false;
         cic = false;
         cid = false;
-        cii = 4;
         cij = 0xbc614e;
         ckn = 0xbc614e;
         cla = 180;
@@ -272,45 +241,36 @@ public class GameObject
         cld = 256;
         cle = 512;
         clf = 32;
-        boolean flag = false;
-        boolean flag1 = false;
         byte abyte0[] = null;
-        try
-        {
+        try {
             java.io.InputStream inputstream = DataOperations.openInputStream(arg0);
             DataInputStream datainputstream = new DataInputStream(inputstream);
             abyte0 = new byte[3];
             clg = 0;
-            clh = 0;
             for(int j = 0; j < 3; j += datainputstream.read(abyte0, j, 3 - j));
             int l = cnm(abyte0);
             abyte0 = new byte[l];
             clg = 0;
-            clh = 0;
             for(int k = 0; k < l; k += datainputstream.read(abyte0, k, l - k));
             datainputstream.close();
         }
-        catch(IOException _ex)
-        {
+        catch(IOException _ex) {
             cfh = 0;
             cgb = 0;
             return;
         }
         int i1 = cnm(abyte0);
         int j1 = cnm(abyte0);
-        boolean flag2 = false;
         cli(i1, j1);
         cje = new int[j1][];
-        for(int k3 = 0; k3 < i1; k3++)
-        {
+        for(int k3 = 0; k3 < i1; k3++) {
             int k1 = cnm(abyte0);
             int l1 = cnm(abyte0);
             int i2 = cnm(abyte0);
             cln(k1, l1, i2);
         }
 
-        for(int l3 = 0; l3 < j1; l3++)
-        {
+        for(int l3 = 0; l3 < j1; l3++) {
             int j2 = cnm(abyte0);
             int k2 = cnm(abyte0);
             int l2 = cnm(abyte0);
@@ -337,8 +297,7 @@ public class GameObject
         cgn = 1;
     }
 
-    public GameObject(GameObject ai[], int j, boolean flag, boolean flag1, boolean flag2, boolean flag3)
-    {
+    public GameObject(GameObject ai[], int j, boolean flag, boolean flag1, boolean flag2, boolean flag3) {
         cgn = 1;
         cha = true;
         chh = true;
@@ -350,7 +309,6 @@ public class GameObject
         cib = false;
         cic = false;
         cid = false;
-        cii = 4;
         cij = 0xbc614e;
         ckn = 0xbc614e;
         cla = 180;
@@ -366,8 +324,7 @@ public class GameObject
         clm(ai, j, false);
     }
 
-    public GameObject(GameObject ai[], int j)
-    {
+    public GameObject(GameObject ai[], int j) {
         cgn = 1;
         cha = true;
         chh = true;
@@ -379,7 +336,6 @@ public class GameObject
         cib = false;
         cic = false;
         cid = false;
-        cii = 4;
         cij = 0xbc614e;
         ckn = 0xbc614e;
         cla = 180;
@@ -391,12 +347,10 @@ public class GameObject
         clm(ai, j, true);
     }
 
-    public void clm(GameObject arg0[], int arg1, boolean arg2)
-    {
+    public void clm(GameObject arg0[], int arg1, boolean arg2) {
         int j = 0;
         int k = 0;
-        for(int l = 0; l < arg1; l++)
-        {
+        for(int l = 0; l < arg1; l++) {
             j += arg0[l].cgb;
             k += arg0[l].cfh;
         }
@@ -404,8 +358,7 @@ public class GameObject
         cli(k, j);
         if(arg2)
             cje = new int[j][];
-        for(int i1 = 0; i1 < arg1; i1++)
-        {
+        for(int i1 = 0; i1 < arg1; i1++) {
             GameObject j1 = arg0[i1];
             j1.cni();
             clf = j1.clf;
@@ -414,8 +367,7 @@ public class GameObject
             clb = j1.clb;
             clc = j1.clc;
             cld = j1.cld;
-            for(int k1 = 0; k1 < j1.cgb; k1++)
-            {
+            for(int k1 = 0; k1 < j1.cgb; k1++) {
                 int ai[] = new int[j1.cgc[k1]];
                 int ai1[] = j1.cgd[k1];
                 for(int l1 = 0; l1 < j1.cgc[k1]; l1++)
@@ -426,15 +378,13 @@ public class GameObject
                 cgh[i2] = j1.cgh[k1];
                 cgg[i2] = j1.cgg[k1];
                 if(arg2)
-                    if(arg1 > 1)
-                    {
+                    if(arg1 > 1) {
                         cje[i2] = new int[j1.cje[k1].length + 1];
                         cje[i2][0] = i1;
                         for(int j2 = 0; j2 < j1.cje[k1].length; j2++)
                             cje[i2][j2 + 1] = j1.cje[k1][j2];
 
-                    } else
-                    {
+                    } else {
                         cje[i2] = new int[j1.cje[k1].length];
                         for(int k2 = 0; k2 < j1.cje[k1].length; k2++)
                             cje[i2][k2] = j1.cje[k1][k2];
@@ -447,17 +397,14 @@ public class GameObject
         cgn = 1;
     }
 
-    public int cln(int arg0, int arg1, int arg2)
-    {
+    public int cln(int arg0, int arg1, int arg2) {
         for(int j = 0; j < cfh; j++)
             if(cil[j] == arg0 && cim[j] == arg1 && cin[j] == arg2)
                 return j;
 
-        if(cfh >= cik)
-        {
+        if(cfh >= cik) {
             return -1;
-        } else
-        {
+        } else {
             cil[cfh] = arg0;
             cim[cfh] = arg1;
             cin[cfh] = arg2;
@@ -465,13 +412,10 @@ public class GameObject
         }
     }
 
-    public int cma(int j, int k, int l)
-    {
-        if(cfh >= cik)
-        {
+    public int cma(int j, int k, int l) {
+        if(cfh >= cik) {
             return -1;
-        } else
-        {
+        } else {
             cil[cfh] = j;
             cim[cfh] = k;
             cin[cfh] = l;
@@ -479,13 +423,10 @@ public class GameObject
         }
     }
 
-    public int cmb(int j, int ai[], int k, int l)
-    {
-        if(cgb >= cjd)
-        {
+    public int cmb(int j, int ai[], int k, int l) {
+        if(cgb >= cjd) {
             return -1;
-        } else
-        {
+        } else {
             cgc[cgb] = j;
             cgd[cgb] = ai;
             cge[cgb] = k;
@@ -496,25 +437,21 @@ public class GameObject
     }
 
     public GameObject[] cmc(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, 
-            boolean arg7)
-    {
+            boolean arg7) {
         cni();
         int ai[] = new int[arg5];
         int ai1[] = new int[arg5];
-        for(int j = 0; j < arg5; j++)
-        {
+        for(int j = 0; j < arg5; j++) {
             ai[j] = 0;
             ai1[j] = 0;
         }
 
-        for(int k = 0; k < cgb; k++)
-        {
+        for(int k = 0; k < cgb; k++) {
             int l = 0;
             int i1 = 0;
             int k1 = cgc[k];
             int ai3[] = cgd[k];
-            for(int k2 = 0; k2 < k1; k2++)
-            {
+            for(int k2 = 0; k2 < k1; k2++) {
                 l += cil[ai3[k2]];
                 i1 += cin[ai3[k2]];
             }
@@ -525,8 +462,7 @@ public class GameObject
         }
 
         GameObject ai2[] = new GameObject[arg5];
-        for(int j1 = 0; j1 < arg5; j1++)
-        {
+        for(int j1 = 0; j1 < arg5; j1++) {
             if(ai[j1] > arg6)
                 ai[j1] = arg6;
             ai2[j1] = new GameObject(ai[j1], ai1[j1], true, true, true, arg7, true);
@@ -534,14 +470,12 @@ public class GameObject
             ai2[j1].clf = clf;
         }
 
-        for(int l1 = 0; l1 < cgb; l1++)
-        {
+        for(int l1 = 0; l1 < cgb; l1++) {
             int i2 = 0;
             int l2 = 0;
             int j3 = cgc[l1];
             int ai4[] = cgd[l1];
-            for(int k3 = 0; k3 < j3; k3++)
-            {
+            for(int k3 = 0; k3 < j3; k3++) {
                 i2 += cil[ai4[k3]];
                 l2 += cin[ai4[k3]];
             }
@@ -556,11 +490,9 @@ public class GameObject
         return ai2;
     }
 
-    public void cmd(GameObject arg0, int arg1[], int arg2, int arg3)
-    {
+    public void cmd(GameObject arg0, int arg1[], int arg2, int arg3) {
         int ai[] = new int[arg2];
-        for(int j = 0; j < arg2; j++)
-        {
+        for(int j = 0; j < arg2; j++) {
             int k = ai[j] = arg0.cln(cil[arg1[j]], cim[arg1[j]], cin[arg1[j]]);
             arg0.cfn[k] = cfn[arg1[j]];
             arg0.cga[k] = cga[arg1[j]];
@@ -574,8 +506,7 @@ public class GameObject
         arg0.cgg[l] = cgg[arg3];
     }
 
-    public void cme(boolean arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
-    {
+    public void cme(boolean arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
         clf = 256 - arg1 * 4;
         cle = (64 - arg2) * 16 + 128;
         if(cib)
@@ -593,15 +524,12 @@ public class GameObject
         cne();
     }
 
-    public void cmf(int j, int k, int l, int i1, int j1)
-    {
+    public void cmf(int j, int k, int l, int i1, int j1) {
         clf = 256 - j * 4;
         cle = (64 - k) * 16 + 128;
-        if(cib)
-        {
+        if(cib) {
             return;
-        } else
-        {
+        } else {
             cla = l;
             clb = i1;
             clc = j1;
@@ -611,13 +539,10 @@ public class GameObject
         }
     }
 
-    public void cmg(int j, int k, int l)
-    {
-        if(cib)
-        {
+    public void cmg(int j, int k, int l) {
+        if(cib) {
             return;
-        } else
-        {
+        } else {
             cla = j;
             clb = k;
             clc = l;
@@ -627,13 +552,11 @@ public class GameObject
         }
     }
 
-    public void cmh(int j, int k)
-    {
+    public void cmh(int j, int k) {
         cga[j] = (byte)k;
     }
 
-    public void cmi(int j, int k, int l)
-    {
+    public void cmi(int j, int k, int l) {
         cka = cka + j & 0xff;
         ckb = ckb + k & 0xff;
         ckc = ckc + l & 0xff;
@@ -641,8 +564,7 @@ public class GameObject
         cgn = 1;
     }
 
-    public void cmj(int j, int k, int l)
-    {
+    public void cmj(int j, int k, int l) {
         cka = j & 0xff;
         ckb = k & 0xff;
         ckc = l & 0xff;
@@ -650,8 +572,7 @@ public class GameObject
         cgn = 1;
     }
 
-    public void cmk(int j, int k, int l)
-    {
+    public void cmk(int j, int k, int l) {
         cjl += j;
         cjm += k;
         cjn += l;
@@ -659,8 +580,7 @@ public class GameObject
         cgn = 1;
     }
 
-    public void cml(int j, int k, int l)
-    {
+    public void cml(int j, int k, int l) {
         cjl = j;
         cjm = k;
         cjn = l;
@@ -668,38 +588,30 @@ public class GameObject
         cgn = 1;
     }
 
-    private void cmm()
-    {
-        if(ckg != 256 || ckh != 256 || cki != 256 || ckj != 256 || ckk != 256 || ckl != 256)
-        {
+    private void cmm() {
+        if(ckg != 256 || ckh != 256 || cki != 256 || ckj != 256 || ckk != 256 || ckl != 256) {
             ckm = 4;
             return;
         }
-        if(ckd != 256 || cke != 256 || ckf != 256)
-        {
+        if(ckd != 256 || cke != 256 || ckf != 256) {
             ckm = 3;
             return;
         }
-        if(cka != 0 || ckb != 0 || ckc != 0)
-        {
+        if(cka != 0 || ckb != 0 || ckc != 0) {
             ckm = 2;
             return;
         }
-        if(cjl != 0 || cjm != 0 || cjn != 0)
-        {
+        if(cjl != 0 || cjm != 0 || cjn != 0) {
             ckm = 1;
             return;
-        } else
-        {
+        } else {
             ckm = 0;
             return;
         }
     }
 
-    private void cmn(int arg0, int arg1, int arg2)
-    {
-        for(int j = 0; j < cfh; j++)
-        {
+    private void cmn(int arg0, int arg1, int arg2) {
+        for(int j = 0; j < cfh; j++) {
             cja[j] += arg0;
             cjb[j] += arg1;
             cjc[j] += arg2;
@@ -707,28 +619,23 @@ public class GameObject
 
     }
 
-    private void cna(int arg0, int arg1, int arg2)
-    {
-        for(int k2 = 0; k2 < cfh; k2++)
-        {
-            if(arg2 != 0)
-            {
+    private void cna(int arg0, int arg1, int arg2) {
+        for(int k2 = 0; k2 < cfh; k2++) {
+            if(arg2 != 0) {
                 int j = cie[arg2];
                 int i1 = cie[arg2 + 256];
                 int l1 = cjb[k2] * j + cja[k2] * i1 >> 15;
                 cjb[k2] = cjb[k2] * i1 - cja[k2] * j >> 15;
                 cja[k2] = l1;
             }
-            if(arg0 != 0)
-            {
+            if(arg0 != 0) {
                 int k = cie[arg0];
                 int j1 = cie[arg0 + 256];
                 int i2 = cjb[k2] * j1 - cjc[k2] * k >> 15;
                 cjc[k2] = cjb[k2] * k + cjc[k2] * j1 >> 15;
                 cjb[k2] = i2;
             }
-            if(arg1 != 0)
-            {
+            if(arg1 != 0) {
                 int l = cie[arg1];
                 int k1 = cie[arg1 + 256];
                 int j2 = cjc[k2] * l + cja[k2] * k1 >> 15;
@@ -739,10 +646,8 @@ public class GameObject
 
     }
 
-    private void cnb(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
-    {
-        for(int j = 0; j < cfh; j++)
-        {
+    private void cnb(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
+        for(int j = 0; j < cfh; j++) {
             if(arg0 != 0)
                 cja[j] += cjb[j] * arg0 >> 8;
             if(arg1 != 0)
@@ -759,10 +664,8 @@ public class GameObject
 
     }
 
-    private void cnc(int arg0, int arg1, int arg2)
-    {
-        for(int j = 0; j < cfh; j++)
-        {
+    private void cnc(int arg0, int arg1, int arg2) {
+        for(int j = 0; j < cfh; j++) {
             cja[j] = cja[j] * arg0 >> 8;
             cjb[j] = cjb[j] * arg1 >> 8;
             cjc[j] = cjc[j] * arg2 >> 8;
@@ -770,12 +673,10 @@ public class GameObject
 
     }
 
-    private void cnd()
-    {
+    private void cnd() {
         chb = chd = chf = 0xf423f;
         ckn = chc = che = chg = 0xfff0bdc1;
-        for(int j = 0; j < cgb; j++)
-        {
+        for(int j = 0; j < cgb; j++) {
             int ai[] = cgd[j];
             int l = ai[0];
             int j1 = cgc[j];
@@ -785,8 +686,7 @@ public class GameObject
             int j2 = i2 = cjb[l];
             int k2;
             int l2 = k2 = cjc[l];
-            for(int k = 0; k < j1; k++)
-            {
+            for(int k = 0; k < j1; k++) {
                 int i1 = ai[k];
                 if(cja[i1] < k1)
                     k1 = cja[i1];
@@ -805,8 +705,7 @@ public class GameObject
                     l2 = cjc[i1];
             }
 
-            if(!cia)
-            {
+            if(!cia) {
                 cjf[j] = k1;
                 cjg[j] = l1;
                 cjh[j] = i2;
@@ -836,8 +735,7 @@ public class GameObject
 
     }
 
-    public void cne()
-    {
+    public void cne() {
         if(cib)
             return;
         int j = cle * cld >> 8;
@@ -849,8 +747,7 @@ public class GameObject
         int ai1[] = new int[cfh];
         int ai2[] = new int[cfh];
         int ai3[] = new int[cfh];
-        for(int l = 0; l < cfh; l++)
-        {
+        for(int l = 0; l < cfh; l++) {
             ai[l] = 0;
             ai1[l] = 0;
             ai2[l] = 0;
@@ -858,10 +755,8 @@ public class GameObject
         }
 
         for(int i1 = 0; i1 < cgb; i1++)
-            if(cgi[i1] == cij)
-            {
-                for(int j1 = 0; j1 < cgc[i1]; j1++)
-                {
+            if(cgi[i1] == cij) {
+                for(int j1 = 0; j1 < cgc[i1]; j1++) {
                     int l1 = cgd[i1][j1];
                     ai[l1] += cgj[i1];
                     ai1[l1] += cgk[i1];
@@ -877,12 +772,10 @@ public class GameObject
 
     }
 
-    public void cnf()
-    {
+    public void cnf() {
         if(cib && cia)
             return;
-        for(int j = 0; j < cgb; j++)
-        {
+        for(int j = 0; j < cgb; j++) {
             int ai[] = cgd[j];
             int k = cja[ai[0]];
             int l = cjb[ai[0]];
@@ -896,8 +789,7 @@ public class GameObject
             int l2 = k1 * k2 - j2 * l1;
             int i3 = l1 * i2 - k2 * j1;
             int j3;
-            for(j3 = j1 * j2 - i2 * k1; l2 > 8192 || i3 > 8192 || j3 > 8192 || l2 < -8192 || i3 < -8192 || j3 < -8192; j3 >>= 1)
-            {
+            for(j3 = j1 * j2 - i2 * k1; l2 > 8192 || i3 > 8192 || j3 > 8192 || l2 < -8192 || i3 < -8192 || j3 < -8192; j3 >>= 1) {
                 l2 >>= 1;
                 i3 >>= 1;
             }
@@ -914,13 +806,10 @@ public class GameObject
         cne();
     }
 
-    public void cng()
-    {
-        if(cgn == 2)
-        {
+    public void cng() {
+        if(cgn == 2) {
             cgn = 0;
-            for(int j = 0; j < cfh; j++)
-            {
+            for(int j = 0; j < cfh; j++) {
                 cja[j] = cil[j];
                 cjb[j] = cim[j];
                 cjc[j] = cin[j];
@@ -930,11 +819,9 @@ public class GameObject
             ckn = chc = che = chg = 0x98967f;
             return;
         }
-        if(cgn == 1)
-        {
+        if(cgn == 1) {
             cgn = 0;
-            for(int k = 0; k < cfh; k++)
-            {
+            for(int k = 0; k < cfh; k++) {
                 cja[k] = cil[k];
                 cjb[k] = cim[k];
                 cjc[k] = cin[k];
@@ -954,11 +841,9 @@ public class GameObject
     }
 
     public void cnh(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, 
-            int arg7)
-    {
+            int arg7) {
         cng();
-        if(chf > Camera.bgj || chg < Camera.bgi || chb > Camera.bgf || chc < Camera.bge || chd > Camera.bgh || che < Camera.bgg)
-        {
+        if(chf > Camera.bgj || chg < Camera.bgi || chb > Camera.bgf || chc < Camera.bge || chd > Camera.bgh || che < Camera.bgg) {
             cha = false;
             return;
         }
@@ -969,40 +854,33 @@ public class GameObject
         int l1 = 0;
         int i2 = 0;
         int j2 = 0;
-        if(arg5 != 0)
-        {
+        if(arg5 != 0) {
             i1 = cif[arg5];
             j1 = cif[arg5 + 1024];
         }
-        if(arg4 != 0)
-        {
+        if(arg4 != 0) {
             i2 = cif[arg4];
             j2 = cif[arg4 + 1024];
         }
-        if(arg3 != 0)
-        {
+        if(arg3 != 0) {
             k1 = cif[arg3];
             l1 = cif[arg3 + 1024];
         }
-        for(int k2 = 0; k2 < cfh; k2++)
-        {
+        for(int k2 = 0; k2 < cfh; k2++) {
             int l2 = cja[k2] - arg0;
             int i3 = cjb[k2] - arg1;
             int j3 = cjc[k2] - arg2;
-            if(arg5 != 0)
-            {
+            if(arg5 != 0) {
                 int j = i3 * i1 + l2 * j1 >> 15;
                 i3 = i3 * j1 - l2 * i1 >> 15;
                 l2 = j;
             }
-            if(arg4 != 0)
-            {
+            if(arg4 != 0) {
                 int k = j3 * i2 + l2 * j2 >> 15;
                 j3 = j3 * j2 - l2 * i2 >> 15;
                 l2 = k;
             }
-            if(arg3 != 0)
-            {
+            if(arg3 != 0) {
                 int l = i3 * l1 - j3 * k1 >> 15;
                 j3 = i3 * k1 + j3 * l1 >> 15;
                 i3 = l;
@@ -1022,11 +900,9 @@ public class GameObject
 
     }
 
-    public void cni()
-    {
+    public void cni() {
         cng();
-        for(int j = 0; j < cfh; j++)
-        {
+        for(int j = 0; j < cfh; j++) {
             cil[j] = cja[j];
             cim[j] = cjb[j];
             cin[j] = cjc[j];
@@ -1039,8 +915,7 @@ public class GameObject
         ckm = 0;
     }
 
-    public GameObject cnj()
-    {
+    public GameObject cnj() {
         GameObject ai[] = new GameObject[1];
         ai[0] = this;
         GameObject j = new GameObject(ai, 1);
@@ -1049,8 +924,7 @@ public class GameObject
         return j;
     }
 
-    public GameObject cnk(boolean flag, boolean flag1, boolean flag2, boolean flag3)
-    {
+    public GameObject cnk(boolean flag, boolean flag1, boolean flag2, boolean flag3) {
         GameObject ai[] = new GameObject[1];
         ai[0] = this;
         GameObject j = new GameObject(ai, 1, flag, flag1, flag2, flag3);
@@ -1058,8 +932,7 @@ public class GameObject
         return j;
     }
 
-    public void cnl(GameObject j)
-    {
+    public void cnl(GameObject j) {
         cka = j.cka;
         ckb = j.ckb;
         ckc = j.ckc;
@@ -1070,8 +943,7 @@ public class GameObject
         cgn = 1;
     }
 
-    public int cnm(byte arg0[])
-    {
+    public int cnm(byte arg0[]) {
         for(; arg0[clg] == 10 || arg0[clg] == 13; clg++);
         int j = cih[arg0[clg++] & 0xff];
         int k = cih[arg0[clg++] & 0xff];
@@ -1125,7 +997,6 @@ public class GameObject
     private static int cif[];
     private static byte cig[];
     private static int cih[];
-    private int cii;
     private int cij;
     public int cik;
     public int cil[];
@@ -1166,22 +1037,18 @@ public class GameObject
     protected int cle;
     protected int clf;
     private int clg;
-    private int clh;
 
-    static 
-    {
+    static  {
         cie = new int[512];
         cif = new int[2048];
         cig = new byte[64];
         cih = new int[256];
-        for(int j = 0; j < 256; j++)
-        {
+        for(int j = 0; j < 256; j++) {
             cie[j] = (int)(Math.sin((double)j * 0.02454369D) * 32768D);
             cie[j + 256] = (int)(Math.cos((double)j * 0.02454369D) * 32768D);
         }
 
-        for(int k = 0; k < 1024; k++)
-        {
+        for(int k = 0; k < 1024; k++) {
             cif[k] = (int)(Math.sin((double)k * 0.00613592315D) * 32768D);
             cif[k + 1024] = (int)(Math.cos((double)k * 0.00613592315D) * 32768D);
         }

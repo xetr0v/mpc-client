@@ -1,36 +1,27 @@
 package client;
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
 
 import java.awt.*;
 import java.io.IOException;
 
-@SuppressWarnings("all")
-public class GameAppletMiddleMan extends GameApplet
-{
+@SuppressWarnings("serial")
+public class GameAppletMiddleMan extends GameApplet {
 
-    protected final void connect(String user, String pass, boolean reconnecting)
-    {
-        if(socketTimeout > 0)
-        {
+    protected final void connect(String user, String pass, boolean reconnecting) {
+        if(socketTimeout > 0) {
             loginScreenPrint("Please wait...", "Connecting to server");
-            try
-            {
+            try {
                 Thread.sleep(2000L);
             }
             catch(Exception _ex) { }
             loginScreenPrint("Sorry! The server is currently full.", "Please try again later");
             return;
         }
-        try
-        {
+        try {
             username = user;
             user = DataOperations.formatString(user, 20);
             password = pass;
             pass = DataOperations.formatString(pass, 20);
-            if(user.trim().length() == 0)
-            {
+            if(user.trim().length() == 0) {
                 loginScreenPrint("You must enter both a username", "and a password - Please try again");
                 return;
             }
@@ -38,7 +29,7 @@ public class GameAppletMiddleMan extends GameApplet
                 gameBoxPrint("Connection lost! Please wait...", "Attempting to re-establish");
             else
                 loginScreenPrint("Please wait...", "Connecting to server");
-            streamClass = new StreamClass(makeSocket(server, port), this);
+            streamClass = new StreamClass(makeSocket(Config.SERVER_IP, Config.SERVER_PORT), this);
             streamClass.maxPacketReadCount = maxPacketReadCount;
             long l = DataOperations.nameToHash(user);
             streamClass.createPacket(32);
@@ -46,8 +37,7 @@ public class GameAppletMiddleMan extends GameApplet
             streamClass.addString("You must enter both a username and a password - Please try again");// TODO not used server-side
             streamClass.flush();
             long sessionId = streamClass.readLong();
-            if(sessionId == 0L)
-            {
+            if(sessionId == 0L) {
                 loginScreenPrint("Login server offline.", "Please try again in a few mins");
                 return;
             }
@@ -59,7 +49,7 @@ public class GameAppletMiddleMan extends GameApplet
             sessionKeys[3] = (int)sessionId;
             LoginDataEncryption dataEnc = new LoginDataEncryption(new byte[117]);
             dataEnc.addByte(reconnecting ? 1 : 0);
-            dataEnc.addInt(40);// TODO Config.CLIENT_VERSION
+            dataEnc.addInt(Config.CLIENT_VERSION);
             dataEnc.addInt(sessionKeys[0]);
             dataEnc.addInt(sessionKeys[1]);
             dataEnc.addInt(sessionKeys[2]);
@@ -72,111 +62,90 @@ public class GameAppletMiddleMan extends GameApplet
             streamClass.flush();
             int loginCode = streamClass.read();
             System.out.println("login response:" + loginCode);
-            if(loginCode == 99)
-            {
+            if(loginCode == 99) {
                 reconnectTries = 0;
                 initVars();
                 return;
             }
-            if(loginCode == 0)
-            {
+            if(loginCode == 0) {
                 reconnectTries = 0;
                 initVars();
                 return;
             }
-            if(loginCode == 1)
-            {
+            if(loginCode == 1) {
                 reconnectTries = 0;
                 return;
             }
-            if(reconnecting)
-            {
+            if(reconnecting) {
                 user = "";
                 pass = "";
                 resetIntVars();
                 return;
             }
-            if(loginCode == -1)
-            {
+            if(loginCode == -1) {
                 loginScreenPrint("Error unable to login.", "Server timed out");
                 return;
             }
-            if(loginCode == 2)
-            {
+            if(loginCode == 2) {
                 loginScreenPrint("Invalid username or password.", "Try again, or create a new account");
                 return;
             }
-            if(loginCode == 3)
-            {
+            if(loginCode == 3) {
                 loginScreenPrint("That username is already logged in.", "Wait 60 seconds then retry");
                 return;
             }
-            if(loginCode == 4)
-            {
+            if(loginCode == 4) {
                 loginScreenPrint("The client has been updated.", "Please restart the client");
                 return;
             }
-            if(loginCode == 5)
-            {
+            if(loginCode == 5) {
                 loginScreenPrint("Error unable to login.", "Please retry");
                 return;
             }
-            if(loginCode == 6)
-            {
+            if(loginCode == 6) {
                 loginScreenPrint("Account banned.", "Appeal on the forums, ASAP.");
                 return;
             }
-            if(loginCode == 7)
-            {
+            if(loginCode == 7) {
                 loginScreenPrint("Error - failed to decode profile.", "Contact an admin!");
                 return;
             }
-            if(loginCode == 8)
-            {
+            if(loginCode == 8) {
                 loginScreenPrint("Too many connections from your IP.", "Please try again later");
                 return;
             }
-            if(loginCode == 9)
-            {
+            if(loginCode == 9) {
                 loginScreenPrint("Account already in use.", "You may only login to one character at a time");
                 return;
-            } else
-            {
+            } else {
                 loginScreenPrint("Error unable to login.", "Unrecognised response code");
                 return;
             }
         }
-        catch(Exception e)
-        {
+        catch(Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
-        if(reconnectTries > 0)
-        {
-            try
-            {
+        if(reconnectTries > 0) {
+            try {
                 Thread.sleep(2500L);
             }
             catch(Exception _ex) { }
             reconnectTries--;
             connect(username, password, reconnecting);
         }
-        if(reconnecting)
-        {
+        if(reconnecting) {
             username = "";
             password = "";
             resetIntVars();
-        } else
-        {
+        } else {
             loginScreenPrint("Sorry! Unable to connect.", "Check internet settings or try another world");
         }
     }
 
-    protected final void requestLogout()
-    {
+    protected final void requestLogout() {
         if(streamClass != null)
-            try
-            {
+            try {
                 streamClass.createPacket(39);
                 streamClass.flush();
             }
@@ -187,15 +156,13 @@ public class GameAppletMiddleMan extends GameApplet
         loginScreenPrint("Please enter your usename and password", "");
     }
 
-    protected void lostConnection()
-    {
+    protected void lostConnection() {
         System.out.println("Lost connection");
         connect(username, password, true);
         loginScreenPrint("Please enter your usename and password", "");
     }
 
-    protected final void gameBoxPrint(String s1, String s2)
-    {
+    protected final void gameBoxPrint(String s1, String s2) {
         Graphics g = getGraphics();
         Font font = new Font("Helvetica", 1, 15);
         char c = '\u0200';
@@ -208,23 +175,19 @@ public class GameAppletMiddleMan extends GameApplet
         drawString(g, s2, font, c / 2, c1 / 2 + 10);
     }
 
-    protected final void sendPingPacket()
-    {
+    protected final void sendPingPacket() {
         long l = System.currentTimeMillis();
         if(streamClass.hasData())
             lastPing = l;
-        if(l - lastPing > 5000L)
-        {
+        if(l - lastPing > 5000L) {
             lastPing = l;
             streamClass.createPacket(5);
             streamClass.formatPacket();
         }
-        try
-        {
+        try {
             streamClass.writePacket(20);
         }
-        catch(IOException _ex)
-        {
+        catch(IOException _ex) {
             lostConnection();
             return;
         }
@@ -233,10 +196,8 @@ public class GameAppletMiddleMan extends GameApplet
             handlePacket(packetData[0] & 0xff, packetLength);
     }
 
-    private final void handlePacket(int command, int length)
-    {
-        if(command == 48)
-        {
+    private final void handlePacket(int command, int length) {
+        if(command == 48) {
             String s1 = new String(packetData, 1, length - 1);
             displayMessage(s1);
             return;
@@ -245,16 +206,13 @@ public class GameAppletMiddleMan extends GameApplet
             requestLogout();
             return;
         }
-        if(command == 136)
-        {
+        if(command == 136) {
             cantLogout();
             return;
         }
-        if(command == 249)
-        {
+        if(command == 249) {
             friendsCount = DataOperations.getByte(packetData[1]);
-            for(int i = 0; i < friendsCount; i++)
-            {
+            for(int i = 0; i < friendsCount; i++) {
                 friendsList[i] = DataOperations.getLong(packetData, 2 + i * 9);
                 friendsWorld[i] = DataOperations.getByte(packetData[10 + i * 9]);
             }
@@ -262,47 +220,42 @@ public class GameAppletMiddleMan extends GameApplet
             reOrderFriendsList();
             return;
         }
-        if(command == 25)
-        {
-            long l = DataOperations.getLong(packetData, 1);
-            int k = packetData[9] & 0xff;
+        if(command == 25) {
+            long friend = DataOperations.getLong(packetData, 1);
+            int status = packetData[9] & 0xff;
             for(int j1 = 0; j1 < friendsCount; j1++)
-                if(friendsList[j1] == l)
-                {
-                    if(friendsWorld[j1] == 0 && k != 0)
-                        displayMessage("@pri@" + DataOperations.hashToName(l) + " has logged in");
-                    if(friendsWorld[j1] != 0 && k == 0)
-                        displayMessage("@pri@" + DataOperations.hashToName(l) + " has logged out");
-                    friendsWorld[j1] = k;
+                if(friendsList[j1] == friend) {
+                    if(friendsWorld[j1] == 0 && status != 0)
+                        displayMessage("@pri@" + DataOperations.hashToName(friend) + " has logged in");
+                    if(friendsWorld[j1] != 0 && status == 0)
+                        displayMessage("@pri@" + DataOperations.hashToName(friend) + " has logged out");
+                    friendsWorld[j1] = status;
                     length = 0;
                     reOrderFriendsList();
                     return;
                 }
 
-            friendsList[friendsCount] = l;
-            friendsWorld[friendsCount] = k;
+            friendsList[friendsCount] = friend;
+            friendsWorld[friendsCount] = status;
             friendsCount++;
             reOrderFriendsList();
             return;
         }
-        if(command == 2)
-        {
+        if(command == 2) {
             ignoresCount = DataOperations.getByte(packetData[1]);
             for(int j = 0; j < ignoresCount; j++)
                 ignoresList[j] = DataOperations.getLong(packetData, 2 + j * 8);
 
             return;
         }
-        if(command == 158)
-        {
+        if(command == 158) {
             blockChat = packetData[1];
             blockPrivate = packetData[2];
             blockTrade = packetData[3];
             blockDuel = packetData[4];
             return;
         }
-        if(command == 170)
-        {
+        if(command == 170) {
             long l1 = DataOperations.getLong(packetData, 1);
             String s = ChatMessage.bytesToString(packetData, 9, length - 9);
             displayMessage("@pri@" + DataOperations.hashToName(l1) + ": tells you " + s);
@@ -322,15 +275,12 @@ public class GameAppletMiddleMan extends GameApplet
         handlePacket(command, length, packetData);
     }
 
-    private final void reOrderFriendsList()
-    {
+    private final void reOrderFriendsList() {
         boolean flag = true;
-        while(flag) 
-        {
+        while(flag)  {
             flag = false;
             for(int i = 0; i < friendsCount - 1; i++)
-                if(friendsWorld[i] < friendsWorld[i + 1])
-                {
+                if(friendsWorld[i] < friendsWorld[i + 1]) {
                     int j = friendsWorld[i];
                     friendsWorld[i] = friendsWorld[i + 1];
                     friendsWorld[i + 1] = j;
@@ -343,8 +293,7 @@ public class GameAppletMiddleMan extends GameApplet
         }
     }
 
-    protected final void sendUpdatedPrivacyInfo(int blockChat, int blockPrivate, int blockTrade, int blockDuel)
-    {
+    protected final void sendUpdatedPrivacyInfo(int blockChat, int blockPrivate, int blockTrade, int blockDuel) {
         streamClass.createPacket(176);
         streamClass.addByte(blockChat);
         streamClass.addByte(blockPrivate);
@@ -353,8 +302,7 @@ public class GameAppletMiddleMan extends GameApplet
         streamClass.formatPacket();
     }
 
-    protected final void addIgnore(String arg0)
-    {
+    protected final void addIgnore(String arg0) {
         long l = DataOperations.nameToHash(arg0);
         streamClass.createPacket(25);
         streamClass.addLong(l);
@@ -363,24 +311,20 @@ public class GameAppletMiddleMan extends GameApplet
             if(ignoresList[i] == l)
                 return;
 
-        if(ignoresCount >= ignoresList.length - 1)
-        {
+        if(ignoresCount >= ignoresList.length - 1) {
             return;
-        } else
-        {
+        } else {
             ignoresList[ignoresCount++] = l;
             return;
         }
     }
 
-    protected final void removeIgnore(long arg0)
-    {
+    protected final void removeIgnore(long arg0) {
         streamClass.createPacket(108);
         streamClass.addLong(arg0);
         streamClass.formatPacket();
         for(int i = 0; i < ignoresCount; i++)
-            if(ignoresList[i] == arg0)
-            {
+            if(ignoresList[i] == arg0) {
                 ignoresCount--;
                 for(int j = i; j < ignoresCount; j++)
                     ignoresList[j] = ignoresList[j + 1];
@@ -390,9 +334,8 @@ public class GameAppletMiddleMan extends GameApplet
 
     }
 
-    protected final void addFriend(String arg0)
-    {
-        streamClass.createPacket(468);
+    protected final void addFriend(String arg0) {
+        streamClass.createPacket(168);
         streamClass.addLong(DataOperations.nameToHash(arg0));
         streamClass.formatPacket();
         long l = DataOperations.nameToHash(arg0);
@@ -400,11 +343,9 @@ public class GameAppletMiddleMan extends GameApplet
             if(friendsList[i] == l)
                 return;
 
-        if(friendsCount >= friendsList.length - 1)
-        {
+        if(friendsCount >= friendsList.length - 1) {
             return;
-        } else
-        {
+        } else {
             friendsList[friendsCount] = l;
             friendsWorld[friendsCount] = 0;
             friendsCount++;
@@ -412,18 +353,15 @@ public class GameAppletMiddleMan extends GameApplet
         }
     }
 
-    protected final void removeFriend(long arg0)
-    {
+    protected final void removeFriend(long arg0) {
         streamClass.createPacket(52);
         streamClass.addLong(arg0);
         streamClass.formatPacket();
-        for(int i = 0; i < friendsCount; i++)
-        {
+        for(int i = 0; i < friendsCount; i++) {
             if(friendsList[i] != arg0)
                 continue;
             friendsCount--;
-            for(int j = i; j < friendsCount; j++)
-            {
+            for(int j = i; j < friendsCount; j++) {
                 friendsList[j] = friendsList[j + 1];
                 friendsWorld[j] = friendsWorld[j + 1];
             }
@@ -434,54 +372,44 @@ public class GameAppletMiddleMan extends GameApplet
         displayMessage("@pri@" + DataOperations.hashToName(arg0) + " has been removed from your friends list");
     }
 
-    protected final void sendPrivateMessage(long l, byte abyte0[], int i)
-    {
-        streamClass.createPacket(59);
+    protected final void sendPrivateMessage(long l, byte abyte0[], int i) {
+        streamClass.createPacket(254);
         streamClass.addLong(l);
         streamClass.addBytes(abyte0, 0, i);
         streamClass.formatPacket();
     }
 
-    protected final void sendChatMessage(byte abyte0[], int i)
-    {
-        streamClass.createPacket(249);
+    protected final void sendChatMessage(byte abyte0[], int i) {
+        streamClass.createPacket(145);
         streamClass.addBytes(abyte0, 0, i);
         streamClass.formatPacket();
     }
 
-    protected final void sendCommand(String s1)
-    {
-        streamClass.createPacket(32);
+    protected final void sendCommand(String s1) {
+        streamClass.createPacket(90);
         streamClass.addString(s1);
         streamClass.formatPacket();
     }
 
-    protected void loginScreenPrint(String s1, String s2)
-    {
+    protected void loginScreenPrint(String s1, String s2) {
     }
 
-    protected void initVars()
-    {
+    protected void initVars() {
     }
 
-    protected void resetIntVars()
-    {
+    protected void resetIntVars() {
     }
 
-    protected void cantLogout()
-    {
+    protected void cantLogout() {
     }
 
-    protected void handlePacket(int i, int j, byte abyte0[])
-    {
+    protected void handlePacket(int i, int j, byte abyte0[]) {
     }
 
-    protected void displayMessage(String s1)
-    {
+    protected void displayMessage(String s1) {
     }
 
-    public GameAppletMiddleMan()
-    {
+    public GameAppletMiddleMan() {
         username = "";
         password = "";
         packetData = new byte[10000];
@@ -491,8 +419,6 @@ public class GameAppletMiddleMan extends GameApplet
     }
 
     public static int maxPacketReadCount;
-    public String server;
-    public int port;
     String username;
     String password;
     public StreamClass streamClass;
@@ -510,6 +436,5 @@ public class GameAppletMiddleMan extends GameApplet
     public int blockDuel;
     public long sessionId;
     public int socketTimeout;
-    public int moderator;
 
 }

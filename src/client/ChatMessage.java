@@ -1,57 +1,43 @@
 package client;
-// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
 
+public class ChatMessage {
 
-public class ChatMessage
-{
-
-    public static String bytesToString(byte arg0[], int arg1, int arg2)
-    {
-        try
-        {
+    public static String bytesToString(byte arg0[], int arg1, int arg2) {
+        try {
             int i = 0;
             int j = -1;
-            for(int k = 0; k < arg2; k++)
-            {
+            for(int k = 0; k < arg2; k++) {
                 int l = arg0[arg1++] & 0xff;
                 int i1 = l >> 4 & 0xf;
-                if(j == -1)
-                {
+                if(j == -1) {
                     if(i1 < 13)
                         ceh[i++] = cei[i1];
                     else
                         j = i1;
-                } else
-                {
+                } else {
                     ceh[i++] = cei[((j << 4) + i1) - 195];
                     j = -1;
                 }
                 i1 = l & 0xf;
-                if(j == -1)
-                {
+                if(j == -1) {
                     if(i1 < 13)
                         ceh[i++] = cei[i1];
                     else
                         j = i1;
-                } else
-                {
+                } else {
                     ceh[i++] = cei[((j << 4) + i1) - 195];
                     j = -1;
                 }
             }
 
             boolean flag = true;
-            for(int j1 = 0; j1 < i; j1++)
-            {
+            for(int j1 = 0; j1 < i; j1++) {
                 char c = ceh[j1];
                 if(j1 > 4 && c == '@')
                     ceh[j1] = ' ';
                 if(c == '%')
                     ceh[j1] = ' ';
-                if(flag && c >= 'a' && c <= 'z')
-                {
+                if(flag && c >= 'a' && c <= 'z') {
                     ceh[j1] += '\uFFE0';
                     flag = false;
                 }
@@ -61,25 +47,21 @@ public class ChatMessage
 
             return new String(ceh, 0, i);
         }
-        catch(Exception _ex)
-        {
+        catch(Exception _ex) {
             return ".";
         }
     }
 
-    public static int stringToBytes(String arg0)
-    {
+    public static int stringToBytes(String arg0) {
         if(arg0.length() > 80)
             arg0 = arg0.substring(0, 80);
         arg0 = arg0.toLowerCase();
         int i = 0;
         int j = -1;
-        for(int k = 0; k < arg0.length(); k++)
-        {
+        for(int k = 0; k < arg0.length(); k++) {
             char c = arg0.charAt(k);
             int l = 0;
-            for(int i1 = 0; i1 < cei.length; i1++)
-            {
+            for(int i1 = 0; i1 < cei.length; i1++) {
                 if(c != cei[i1])
                     continue;
                 l = i1;
@@ -88,19 +70,16 @@ public class ChatMessage
 
             if(l > 12)
                 l += 195;
-            if(j == -1)
-            {
+            if(j == -1) {
                 if(l < 13)
                     j = l;
                 else
                     lastChat[i++] = (byte)l;
             } else
-            if(l < 13)
-            {
+            if(l < 13) {
                 lastChat[i++] = (byte)((j << 4) + l);
                 j = -1;
-            } else
-            {
+            } else {
                 lastChat[i++] = (byte)((j << 4) + (l >> 4));
                 j = l & 0xf;
             }
