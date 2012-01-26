@@ -50,7 +50,6 @@ public class GameApplet extends Applet
 
     public final synchronized boolean keyDown(Event evt, int key) {
         handleKeyDown(key);
-        //lastActionTimeout = 0;
         if(key == 1006)
             keyLeftDown = true;
         if(key == 1007)
@@ -483,7 +482,6 @@ public class GameApplet extends Applet
     private int runStatus;
     private int fij;
     public int mouseYOffset;
-    //public int lastActionTimeout;
     public int gameLoadingScreen;
     private int gameLoadingPercentage;
     private String gameLoadingFileTitle;

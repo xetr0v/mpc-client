@@ -6768,7 +6768,7 @@ label0:
             questMenu.clearList(questMenuHandle);
             questMenu.addListItem(questMenuHandle, 0, "@whi@Quest-list (green=completed)");
             for(int i2 = 0; i2 < usedQuestName.length; i2++)
-                questMenu.addListItem(questMenuHandle, i2 + 1, (questStage[i2] == 0 ? "@red@" : questStage[i2] == 1 ? "@yel@" : "@gre@") + questName[i2]);
+                questMenu.addListItem(questMenuHandle, i2 + 1, (questStage[i2] == 0 ? "@red@" : questStage[i2] == 1 ? "@yel@" : "@gre@") + usedQuestName[i2]);
 
             questMenu.listShownEntries = questsLastShownEntries;
             questMenu.drawMenu();
