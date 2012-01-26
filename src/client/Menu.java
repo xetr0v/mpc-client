@@ -12,7 +12,7 @@ public class Menu {
         componentIsPasswordField = new boolean[i];
         componentSkip = new boolean[i];
         componentWhiteText = new boolean[i];
-        gbc = new int[i];
+        listShownEntries = new int[i];
         listLength = new int[i];
         gbe = new int[i];
         gbf = new int[i];
@@ -25,46 +25,46 @@ public class Menu {
         componentTextSize = new int[i];
         componentText = new String[i];
         componentTextList = new String[i][];
-        gci = gdn(114, 114, 176);
-        gcj = gdn(14, 14, 62);
-        gck = gdn(200, 208, 232);
-        gcl = gdn(96, 129, 184);
-        gcm = gdn(53, 95, 115);
-        gcn = gdn(117, 142, 171);
-        gda = gdn(98, 122, 158);
-        gdb = gdn(86, 100, 136);
-        gdc = gdn(135, 146, 179);
-        gdd = gdn(97, 112, 151);
-        gde = gdn(88, 102, 136);
-        gdf = gdn(84, 93, 120);
+        scrollBarGradientColorTop = rgbToIntMod(114, 114, 176);
+        scrollBarGradientColorBottom = rgbToIntMod(14, 14, 62);
+        scrollBarDraggingBarLine1Color = rgbToIntMod(200, 208, 232);
+        scrollBarDraggingBarColor = rgbToIntMod(96, 129, 184);
+        scrollBarDraggingBarLine2Color = rgbToIntMod(53, 95, 115);
+        gcn = rgbToIntMod(117, 142, 171);
+        gda = rgbToIntMod(98, 122, 158);
+        gdb = rgbToIntMod(86, 100, 136);
+        gdc = rgbToIntMod(135, 146, 179);
+        gdd = rgbToIntMod(97, 112, 151);
+        gde = rgbToIntMod(88, 102, 136);
+        gdf = rgbToIntMod(84, 93, 120);
     }
 
-    public int gdn(int i, int k, int l) {
-        return GameImage.rgbToInt((gdj * i) / 114, (gdk * k) / 114, (gdl * l) / 176);
+    public int rgbToIntMod(int i, int k, int l) {
+        return GameImage.rgbToInt((redMod * i) / 114, (greenMod * k) / 114, (blueMod * l) / 176);
     }
 
-    public void mouseClick(int arg0, int arg1, int arg2, int arg3) {
-        gcc = arg0;
-        gcd = arg1;
-        gcf = arg3;
-        if(arg2 != 0)
-            gce = arg2;
-        if(arg2 == 1) {
+    public void mouseClick(int mouseX, int mouseY, int lastMouseButton, int mouseButton) {
+        this.mouseX = mouseX;
+        this.mouseY = mouseY;
+        this.mouseButton = mouseButton;
+        if(lastMouseButton != 0)
+            this.lastMouseButton = lastMouseButton;
+        if(lastMouseButton == 1) {
             for(int i = 0; i < gak; i++) {
-                if(componentAcceptsInput[i] && componentType[i] == 10 && gcc >= componentX[i] && gcd >= componentY[i] && gcc <= componentX[i] + componentWidth[i] && gcd <= componentY[i] + componentHeight[i])
+                if(componentAcceptsInput[i] && componentType[i] == 10 && this.mouseX >= componentX[i] && this.mouseY >= componentY[i] && this.mouseX <= componentX[i] + componentWidth[i] && this.mouseY <= componentY[i] + componentHeight[i])
                     componentSkip[i] = true;
-                if(componentAcceptsInput[i] && componentType[i] == 14 && gcc >= componentX[i] && gcd >= componentY[i] && gcc <= componentX[i] + componentWidth[i] && gcd <= componentY[i] + componentHeight[i])
+                if(componentAcceptsInput[i] && componentType[i] == 14 && this.mouseX >= componentX[i] && this.mouseY >= componentY[i] && this.mouseX <= componentX[i] + componentWidth[i] && this.mouseY <= componentY[i] + componentHeight[i])
                     gbe[i] = 1 - gbe[i];
             }
 
         }
-        if(arg3 == 1)
+        if(mouseButton == 1)
             gch++;
         else
             gch = 0;
-        if(arg2 == 1 || gch > 20) {
+        if(lastMouseButton == 1 || gch > 20) {
             for(int k = 0; k < gak; k++)
-                if(componentAcceptsInput[k] && componentType[k] == 15 && gcc >= componentX[k] && gcd >= componentY[k] && gcc <= componentX[k] + componentWidth[k] && gcd <= componentY[k] + componentHeight[k])
+                if(componentAcceptsInput[k] && componentType[k] == 15 && this.mouseX >= componentX[k] && this.mouseY >= componentY[k] && this.mouseX <= componentX[k] + componentWidth[k] && this.mouseY <= componentY[k] + componentHeight[k])
                     componentSkip[k] = true;
 
             gch -= 5;
@@ -121,7 +121,7 @@ public class Menu {
                     gel(componentX[i], componentY[i], componentWidth[i]);
                 else
                 if(componentType[i] == 4)
-                    gem(i, componentX[i], componentY[i], componentWidth[i], componentHeight[i], componentTextSize[i], componentTextList[i], listLength[i], gbc[i]);
+                    gem(i, componentX[i], componentY[i], componentWidth[i], componentHeight[i], componentTextSize[i], componentTextList[i], listLength[i], listShownEntries[i]);
                 else
                 if(componentType[i] == 5 || componentType[i] == 6)
                     geh(i, componentX[i], componentY[i], componentWidth[i], componentHeight[i], componentText[i], componentTextSize[i]);
@@ -133,7 +133,7 @@ public class Menu {
                     gfb(i, componentX[i], componentY[i], componentTextSize[i], componentTextList[i]);
                 else
                 if(componentType[i] == 9)
-                    gfc(i, componentX[i], componentY[i], componentWidth[i], componentHeight[i], componentTextSize[i], componentTextList[i], listLength[i], gbc[i]);
+                    drawList(i, componentX[i], componentY[i], componentWidth[i], componentHeight[i], componentTextSize[i], componentTextList[i], listLength[i], listShownEntries[i]);
                 else
                 if(componentType[i] == 11)
                     gej(componentX[i], componentY[i], componentWidth[i], componentHeight[i]);
@@ -144,7 +144,7 @@ public class Menu {
                 if(componentType[i] == 14)
                     gee(i, componentX[i], componentY[i], componentWidth[i], componentHeight[i]);
 
-        gce = 0;
+        lastMouseButton = 0;
     }
 
     protected void gee(int arg0, int arg1, int arg2, int arg3, int arg4) {
@@ -185,11 +185,11 @@ public class Menu {
 
         }
         if(componentType[arg0] == 5) {
-            if(gce == 1 && gcc >= arg1 && gcd >= arg2 - arg4 / 2 && gcc <= arg1 + arg3 && gcd <= arg2 + arg4 / 2)
+            if(lastMouseButton == 1 && mouseX >= arg1 && mouseY >= arg2 - arg4 / 2 && mouseX <= arg1 + arg3 && mouseY <= arg2 + arg4 / 2)
                 selectedComponent = arg0;
         } else
         if(componentType[arg0] == 6) {
-            if(gce == 1 && gcc >= arg1 - arg3 / 2 && gcd >= arg2 - arg4 / 2 && gcc <= arg1 + arg3 / 2 && gcd <= arg2 + arg4 / 2)
+            if(lastMouseButton == 1 && mouseX >= arg1 - arg3 / 2 && mouseY >= arg2 - arg4 / 2 && mouseX <= arg1 + arg3 / 2 && mouseY <= arg2 + arg4 / 2)
                 selectedComponent = arg0;
             arg1 -= gaj.textWidth(arg5, arg6) / 2;
         }
@@ -201,11 +201,11 @@ public class Menu {
 
     public void gei(int arg0, int arg1, int arg2, int arg3) {
         gaj.setGameBoundaries(arg0, arg1, arg0 + arg2, arg1 + arg3);
-        gaj.can(arg0, arg1, arg2, arg3, gdf, gdc);
+        gaj.drawGradientBox(arg0, arg1, arg2, arg3, gdf, gdc);
         if(gdh) {
             for(int i = arg0 - (arg1 & 0x3f); i < arg0 + arg2; i += 128) {
                 for(int k = arg1 - (arg1 & 0x1f); k < arg1 + arg3; k += 128)
-                    gaj.ccd(i, k, 6 + gdi, 128);
+                    gaj.ccd(i, k, 6 + baseScrollPic, 128);
 
             }
 
@@ -230,10 +230,10 @@ public class Menu {
         gaj.drawBoxEdge(i, k, l, i1, gcn);
         gaj.drawBoxEdge(i + 1, k + 1, l - 2, i1 - 2, gda);
         gaj.drawBoxEdge(i + 2, k + 2, l - 4, i1 - 4, gdb);
-        gaj.drawPicture(i, k, 2 + gdi);
-        gaj.drawPicture((i + l) - 7, k, 3 + gdi);
-        gaj.drawPicture(i, (k + i1) - 7, 4 + gdi);
-        gaj.drawPicture((i + l) - 7, (k + i1) - 7, 5 + gdi);
+        gaj.drawPicture(i, k, 2 + baseScrollPic);
+        gaj.drawPicture((i + l) - 7, k, 3 + baseScrollPic);
+        gaj.drawPicture(i, (k + i1) - 7, 4 + baseScrollPic);
+        gaj.drawPicture((i + l) - 7, (k + i1) - 7, 5 + baseScrollPic);
     }
 
     protected void gek(int i, int k, int l) {
@@ -251,36 +251,36 @@ public class Menu {
             arg8 = arg7 - i;
         if(arg8 < 0)
             arg8 = 0;
-        gbc[arg0] = arg8;
+        listShownEntries[arg0] = arg8;
         if(i < arg7) {
             int k = (arg1 + arg3) - 12;
             int i1 = ((arg4 - 27) * i) / arg7;
             if(i1 < 6)
                 i1 = 6;
             int k1 = ((arg4 - 27 - i1) * arg8) / (arg7 - i);
-            if(gcf == 1 && gcc >= k && gcc <= k + 12) {
-                if(gcd > arg2 && gcd < arg2 + 12 && arg8 > 0)
+            if(mouseButton == 1 && mouseX >= k && mouseX <= k + 12) {
+                if(mouseY > arg2 && mouseY < arg2 + 12 && arg8 > 0)
                     arg8--;
-                if(gcd > (arg2 + arg4) - 12 && gcd < arg2 + arg4 && arg8 < arg7 - i)
+                if(mouseY > (arg2 + arg4) - 12 && mouseY < arg2 + arg4 && arg8 < arg7 - i)
                     arg8++;
-                gbc[arg0] = arg8;
+                listShownEntries[arg0] = arg8;
             }
-            if(gcf == 1 && (gcc >= k && gcc <= k + 12 || gcc >= k - 12 && gcc <= k + 24 && gan[arg0])) {
-                if(gcd > arg2 + 12 && gcd < (arg2 + arg4) - 12) {
+            if(mouseButton == 1 && (mouseX >= k && mouseX <= k + 12 || mouseX >= k - 12 && mouseX <= k + 24 && gan[arg0])) {
+                if(mouseY > arg2 + 12 && mouseY < (arg2 + arg4) - 12) {
                     gan[arg0] = true;
-                    int i2 = gcd - arg2 - 12 - i1 / 2;
+                    int i2 = mouseY - arg2 - 12 - i1 / 2;
                     arg8 = (i2 * arg7) / (arg4 - 24);
                     if(arg8 > arg7 - i)
                         arg8 = arg7 - i;
                     if(arg8 < 0)
                         arg8 = 0;
-                    gbc[arg0] = arg8;
+                    listShownEntries[arg0] = arg8;
                 }
             } else {
                 gan[arg0] = false;
             }
             k1 = ((arg4 - 27 - i1) * arg8) / (arg7 - i);
-            gen(arg1, arg2, arg3, arg4, k1, i1);
+            drawScrollbar(arg1, arg2, arg3, arg4, k1, i1);
         }
         int l = arg4 - i * gaj.textHeightNumber(arg5);
         int j1 = arg2 + (gaj.textHeightNumber(arg5) * 5) / 6 + l / 2;
@@ -293,17 +293,17 @@ public class Menu {
 
     }
 
-    protected void gen(int i, int k, int l, int i1, int j1, int k1) {
+    protected void drawScrollbar(int i, int k, int l, int i1, int j1, int k1) {
         int l1 = (i + l) - 12;
-        gaj.drawBoxEdge(l1, k, 12, i1, 0);
-        gaj.drawPicture(l1 + 1, k + 1, gdi);
-        gaj.drawPicture(l1 + 1, (k + i1) - 12, 1 + gdi);
-        gaj.drawLineX(l1, k + 13, 12, 0);
-        gaj.drawLineX(l1, (k + i1) - 13, 12, 0);
-        gaj.can(l1 + 1, k + 14, 11, i1 - 27, gci, gcj);
-        gaj.drawBox(l1 + 3, j1 + k + 14, 7, k1, gcl);
-        gaj.drawLineY(l1 + 2, j1 + k + 14, k1, gck);
-        gaj.drawLineY(l1 + 2 + 8, j1 + k + 14, k1, gcm);
+        gaj.drawBoxEdge(l1, k, 12, i1, 0);// border
+        gaj.drawPicture(l1 + 1, k + 1, baseScrollPic);// up arrow
+        gaj.drawPicture(l1 + 1, (k + i1) - 12, 1 + baseScrollPic);// down arrow
+        gaj.drawLineX(l1, k + 13, 12, 0);// up arrow border
+        gaj.drawLineX(l1, (k + i1) - 13, 12, 0);// down arrow border
+        gaj.drawGradientBox(l1 + 1, k + 14, 11, i1 - 27, scrollBarGradientColorTop, scrollBarGradientColorBottom);// background gradient
+        gaj.drawBox(l1 + 3, j1 + k + 14, 7, k1, scrollBarDraggingBarColor);// dragging bar
+        gaj.drawLineY(l1 + 2, j1 + k + 14, k1, scrollBarDraggingBarLine1Color);// dragging bar
+        gaj.drawLineY(l1 + 2 + 8, j1 + k + 14, k1, scrollBarDraggingBarLine2Color);// drawgging bar
     }
 
     protected void gfa(int arg0, int arg1, int arg2, int arg3, String arg4[]) {
@@ -323,12 +323,12 @@ public class Menu {
                 l1 = 0xffffff;
             else
                 l1 = 0;
-            if(gcc >= i1 && gcc <= i1 + gaj.textWidth(arg4[k1], arg3) && gcd <= j1 && gcd > j1 - gaj.textHeightNumber(arg3)) {
+            if(mouseX >= i1 && mouseX <= i1 + gaj.textWidth(arg4[k1], arg3) && mouseY <= j1 && mouseY > j1 - gaj.textHeightNumber(arg3)) {
                 if(componentWhiteText[arg0])
                     l1 = 0x808080;
                 else
                     l1 = 0xffffff;
-                if(gce == 1) {
+                if(lastMouseButton == 1) {
                     gbe[arg0] = k1;
                     componentSkip[arg0] = true;
                 }
@@ -354,12 +354,12 @@ public class Menu {
             else
                 i1 = 0;
             int j1 = gaj.textWidth(arg4[l], arg3);
-            if(gcc >= arg1 - j1 / 2 && gcc <= arg1 + j1 / 2 && gcd - 2 <= k && gcd - 2 > k - gaj.textHeightNumber(arg3)) {
+            if(mouseX >= arg1 - j1 / 2 && mouseX <= arg1 + j1 / 2 && mouseY - 2 <= k && mouseY - 2 > k - gaj.textHeightNumber(arg3)) {
                 if(componentWhiteText[arg0])
                     i1 = 0x808080;
                 else
                     i1 = 0xffffff;
-                if(gce == 1) {
+                if(lastMouseButton == 1) {
                     gbe[arg0] = l;
                     componentSkip[arg0] = true;
                 }
@@ -374,68 +374,68 @@ public class Menu {
         }
 
     }
-
-    protected void gfc(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, String arg6[], 
-            int arg7, int arg8) {
-        int i = arg4 / gaj.textHeightNumber(arg5);
-        if(i < arg7) {
-            int k = (arg1 + arg3) - 12;
-            int i1 = ((arg4 - 27) * i) / arg7;
+   // drawList(i, componentX[i], componentY[i], componentWidth[i], componentHeight[i], componentTextSize[i], componentTextList[i], listLength[i], gbc[i]);
+    protected void drawList(int listIndex, int listX, int listY, int listWidth, int listHeight, int listTextSize, String listText[], 
+            int listLength, int shownEntries) {
+        int entryCount = listHeight / gaj.textHeightNumber(listTextSize);
+        if(entryCount < listLength) {
+            int k = (listX + listWidth) - 12;
+            int i1 = ((listHeight - 27) * entryCount) / listLength;
             if(i1 < 6)
                 i1 = 6;
-            int k1 = ((arg4 - 27 - i1) * arg8) / (arg7 - i);
-            if(gcf == 1 && gcc >= k && gcc <= k + 12) {
-                if(gcd > arg2 && gcd < arg2 + 12 && arg8 > 0)
-                    arg8--;
-                if(gcd > (arg2 + arg4) - 12 && gcd < arg2 + arg4 && arg8 < arg7 - i)
-                    arg8++;
-                gbc[arg0] = arg8;
+            int k1 = ((listHeight - 27 - i1) * shownEntries) / (listLength - entryCount);
+            if(mouseButton == 1 && mouseX >= k && mouseX <= k + 12) {
+                if(mouseY > listY && mouseY < listY + 12 && shownEntries > 0)
+                    shownEntries--;
+                if(mouseY > (listY + listHeight) - 12 && mouseY < listY + listHeight && shownEntries < listLength - entryCount)
+                    shownEntries++;
+                listShownEntries[listIndex] = shownEntries;
             }
-            if(gcf == 1 && (gcc >= k && gcc <= k + 12 || gcc >= k - 12 && gcc <= k + 24 && gan[arg0])) {
-                if(gcd > arg2 + 12 && gcd < (arg2 + arg4) - 12) {
-                    gan[arg0] = true;
-                    int i2 = gcd - arg2 - 12 - i1 / 2;
-                    arg8 = (i2 * arg7) / (arg4 - 24);
-                    if(arg8 < 0)
-                        arg8 = 0;
-                    if(arg8 > arg7 - i)
-                        arg8 = arg7 - i;
-                    gbc[arg0] = arg8;
+            if(mouseButton == 1 && (mouseX >= k && mouseX <= k + 12 || mouseX >= k - 12 && mouseX <= k + 24 && gan[listIndex])) {
+                if(mouseY > listY + 12 && mouseY < (listY + listHeight) - 12) {
+                    gan[listIndex] = true;
+                    int i2 = mouseY - listY - 12 - i1 / 2;
+                    shownEntries = (i2 * listLength) / (listHeight - 24);
+                    if(shownEntries < 0)
+                        shownEntries = 0;
+                    if(shownEntries > listLength - entryCount)
+                        shownEntries = listLength - entryCount;
+                    listShownEntries[listIndex] = shownEntries;
                 }
             } else {
-                gan[arg0] = false;
+                gan[listIndex] = false;
             }
-            k1 = ((arg4 - 27 - i1) * arg8) / (arg7 - i);
-            gen(arg1, arg2, arg3, arg4, k1, i1);
+            k1 = ((listHeight - 27 - i1) * shownEntries) / (listLength - entryCount);
+            drawScrollbar(listX, listY, listWidth, listHeight, k1, i1);
         } else {
-            arg8 = 0;
-            gbc[arg0] = 0;
+            shownEntries = 0;
+            listShownEntries[listIndex] = 0;
         }
-        gbf[arg0] = -1;
-        int l = arg4 - i * gaj.textHeightNumber(arg5);
-        int j1 = arg2 + (gaj.textHeightNumber(arg5) * 5) / 6 + l / 2;
-        for(int l1 = arg8; l1 < arg7; l1++) {
+        gbf[listIndex] = -1;
+        int l = listHeight - entryCount * gaj.textHeightNumber(listTextSize);
+        int j1 = listY + (gaj.textHeightNumber(listTextSize) * 5) / 6 + l / 2;
+        for(int l1 = shownEntries; l1 < listLength; l1++) {
             int j2;
-            if(componentWhiteText[arg0])
+            if(componentWhiteText[listIndex])
                 j2 = 0xffffff;
             else
                 j2 = 0;
-            if(gcc >= arg1 + 2 && gcc <= arg1 + 2 + gaj.textWidth(arg6[l1], arg5) && gcd - 2 <= j1 && gcd - 2 > j1 - gaj.textHeightNumber(arg5)) {
-                if(componentWhiteText[arg0])
+            if(mouseX >= listX + 2 && mouseX <= listX + 2 + gaj.textWidth(listText[l1], listTextSize) && mouseY - 2 <= j1 && mouseY - 2 > j1 - gaj.textHeightNumber(listTextSize)) {
+                if(componentWhiteText[listIndex])
                     j2 = 0x808080;
                 else
                     j2 = 0xffffff;
-                gbf[arg0] = l1;
-                if(gce == 1) {
-                    gbe[arg0] = l1;
-                    componentSkip[arg0] = true;
+                gbf[listIndex] = l1;
+                if(lastMouseButton == 1) {
+                    gbe[listIndex] = l1;
+                    componentSkip[listIndex] = true;
                 }
             }
-            if(gbe[arg0] == l1 && gdg)
+            if(gbe[listIndex] == l1 && gdg)
                 j2 = 0xff0000;
-            gaj.drawString(arg6[l1], arg1 + 2, j1, arg5, j2);
-            j1 += gaj.textHeightNumber(arg5);
-            if(j1 >= arg2 + arg4)
+            gaj.drawString(listText[l1], listX + 2, j1, listTextSize, j2);
+            j1 += gaj.textHeightNumber(listTextSize);
+            if(j1 >= listY + listHeight)
                 return;
         }
 
@@ -501,7 +501,7 @@ public class Menu {
         componentTextSize[gak] = j1;
         copmonentInputMaxLength[gak] = k1;
         listLength[gak] = 0;
-        gbc[gak] = 0;
+        listShownEntries[gak] = 0;
         componentTextList[gak] = new String[k1];
         return gak++;
     }
@@ -553,7 +553,7 @@ public class Menu {
         copmonentInputMaxLength[gak] = k1;
         componentTextList[gak] = new String[k1];
         listLength[gak] = 0;
-        gbc[gak] = 0;
+        listShownEntries[gak] = 0;
         gbe[gak] = -1;
         gbf[gak] = -1;
         return gak++;
@@ -575,7 +575,7 @@ public class Menu {
     }
 
     public void switchList(int i) {
-        gbc[i] = 0;
+        listShownEntries[i] = 0;
         gbf[i] = -1;
     }
 
@@ -596,7 +596,7 @@ public class Menu {
         }
         componentTextList[arg0][i] = arg1;
         if(arg2)
-            gbc[arg0] = 0xf423f;
+            listShownEntries[arg0] = 0xf423f;
     }
 
     public void updateText(int i, String s) {
@@ -634,7 +634,7 @@ public class Menu {
     public boolean gan[];
     public boolean componentIsPasswordField[];
     public boolean componentSkip[];
-    public int gbc[];
+    public int listShownEntries[];
     public int listLength[];
     public int gbe[];
     public int gbf[];
@@ -648,17 +648,17 @@ public class Menu {
     int componentTextSize[];
     String componentText[];
     String componentTextList[][];
-    int gcc;
-    int gcd;
-    int gce;
-    int gcf;
+    int mouseX;
+    int mouseY;
+    int lastMouseButton;
+    int mouseButton;
     int selectedComponent;
     int gch;
-    int gci;
-    int gcj;
-    int gck;
-    int gcl;
-    int gcm;
+    int scrollBarGradientColorTop;
+    int scrollBarGradientColorBottom;
+    int scrollBarDraggingBarLine1Color;
+    int scrollBarDraggingBarColor;
+    int scrollBarDraggingBarLine2Color;
     int gcn;
     int gda;
     int gdb;
@@ -668,10 +668,10 @@ public class Menu {
     int gdf;
     public boolean gdg;
     public static boolean gdh = true;
-    public static int gdi;
-    public static int gdj = 114;
-    public static int gdk = 114;
-    public static int gdl = 176;
+    public static int baseScrollPic;
+    public static int redMod = 114;
+    public static int greenMod = 114;
+    public static int blueMod = 176;
     public static int chatMenuTextHeightMod;
 
 }

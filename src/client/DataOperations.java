@@ -58,19 +58,19 @@ public class DataOperations {
             return ((abyte0[i] & 0xff) - 128 << 24) + ((abyte0[i + 1] & 0xff) << 16) + ((abyte0[i + 2] & 0xff) << 8) + (abyte0[i + 3] & 0xff);
     }
 
-    public static int getBits(byte arg0[], int arg1, int arg2) {
-        int i = arg1 >> 3;
-        int j = 8 - (arg1 & 7);
+    public static int getBits(byte bytes[], int off, int len) {
+        int bitOff = off >> 3;
+        int bitMod = 8 - (off & 7);
         int k = 0;
-        for(; arg2 > j; j = 8) {
-            k += (arg0[i++] & bitMask[j]) << arg2 - j;
-            arg2 -= j;
+        for(; len > bitMod; bitMod = 8) {
+            k += (bytes[bitOff++] & bitMask[bitMod]) << len - bitMod;
+            len -= bitMod;
         }
 
-        if(arg2 == j)
-            k += arg0[i] & bitMask[j];
+        if(len == bitMod)
+            k += bytes[bitOff] & bitMask[bitMod];
         else
-            k += arg0[i] >> j - arg2 & bitMask[arg2];
+            k += bytes[bitOff] >> bitMod - len & bitMask[len];
         return k;
     }
 
@@ -232,5 +232,4 @@ public class DataOperations {
         0xfffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff, 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 
         0x3fffffff, 0x7fffffff, -1
     };
-
 }

@@ -11,12 +11,11 @@ import javax.imageio.ImageIO;
 
 @SuppressWarnings("serial")
 public final class mudclient extends GameAppletMiddleMan {
-
+    
     public static final void main(String args[]) {
         mudclient mud = new mudclient();
         mud.appletMode = false;
         mud.members = true;
-        GameAppletMiddleMan.maxPacketReadCount = 500;
         mud.flc(mud.windowWidth, mud.windowHeight + 11, "MoparClassic", false);
         mud.gameMinThreadSleepTime = 10;
     }
@@ -469,14 +468,17 @@ public final class mudclient extends GameAppletMiddleMan {
             objectArray[l] = j2;
         }
     }
-
+boolean print = false;
     final void drawPlayer(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6) {
         Mob f1 = playerArray[arg4];
         if(f1.bottomColour == 255)
             return;
-        int l = f1.currentSprite + (cameraRotation + 16) / 32 & 7;
+        int spriteId = f1.currentSprite + (cameraRotation + 16) / 32 & 7;
+        if(f1.serverIndex == ourPlayer.serverIndex && print) {
+            System.out.println("spriteId: " + spriteId);// facing east: if camera is fucked = 1, normally 0
+        }
         boolean flag = false;
-        int i1 = l;
+        int i1 = spriteId;
         if(i1 == 5) {
             i1 = 3;
             flag = true;
@@ -492,20 +494,25 @@ public final class mudclient extends GameAppletMiddleMan {
         int j1 = i1 * 3 + walkModel[(f1.stepCount / 6) % 4];
         if(f1.currentSprite == 8) {
             i1 = 5;
-            l = 2;
+            spriteId = 2;
             flag = false;
             arg0 -= (5 * arg6) / 100;
             j1 = i1 * 3 + combatModelArray1[(tick / 5) % 8];
         } else
         if(f1.currentSprite == 9) {
             i1 = 5;
-            l = 2;
+            spriteId = 2;
             flag = true;
             arg0 += (5 * arg6) / 100;
             j1 = i1 * 3 + combatModelArray2[(tick / 6) % 8];
         }
+        if(f1.serverIndex == ourPlayer.serverIndex && print) {
+            System.out.println("i1: " + i1);// facing east: if camera is fucked = 1, normally 0
+            System.out.println("j1: " + j1);// facing east: if camera is fucked = 5 or 4, normally 1
+            print = false;
+        }
         for(int k1 = 0; k1 < 12; k1++) {
-            int l1 = animationModelArray[l][k1];
+            int l1 = animationModelArray[spriteId][k1];
             int l2 = f1.appearanceItems[l1] - 1;
             if(l2 > Data.animationCount - 1)// TODO fixes the crash with custom animations
                 continue;
@@ -1210,6 +1217,8 @@ public final class mudclient extends GameAppletMiddleMan {
                     if(index < 0 || index > playerBufferArray.length)
                         return;
                     Mob mob = playerBufferArray[index];
+                    if(mob == null)
+                        return;
                     byte mobUpdateType = packetData[off];
                     off++;
                     if(mobUpdateType == 0) {
@@ -1224,7 +1233,9 @@ public final class mudclient extends GameAppletMiddleMan {
                         byte byte7 = packetData[off];
                         off++;
                         if(mob != null) {
-                            String s3 = ChatFilter.filterChat(ChatMessage.bytesToString(packetData, off, byte7));
+                            String s3 = ChatMessage.bytesToString(packetData, off, byte7);
+                            if(useChatFilter)
+                                s3 = ChatFilter.filterChat(s3);
                             boolean ignore = false;
                             for(int i41 = 0; i41 < super.ignoresCount; i41++)
                                 if(super.ignoresList[i41] == mob.nameHash)
@@ -1737,12 +1748,12 @@ public final class mudclient extends GameAppletMiddleMan {
                 }
             }
             if(packetID == 152) {
-                configCmeraAutoAngle = DataOperations.getByte(packetData[1]) == 1;
+                configCameraAutoAngle = DataOperations.getByte(packetData[1]) == 1;
                 configOneMouseButton = DataOperations.getByte(packetData[2]) == 1;
                 configSoundOff = DataOperations.getByte(packetData[3]) == 1;
                 showRoofs = DataOperations.getByte(packetData[4]) == 1;
                 autoScreenshot = DataOperations.getByte(packetData[5]) == 1;
-                combatWindow = DataOperations.getByte(packetData[6]) == 1;
+                showCombatWindow = DataOperations.getByte(packetData[6]) == 1;
                 return;
             }
             if(packetID == 209) {
@@ -1988,7 +1999,7 @@ public final class mudclient extends GameAppletMiddleMan {
                 }
                 return;
             }
-            if(packetID == 248) {// TODO remove?
+            if(packetID == 248) {
                 if(!loginScreenShown) {
                     lastLoginDays = DataOperations.getShort(packetData, 1);
                     subDaysLeft = DataOperations.getShort(packetData, 3);
@@ -2289,6 +2300,7 @@ public final class mudclient extends GameAppletMiddleMan {
         loadChatFilter();
         if(errorLoading)
             return;
+        GameAppletMiddleMan.maxPacketReadCount = 500;
         baseInventoryPic = 2000;
         baseScrollPic = baseInventoryPic + 100;
         baseItemPicture = baseScrollPic + 50;
@@ -2302,7 +2314,7 @@ public final class mudclient extends GameAppletMiddleMan {
         gameGraphics.gameReference = this;
         gameGraphics.setGameBoundaries(0, 0, windowWidth, windowHeight + 12);
         Menu.gdh = false;
-        Menu.gdi = baseScrollPic;
+        Menu.baseScrollPic = baseScrollPic;
         spellMenu = new Menu(gameGraphics, 5);
         int k1 = ((GameImage) (gameGraphics)).gameWidth - 199;
         byte byte0 = 36;
@@ -2809,14 +2821,14 @@ label0:
         gameGraphics.drawPicture(l - 49, 3, baseInventoryPic + 6);
         int c1 = 196;
         gameGraphics.drawBoxAlpha(l, 36, c1, 65, GameImage.rgbToInt(181, 181, 181), 160);
-        gameGraphics.drawBoxAlpha(l, 101, c1, 72, GameImage.rgbToInt(201, 201, 201), 160);
-        gameGraphics.drawBoxAlpha(l, 173, c1, 95, GameImage.rgbToInt(181, 181, 181), 160);
-        gameGraphics.drawBoxAlpha(l, 268, c1, 40, GameImage.rgbToInt(201, 201, 201), 160);
+        gameGraphics.drawBoxAlpha(l, 101, c1, 87, GameImage.rgbToInt(201, 201, 201), 160);
+        gameGraphics.drawBoxAlpha(l, 188, c1, 95, GameImage.rgbToInt(181, 181, 181), 160);
+        gameGraphics.drawBoxAlpha(l, 283, c1, 40, GameImage.rgbToInt(201, 201, 201), 160);
         int j1 = l + 3;
         int l1 = i1 + 15;
         gameGraphics.drawString("Game options - click to toggle", j1, l1, 1, 0);
         l1 += 15;
-        if(configCmeraAutoAngle)
+        if(configCameraAutoAngle)
             gameGraphics.drawString("Camera angle mode - @gre@Auto", j1, l1, 1, 0xffffff);
         else
             gameGraphics.drawString("Camera angle mode - @red@Manual", j1, l1, 1, 0xffffff);
@@ -2839,7 +2851,7 @@ label0:
         else
             gameGraphics.drawString("Roofs - @red@hide", j1, l1, 1, 0xffffff);
         l1 += 15;
-        if(combatWindow)
+        if(showCombatWindow)
             gameGraphics.drawString("Fight mode window - @gre@show", j1, l1, 1, 0xffffff);
         else
             gameGraphics.drawString("Fight mode window - @red@hide", j1, l1, 1, 0xffffff);
@@ -2857,6 +2869,11 @@ label0:
         gameGraphics.drawString("Privacy settings. Will be applied to", j1, l1, 1, 0);
         l1 += 15;
         gameGraphics.drawString("all people not on your friends list", j1, l1, 1, 0);
+        l1 += 15;
+        if(useChatFilter)
+            gameGraphics.drawString("Chat filter: @gre@<on>", l + 3, l1, 1, 0xffffff);
+        else
+            gameGraphics.drawString("Chat filter: @red@<off>", l + 3, l1, 1, 0xffffff);
         l1 += 15;
         if(super.blockChat == 0)
             gameGraphics.drawString("Block chat messages: @red@<off>", l + 3, l1, 1, 0xffffff);
@@ -2890,17 +2907,17 @@ label0:
             return;
         l = super.mouseX - (((GameImage) (gameGraphics)).gameWidth - 199);
         i1 = super.mouseY - 36;
-        if(l >= 0 && i1 >= 0 && l < 196 && i1 < 265) {
+        if(l >= 0 && i1 >= 0 && l < 196 && i1 < 280) {
             int k2 = ((GameImage) (gameGraphics)).gameWidth - 199;
             byte byte0 = 36;
             char c2 = '\304';
             int k1 = k2 + 3;
             int i2 = byte0 + 30;
             if(super.mouseX > k1 && super.mouseX < k1 + c2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && mouseButtonClick == 1) {
-                configCmeraAutoAngle = !configCmeraAutoAngle;
+                configCameraAutoAngle = !configCameraAutoAngle;
                 super.streamClass.createPacket(157);
                 super.streamClass.addByte(0);
-                super.streamClass.addByte(configCmeraAutoAngle ? 1 : 0);
+                super.streamClass.addByte(configCameraAutoAngle ? 1 : 0);
                 super.streamClass.formatPacket();
             }
             i2 += 15;
@@ -2930,10 +2947,10 @@ label0:
             }
             i2 += 15;
             if(super.mouseX > k1 && super.mouseX < k1 + c2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && mouseButtonClick == 1) {
-                combatWindow = !combatWindow;
+                showCombatWindow = !showCombatWindow;
                 super.streamClass.createPacket(157);
                 super.streamClass.addByte(6);
-                super.streamClass.addByte(combatWindow ? 1 : 0);
+                super.streamClass.addByte(showCombatWindow ? 1 : 0);
                 super.streamClass.formatPacket();
             }
             i2 += 15;
@@ -2951,6 +2968,10 @@ label0:
             boolean flag = false;
             i2 += 15;
             i2 += 15;
+            i2 += 15;
+            if(super.mouseX > k1 && super.mouseX < k1 + c2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && mouseButtonClick == 1) {
+                useChatFilter = !useChatFilter;
+            }
             i2 += 15;
             if(super.mouseX > k1 && super.mouseX < k1 + c2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && mouseButtonClick == 1) {
                 super.blockChat = 1 - super.blockChat;
@@ -3664,6 +3685,7 @@ label0:
         gameGraphics.drawLineX(l, (i1 + c2) - 16, c1, 0);
         gameGraphics.drawText("Friends", l + c1 / 4, i1 + 16, 4, 0);
         gameGraphics.drawText("Ignore", l + c1 / 4 + c1 / 2, i1 + 16, 4, 0);
+        friendsLastShownEntries = spellMenu.listShownEntries;
         friendsMenu.clearList(friendsMenuHandle);
         if(friendsIgnoreMenuSelected == 0) {
             for(int l1 = 0; l1 < super.friendsCount; l1++) {
@@ -3684,6 +3706,7 @@ label0:
                 friendsMenu.addListItem(friendsMenuHandle, i2, "@yel@" + DataOperations.hashToName(super.ignoresList[i2]) + "~439~@whi@Remove         WWWWWWWWWW");
 
         }
+        friendsMenu.listShownEntries = friendsLastShownEntries;
         friendsMenu.drawMenu();
         if(friendsIgnoreMenuSelected == 0) {
             int j2 = friendsMenu.getEntryHighlighted(friendsMenuHandle);
@@ -3792,6 +3815,7 @@ label0:
         gameGraphics.drawText("Magic", l + c1 / 4, i1 + 16, 4, 0);
         gameGraphics.drawText("Prayers", l + c1 / 4 + c1 / 2, i1 + 16, 4, 0);
         if(menuMagicPrayersSelected == 0) {
+            spellsLastShownEntries = spellMenu.listShownEntries;
             spellMenu.clearList(spellMenuHandle);
             int l1 = 0;
             for(int l2 = 0; l2 < Data.spellCount; l2++) {
@@ -3810,6 +3834,7 @@ label0:
                 spellMenu.addListItem(spellMenuHandle, l1++, s1 + "Level " + Data.spellRequiredLevel[l2] + ": " + Data.spellName[l2]);
             }
 
+            spellMenu.listShownEntries = spellsLastShownEntries;
             spellMenu.drawMenu();
             int l3 = spellMenu.getEntryHighlighted(spellMenuHandle);
             if(l3 != -1) {
@@ -3831,6 +3856,7 @@ label0:
             }
         }
         if(menuMagicPrayersSelected == 1) {
+            prayersLastShownEntries = spellMenu.listShownEntries;
             spellMenu.clearList(spellMenuHandle);
             int i2 = 0;
             for(int i3 = 0; i3 < Data.prayerCount; i3++) {
@@ -3842,6 +3868,7 @@ label0:
                 spellMenu.addListItem(spellMenuHandle, i2++, s2 + "Level " + Data.prayerRequiredLevel[i3] + ": " + Data.prayerName[i3]);
             }
 
+            spellMenu.listShownEntries = prayersLastShownEntries;
             spellMenu.drawMenu();
             int i4 = spellMenu.getEntryHighlighted(spellMenuHandle);
             if(i4 != -1) {
@@ -3984,12 +4011,6 @@ label0:
         sendPingPacket();
         if(logoutTimer > 0)
             logoutTimer--;
-        // TODO use this as an excuse to logout when afk and use server as the backup choice?
-        /*if(super.lastActionTimeout > 4500 && combatTimeout == 0 && logoutTimer == 0) {
-            super.lastActionTimeout -= 500;
-            sendLogout();
-            return;
-        }*/
         if(ourPlayer.currentSprite == 8 || ourPlayer.currentSprite == 9)
             combatTimeout = 500;
         if(combatTimeout > 0)
@@ -4175,7 +4196,7 @@ label0:
                 cameraAutoRotatePlayerX += (ourPlayer.currentX - cameraAutoRotatePlayerX) / (16 + (cameraDistance - 500) / 15);
             if(cameraAutoRotatePlayerY != ourPlayer.currentY)
                 cameraAutoRotatePlayerY += (ourPlayer.currentY - cameraAutoRotatePlayerY) / (16 + (cameraDistance - 500) / 15);
-            if(configCmeraAutoAngle) {
+            if(configCameraAutoAngle) {
                 int j2 = cameraAutoAngle * 32;
                 int i4 = j2 - cameraRotation;
                 byte byte0 = 1;
@@ -4246,15 +4267,15 @@ label0:
                 messagesTab = 0;
             if(super.mouseX > 110 && super.mouseX < 194 && super.lastMouseButton == 1) {
                 messagesTab = 1;
-                chatInputMenu.gbc[messagesHandleType2] = 0xf423f;
+                chatInputMenu.listShownEntries[messagesHandleType2] = 0xf423f;
             }
             if(super.mouseX > 215 && super.mouseX < 295 && super.lastMouseButton == 1) {
                 messagesTab = 2;
-                chatInputMenu.gbc[messagesHandleType5] = 0xf423f;
+                chatInputMenu.listShownEntries[messagesHandleType5] = 0xf423f;
             }
             if(super.mouseX > 315 && super.mouseX < 395 && super.lastMouseButton == 1) {
                 messagesTab = 3;
-                chatInputMenu.gbc[messagesHandleType6] = 0xf423f;
+                chatInputMenu.listShownEntries[messagesHandleType6] = 0xf423f;
             }
             if(super.mouseX > 417 && super.mouseX < 497 && super.lastMouseButton == 1) {
                 showAbuseBox = 1;
@@ -4280,13 +4301,14 @@ label0:
                 else
                 if(s1.equalsIgnoreCase("::lostcon") && !appletMode)
                     lostConnection();
-                else
+                else if(!handleCommand(s1.substring(2)))
                     sendCommand(s1.substring(2));
             } else {
                 int len = ChatMessage.stringToBytes(s1);
                 sendChatMessage(ChatMessage.lastChat, len);
                 s1 = ChatMessage.bytesToString(ChatMessage.lastChat, 0, len);
-                s1 = ChatFilter.filterChat(s1);// TODO remove filter?
+                if(useChatFilter)
+                    s1 = ChatFilter.filterChat(s1);
                 ourPlayer.lastMessageTimeout = 150;
                 ourPlayer.lastMessage = s1;
                 displayMessage(ourPlayer.username + ": " + s1, 2);
@@ -4336,34 +4358,38 @@ label0:
             mouseButtonClick = 2;
         gameCamera.setMousePosition(super.mouseX, super.mouseY);
         super.lastMouseButton = 0;
-        if(configCmeraAutoAngle) {
+        if(configCameraAutoAngle) {
             if(cameraAutoRotationAmoun == 0 || cameraAutoAngleDebug) {
                 if(super.keyLeftDown) {
                     cameraAutoAngle = cameraAutoAngle + 1 & 7;
                     super.keyLeftDown = false;
-                    if((cameraAutoAngle & 1) == 0)
-                        cameraAutoAngle = cameraAutoAngle + 1 & 7;
-                    for(int l2 = 0; l2 < 8; l2++) {
-                        if(validCameraAngle(cameraAutoAngle))
-                            break;
-                        cameraAutoAngle = cameraAutoAngle + 1 & 7;
+                    if(!cameraZoom) {
+                        if((cameraAutoAngle & 1) == 0)
+                            cameraAutoAngle = cameraAutoAngle + 1 & 7;
+                        for(int l2 = 0; l2 < 8; l2++) {
+                            if(validCameraAngle(cameraAutoAngle))
+                                break;
+                            cameraAutoAngle = cameraAutoAngle + 1 & 7;
+                        }
                     }
                 }
                 if(super.keyRightDown) {
                     cameraAutoAngle = cameraAutoAngle + 7 & 7;
                     super.keyRightDown = false;
-                    if((cameraAutoAngle & 1) == 0)
-                        cameraAutoAngle = cameraAutoAngle + 7 & 7;
-                    for(int i3 = 0; i3 < 8; i3++) {
-                        if(validCameraAngle(cameraAutoAngle))
-                            break;
-                        cameraAutoAngle = cameraAutoAngle + 7 & 7;
+                    if(!cameraZoom) {
+                        if((cameraAutoAngle & 1) == 0)
+                            cameraAutoAngle = cameraAutoAngle + 7 & 7;
+                        for(int i3 = 0; i3 < 8; i3++) {
+                            if(validCameraAngle(cameraAutoAngle))
+                                break;
+                            cameraAutoAngle = cameraAutoAngle + 7 & 7;
+                        }
                     }
                 }
             }
         } else
         if(super.keyLeftDown)
-            cameraRotation += 2 & 0xff;// TODO idk wtf is going on but rotating the camera seem to fuck up walking sprites
+            cameraRotation += 2 & 0xff;
         else
         if(super.keyRightDown)
             cameraRotation -= 2 & 0xff;
@@ -4371,6 +4397,12 @@ label0:
             cameraDistance -= 4;
         else if(super.keyDownDown && cameraDistance < 1250)
             cameraDistance += 4;
+        if(fogOfWar) {
+            if(cameraZoom && cameraDistance > 550)
+                cameraDistance -= 4;
+            if(!cameraZoom && cameraDistance < 750)
+                cameraDistance += 4;
+        }
         if(actionPictureType > 0)
             actionPictureType--;
         else
@@ -4422,45 +4454,45 @@ label0:
         appearanceMenu.drawCurvedBox(l - byte0, i1, 53, 41);
         appearanceMenu.drawText(l - byte0, i1 - 8, "Head", 1, true);
         appearanceMenu.drawText(l - byte0, i1 + 8, "Type", 1, true);
-        appearanceMenu.drawArrow(l - byte0 - 40, i1, Menu.gdi + 7);
+        appearanceMenu.drawArrow(l - byte0 - 40, i1, Menu.baseScrollPic + 7);
         appearanceHeadLeftArrow = appearanceMenu.createButton(l - byte0 - 40, i1, 20, 20);
-        appearanceMenu.drawArrow((l - byte0) + 40, i1, Menu.gdi + 6);
+        appearanceMenu.drawArrow((l - byte0) + 40, i1, Menu.baseScrollPic + 6);
         appearanceHeadRightArrow = appearanceMenu.createButton((l - byte0) + 40, i1, 20, 20);
         appearanceMenu.drawCurvedBox(l + byte0, i1, 53, 41);
         appearanceMenu.drawText(l + byte0, i1 - 8, "Hair", 1, true);
         appearanceMenu.drawText(l + byte0, i1 + 8, "Color", 1, true);
-        appearanceMenu.drawArrow((l + byte0) - 40, i1, Menu.gdi + 7);
+        appearanceMenu.drawArrow((l + byte0) - 40, i1, Menu.baseScrollPic + 7);
         appearanceHairLeftArrow = appearanceMenu.createButton((l + byte0) - 40, i1, 20, 20);
-        appearanceMenu.drawArrow(l + byte0 + 40, i1, Menu.gdi + 6);
+        appearanceMenu.drawArrow(l + byte0 + 40, i1, Menu.baseScrollPic + 6);
         appearanceHairRightArrow = appearanceMenu.createButton(l + byte0 + 40, i1, 20, 20);
         i1 += 50;
         appearanceMenu.drawCurvedBox(l - byte0, i1, 53, 41);
         appearanceMenu.drawText(l - byte0, i1, "Gender", 1, true);
-        appearanceMenu.drawArrow(l - byte0 - 40, i1, Menu.gdi + 7);
+        appearanceMenu.drawArrow(l - byte0 - 40, i1, Menu.baseScrollPic + 7);
         appearanceGenderLeftArrow = appearanceMenu.createButton(l - byte0 - 40, i1, 20, 20);
-        appearanceMenu.drawArrow((l - byte0) + 40, i1, Menu.gdi + 6);
+        appearanceMenu.drawArrow((l - byte0) + 40, i1, Menu.baseScrollPic + 6);
         appearanceGenderRightArrow = appearanceMenu.createButton((l - byte0) + 40, i1, 20, 20);
         appearanceMenu.drawCurvedBox(l + byte0, i1, 53, 41);
         appearanceMenu.drawText(l + byte0, i1 - 8, "Top", 1, true);
         appearanceMenu.drawText(l + byte0, i1 + 8, "Color", 1, true);
-        appearanceMenu.drawArrow((l + byte0) - 40, i1, Menu.gdi + 7);
+        appearanceMenu.drawArrow((l + byte0) - 40, i1, Menu.baseScrollPic + 7);
         appearanceTopLeftArrow = appearanceMenu.createButton((l + byte0) - 40, i1, 20, 20);
-        appearanceMenu.drawArrow(l + byte0 + 40, i1, Menu.gdi + 6);
+        appearanceMenu.drawArrow(l + byte0 + 40, i1, Menu.baseScrollPic + 6);
         appearanceTopRightArrow = appearanceMenu.createButton(l + byte0 + 40, i1, 20, 20);
         i1 += 50;
         appearanceMenu.drawCurvedBox(l - byte0, i1, 53, 41);
         appearanceMenu.drawText(l - byte0, i1 - 8, "Skin", 1, true);
         appearanceMenu.drawText(l - byte0, i1 + 8, "Color", 1, true);
-        appearanceMenu.drawArrow(l - byte0 - 40, i1, Menu.gdi + 7);
+        appearanceMenu.drawArrow(l - byte0 - 40, i1, Menu.baseScrollPic + 7);
         appearanceSkinLeftArrow = appearanceMenu.createButton(l - byte0 - 40, i1, 20, 20);
-        appearanceMenu.drawArrow((l - byte0) + 40, i1, Menu.gdi + 6);
+        appearanceMenu.drawArrow((l - byte0) + 40, i1, Menu.baseScrollPic + 6);
         appearanceSkingRightArrow = appearanceMenu.createButton((l - byte0) + 40, i1, 20, 20);
         appearanceMenu.drawCurvedBox(l + byte0, i1, 53, 41);
         appearanceMenu.drawText(l + byte0, i1 - 8, "Bottom", 1, true);
         appearanceMenu.drawText(l + byte0, i1 + 8, "Color", 1, true);
-        appearanceMenu.drawArrow((l + byte0) - 40, i1, Menu.gdi + 7);
+        appearanceMenu.drawArrow((l + byte0) - 40, i1, Menu.baseScrollPic + 7);
         appearanceBottomLeftArrow = appearanceMenu.createButton((l + byte0) - 40, i1, 20, 20);
-        appearanceMenu.drawArrow(l + byte0 + 40, i1, Menu.gdi + 6);
+        appearanceMenu.drawArrow(l + byte0 + 40, i1, Menu.baseScrollPic + 6);
         appearanceBottomRightArrow = appearanceMenu.createButton(l + byte0 + 40, i1, 20, 20);
         i1 += 82;
         i1 -= 35;
@@ -4470,20 +4502,23 @@ label0:
     }
 
     protected final void handleKeyDown(int key) {
+        if(key == 1010) {
+            print = true;
+        }
         if(loggedIn == 0) {
-            if(loginScreen == 0)
+            if(loginScreen == 0 && loginMenuFirst != null)
                 loginMenuFirst.keyPress(key);
-            if(loginScreen == 1)
+            if(loginScreen == 1 && loginNewUser != null)
                 loginNewUser.keyPress(key);
-            if(loginScreen == 2)
+            if(loginScreen == 2 && loginMenuLogin != null)
                 loginMenuLogin.keyPress(key);
         }
         if(loggedIn == 1) {
-            if(showAppearanceWindow) {
+            if(showAppearanceWindow && appearanceMenu != null) {
                 appearanceMenu.keyPress(key);
                 return;
             }
-            if(showFriendsBox == 0 && showAbuseBox == 0 && !isSleeping)
+            if(showFriendsBox == 0 && showAbuseBox == 0 && !isSleeping && chatInputMenu != null)
                 chatInputMenu.keyPress(key);
         }
     }
@@ -5154,7 +5189,8 @@ label0:
                 gameCamera.removeModel(engineHandle.gim[2][l]);
                 gameCamera.removeModel(engineHandle.gih[2][l]);
             }
-            if(showRoofs && lastLayerIndex == 0 && (engineHandle.tiles[ourPlayer.currentX / 128][ourPlayer.currentY / 128] & 0x80) == 0) {
+            cameraZoom = true;
+            if(/*showRoofs && */lastLayerIndex == 0 && (engineHandle.tiles[ourPlayer.currentX / 128][ourPlayer.currentY / 128] & 0x80) == 0) {
                 gameCamera.addModel(engineHandle.gih[lastLayerIndex][l]);
                 if(lastLayerIndex == 0) {
                     gameCamera.addModel(engineHandle.gim[1][l]);
@@ -5163,6 +5199,7 @@ label0:
                     gameCamera.addModel(engineHandle.gih[2][l]);
                 
                 }
+                cameraZoom = false;
             }
         }
 
@@ -5289,7 +5326,7 @@ label0:
         receivedMessagesCount = 0;
         healthBarVisibleCount = 0;
         if(cameraAutoAngleDebug) {
-            if(configCmeraAutoAngle) {
+            if(configCameraAutoAngle && !cameraZoom) {
                 int i6 = cameraAutoAngle;
                 autoRotateCamera();
                 if(cameraAutoAngle != i6) {
@@ -5314,7 +5351,7 @@ label0:
             int k8 = cameraAutoRotatePlayerY + cameraRotationYAmount;
             gameCamera.setCamera(j6, -engineHandle.getAveragedElevation(j6, k8), k8, 912, cameraRotation * 4, 0, 2000);
         } else {
-            if(configCmeraAutoAngle)
+            if(configCameraAutoAngle && !cameraZoom)
                 autoRotateCamera();
             if(fogOfWar) {
                 if(!super.keyF1Toggle) {
@@ -5478,7 +5515,7 @@ label0:
         } else {
             if(showQuestionMenu)
                 drawQuestionMenu();
-            if(combatWindow || ourPlayer.currentSprite == 8 || ourPlayer.currentSprite == 9)
+            if(showCombatWindow || ourPlayer.currentSprite == 8 || ourPlayer.currentSprite == 9)
                 drawCombatStyleBox();
             getMenuHighlighted();
             boolean flag = !showQuestionMenu && !menuShow;
@@ -6469,17 +6506,17 @@ label0:
         messagesArray[0] = message;
         messagesTimeout[0] = 300;
         if(type == 2)
-            if(chatInputMenu.gbc[messagesHandleType2] == chatInputMenu.listLength[messagesHandleType2] - 4)
+            if(chatInputMenu.listShownEntries[messagesHandleType2] == chatInputMenu.listLength[messagesHandleType2] - 4)
                 chatInputMenu.addMessage(messagesHandleType2, message, true);
             else
                 chatInputMenu.addMessage(messagesHandleType2, message, false);
         if(type == 5)
-            if(chatInputMenu.gbc[messagesHandleType5] == chatInputMenu.listLength[messagesHandleType5] - 4)
+            if(chatInputMenu.listShownEntries[messagesHandleType5] == chatInputMenu.listLength[messagesHandleType5] - 4)
                 chatInputMenu.addMessage(messagesHandleType5, message, true);
             else
                 chatInputMenu.addMessage(messagesHandleType5, message, false);
         if(type == 6) {
-            if(chatInputMenu.gbc[messagesHandleType6] == chatInputMenu.listLength[messagesHandleType6] - 4) {
+            if(chatInputMenu.listShownEntries[messagesHandleType6] == chatInputMenu.listLength[messagesHandleType6] - 4) {
                 chatInputMenu.addMessage(messagesHandleType6, message, true);
                 return;
             }
@@ -6718,11 +6755,13 @@ label0:
             }
         }
         if(questMenuSelected == 1) {
+            questsLastShownEntries = questMenu.listShownEntries;
             questMenu.clearList(questMenuHandle);
             questMenu.addListItem(questMenuHandle, 0, "@whi@Quest-list (green=completed)");
             for(int i2 = 0; i2 < usedQuestName.length; i2++)
                 questMenu.addListItem(questMenuHandle, i2 + 1, (questStage[i2] == 0 ? "@red@" : questStage[i2] == 1 ? "@yel@" : "@gre@") + questName[i2]);
 
+            questMenu.listShownEntries = questsLastShownEntries;
             questMenu.drawMenu();
         }
         if(!canClick)
@@ -6795,7 +6834,8 @@ label0:
                 int j1 = ChatMessage.stringToBytes(s2);
                 sendPrivateMessage(pmTarget, ChatMessage.lastChat, j1);
                 s2 = ChatMessage.bytesToString(ChatMessage.lastChat, 0, j1);
-                s2 = ChatFilter.filterChat(s2);
+                if(useChatFilter)
+                    s2 = ChatFilter.filterChat(s2);
                 displayMessage("@pri@You tell " + DataOperations.hashToName(pmTarget) + ": " + s2);
             }
         }
@@ -6897,7 +6937,7 @@ label0:
             drawMenuTab = 0;
         if((drawMenuTab == 2 || drawMenuTab == 4 || drawMenuTab == 5) && (super.mouseX < ((GameImage) (gameGraphics)).gameWidth - 199 || super.mouseY > 240))
             drawMenuTab = 0;
-        if(drawMenuTab == 6 && (super.mouseX < ((GameImage) (gameGraphics)).gameWidth - 199 || super.mouseY > 311))
+        if(drawMenuTab == 6 && (super.mouseX < ((GameImage) (gameGraphics)).gameWidth - 199 || super.mouseY > 326))
             drawMenuTab = 0;
     }
 
@@ -6946,6 +6986,30 @@ label0:
             }
         }
         return null;
+    }
+    
+    public boolean handleCommand(String command) {
+        try {
+            int firstSpace = command.indexOf(' ');
+            String cmd = command;
+            String args[] = new String[0];
+            if(firstSpace != -1) {
+                cmd = command.substring(0, firstSpace).trim();
+                args = command.substring(firstSpace).trim().split(" ");
+            }
+            if(cmd.equals("get")) {
+                java.lang.reflect.Field field = getClass().getDeclaredField(args[0]);
+                if(!field.isAccessible())
+                    field.setAccessible(true);
+                Object value = field.get(this);
+                displayMessage(args[0] + ": " + value, 5);
+                System.out.println(args[0] + ": " + value);
+            }
+            return true;
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public mudclient() {
@@ -7010,7 +7074,7 @@ label0:
         menuActionVar1 = new int[250];
         menuActionVar2 = new int[250];
         sleepWordDelay = true;
-        configCmeraAutoAngle = true;
+        configCameraAutoAngle = true;
         cameraRotation = 128;
         configSoundOff = true;
         menuShow = false;
@@ -7031,7 +7095,7 @@ label0:
         layerIndex = -1;
         walkArrayX = new int[8000];
         walkArrayY = new int[8000];
-        cameraDistance = 850;
+        cameraDistance = 550;
         receivedMessageX = new int[50];
         receivedMessageY = new int[50];
         receivedMessageMidPoint = new int[50];
@@ -7109,11 +7173,13 @@ label0:
         loadArea = false;
         teleBubbleX = new int[50];
         showAppearanceWindow = false;
+        cameraZoom = false;
         
         fogOfWar = false;
-        combatWindow = false;
+        showCombatWindow = false;
         showRoofs = true;
         autoScreenshot = false;
+        useChatFilter = true;
         usedQuestName = new String[0];
         subDaysLeft = 0;
         shopItemSellPrice = new int[256];
@@ -7123,6 +7189,10 @@ label0:
         captchaHeight = 0;
         needsClear = false;
         hasWorldInfo = false;
+        friendsLastShownEntries = new int[5];
+        spellsLastShownEntries = new int[5];
+        prayersLastShownEntries = new int[5];
+        questsLastShownEntries = new int[5];
     }
 
     private String tradeOtherName;
@@ -7270,7 +7340,7 @@ label0:
     private int menuActionVar1[];
     private int menuActionVar2[];
     private boolean sleepWordDelay;
-    private boolean configCmeraAutoAngle;
+    private boolean configCameraAutoAngle;
     private int minimapRandomRotationX;
     private int minimapRandomRotationY;
     private int loginMenuOkButton;
@@ -7505,11 +7575,13 @@ label0:
     private int combatModelArray1[] = {
         0, 1, 2, 1, 0, 0, 0, 0
     };
+    private boolean cameraZoom;
     
     private boolean fogOfWar;
-    private boolean combatWindow;
+    private boolean showCombatWindow;
     private boolean showRoofs;
     private boolean autoScreenshot;
+    private boolean useChatFilter;
     private String usedQuestName[];
     private int subDaysLeft;
     private int shopItemSellPrice[];
@@ -7519,4 +7591,8 @@ label0:
     private int captchaHeight;
     private boolean needsClear;
     private boolean hasWorldInfo;
+    private int friendsLastShownEntries[];
+    private int spellsLastShownEntries[];
+    private int prayersLastShownEntries[];
+    private int questsLastShownEntries[];
 }

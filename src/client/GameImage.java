@@ -202,7 +202,7 @@ public class GameImage
 
     }
 
-    public void can(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
+    public void drawGradientBox(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
         if(arg0 < bna) {
             arg2 -= bna - arg0;
             arg0 = bna;
