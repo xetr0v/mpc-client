@@ -1,4 +1,4 @@
-package client;
+package mudclient;
 
 import java.awt.*;
 import java.io.IOException;

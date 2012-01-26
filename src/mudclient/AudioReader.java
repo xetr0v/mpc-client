@@ -1,4 +1,4 @@
-package client;
+package mudclient;
 
 import java.io.InputStream;
 import sun.audio.AudioPlayer;

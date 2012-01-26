@@ -1,4 +1,4 @@
-package client;
+package mudclient;
 
 import java.applet.Applet;
 import java.io.File;
@@ -16,7 +16,7 @@ public class link {
     
     public static final boolean loadFile(String fileName) {
         try {
-            File f = new File(Config.CONF_DIR, fileName);
+            File f = new File(".", "data/" + fileName);
             if(f.exists()) {
                 FileInputStream fis = new FileInputStream(f);
                 byte buf[] = new byte[fis.available()];

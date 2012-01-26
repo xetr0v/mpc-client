@@ -1,4 +1,4 @@
-package client;
+package mudclient;
 
 import java.math.BigInteger;
 import java.security.KeyFactory;

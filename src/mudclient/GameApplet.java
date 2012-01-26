@@ -1,7 +1,8 @@
-package client;
+package mudclient;
 
 import java.applet.Applet;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 
@@ -47,7 +48,7 @@ public class GameApplet extends Applet
 
     }
 
-    public final synchronized boolean keyDown(int key) {
+    public final synchronized boolean keyDown(Event evt, int key) {
         handleKeyDown(key);
         //lastActionTimeout = 0;
         if(key == 1006)
@@ -96,7 +97,7 @@ public class GameApplet extends Applet
     protected void handleKeyDown(int i) {
     }
 
-    public final synchronized boolean keyUp(int key) {
+    public final synchronized boolean keyUp(Event evt, int key) {
         if(key == 1006)
             keyLeftDown = false;
         if(key == 1007)
@@ -118,24 +119,24 @@ public class GameApplet extends Applet
         return true;
     }
 
-    public final synchronized boolean mouseMove(int i, int k) {
+    public final synchronized boolean mouseMove(Event evt, int i, int k) {
         mouseX = i;
         mouseY = k + mouseYOffset;
         mouseButton = 0;
         return true;
     }
 
-    public final synchronized boolean mouseUp(int i, int k) {
+    public final synchronized boolean mouseUp(Event evt, int i, int k) {
         mouseX = i;
         mouseY = k + mouseYOffset;
         mouseButton = 0;
         return true;
     }
 
-    public final synchronized boolean mouseDown(int x, int y, boolean metaDown) {
+    public final synchronized boolean mouseDown(Event evt, int x, int y) {
         mouseX = x;
         mouseY = y + mouseYOffset;
-        mouseButton = metaDown ? 2 : 1;
+        mouseButton = evt.metaDown() ? 2 : 1;
         lastMouseButton = mouseButton;
         handleMouseDown(mouseButton, x, y);
         return true;
@@ -144,10 +145,10 @@ public class GameApplet extends Applet
     protected void handleMouseDown(int i, int k, int l) {
     }
 
-    public final synchronized boolean mouseDrag(int x, int y, boolean metaDown) {
+    public final synchronized boolean mouseDrag(Event evt, int x, int y) {
         mouseX = x;
         mouseY = y + mouseYOffset;
-        mouseButton = metaDown ? 2 : 1;
+        mouseButton = evt.metaDown() ? 2 : 1;
         return true;
     }
 
@@ -307,6 +308,8 @@ public class GameApplet extends Applet
     }
 
     private final void drawLoadingScreen(int percentage, String fileTitle) {
+        if(bgImage != null)
+            graphics.drawImage(bgImage, 0, 0, null);
         try {
             int i = (appletWidth - 281) / 2;
             int k = (appletHeight - 148) / 2;
@@ -507,5 +510,8 @@ public class GameApplet extends Applet
     public String enteredInputText;
     public String pmText;
     public String enteredPMText;
+    
+    protected static int bgPixels[][] = null;
+    protected static BufferedImage bgImage = null;
 
 }

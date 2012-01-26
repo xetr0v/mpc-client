@@ -1,4 +1,4 @@
-package client;
+package mudclient;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -10,12 +10,11 @@ import java.net.*;
 import javax.imageio.ImageIO;
 
 @SuppressWarnings("serial")
-public final class mudclient extends GameAppletMiddleMan {
+public class mudclient extends GameAppletMiddleMan {
     
     public static final void main(String args[]) {
         mudclient mud = new mudclient();
         mud.appletMode = false;
-        mud.members = true;
         mud.flc(mud.windowWidth, mud.windowHeight + 11, "MoparClassic", false);
         mud.gameMinThreadSleepTime = 10;
     }
@@ -869,7 +868,10 @@ boolean print = false;
         for(int j1 = 6; j1 >= 1; j1--)
             gameGraphics.cbg(0, j1, 0, 194 - j1, 512, 8);
 
-        gameGraphics.drawPicture(15, 15, baseInventoryPic + 10);
+        if(bgPixels == null)
+            gameGraphics.drawPicture(15, 15, baseInventoryPic + 10);
+        else
+            gameGraphics.drawPixels(bgPixels, 0, 0, bgPixels.length, bgPixels[0].length);
         gameGraphics.cca(baseLoginScreenBackgroundPic, 0, 0, 512, 200);
         gameGraphics.cbl(baseLoginScreenBackgroundPic);
         c1 = '\u2400';
@@ -892,7 +894,10 @@ boolean print = false;
         for(int l1 = 6; l1 >= 1; l1--)
             gameGraphics.cbg(0, l1, 0, 194 - l1, 512, 8);
 
-        gameGraphics.drawPicture(15, 15, baseInventoryPic + 10);
+        if(bgPixels == null)
+            gameGraphics.drawPicture(15, 15, baseInventoryPic + 10);
+        else
+            gameGraphics.drawPixels(bgPixels, 0, 0, bgPixels.length, bgPixels[0].length);
         gameGraphics.cca(baseLoginScreenBackgroundPic + 1, 0, 0, 512, 200);
         gameGraphics.cbl(baseLoginScreenBackgroundPic + 1);
         for(int i2 = 0; i2 < 64; i2++) {
@@ -923,7 +928,10 @@ boolean print = false;
         for(int k2 = 6; k2 >= 1; k2--)
             gameGraphics.cbg(0, k2, 0, 194, 512, 8);
 
-        gameGraphics.drawPicture(15, 15, baseInventoryPic + 10);
+        if(bgPixels == null)
+            gameGraphics.drawPicture(15, 15, baseInventoryPic + 10);
+        else
+            gameGraphics.drawPixels(bgPixels, 0, 0, bgPixels.length, bgPixels[0].length);
         gameGraphics.cca(baseInventoryPic + 10, 0, 0, 512, 200);
         gameGraphics.cbl(baseInventoryPic + 10);
     }
@@ -2300,6 +2308,7 @@ boolean print = false;
         loadChatFilter();
         if(errorLoading)
             return;
+        members = true;
         GameAppletMiddleMan.maxPacketReadCount = 500;
         baseInventoryPic = 2000;
         baseScrollPic = baseInventoryPic + 100;

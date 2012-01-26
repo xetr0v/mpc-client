@@ -1,4 +1,4 @@
-package client;
+package mudclient;
 
 import java.awt.*;
 
@@ -36,22 +36,22 @@ public class GameFrame extends Frame {
 
     public boolean handleEvent(Event evt) {
         if(evt.id == Event.KEY_PRESS)
-            gameApplet.keyDown(evt.key);
+            gameApplet.keyDown(evt, evt.key);
         else
         if(evt.id == Event.KEY_RELEASE)
-            gameApplet.keyUp(evt.key);
+            gameApplet.keyUp(evt, evt.key);
         else
         if(evt.id == Event.MOUSE_DOWN)
-            gameApplet.mouseDown(evt.x, evt.y - 24, evt.metaDown());
+            gameApplet.mouseDown(evt, evt.x, evt.y - 24);
         else
         if(evt.id == Event.MOUSE_DRAG)
-            gameApplet.mouseDrag(evt.x, evt.y - 24, evt.metaDown());
+            gameApplet.mouseDrag(evt, evt.x, evt.y - 24);
         else
         if(evt.id == Event.MOUSE_UP)
-            gameApplet.mouseUp(evt.x, evt.y - 24);
+            gameApplet.mouseUp(evt, evt.x, evt.y - 24);
         else
         if(evt.id == Event.MOUSE_MOVE)
-            gameApplet.mouseMove(evt.x, evt.y - 24);
+            gameApplet.mouseMove(evt, evt.x, evt.y - 24);
         else
         if(evt.id == Event.WINDOW_DESTROY)
             gameApplet.destroy();
@@ -60,16 +60,10 @@ public class GameFrame extends Frame {
             gameApplet.action(evt, evt.target);
         else
         if(evt.id == Event.KEY_ACTION)
-            gameApplet.keyDown(evt.key);
+            gameApplet.keyDown(evt, evt.key);
         else
         if(evt.id == Event.KEY_ACTION_RELEASE)
-            gameApplet.keyUp(evt.key);
-        else
-        if(evt.id == Event.SCROLL_BEGIN)
-            gameApplet.mouseScroll(true, evt.key);
-        else
-        if(evt.id == Event.SCROLL_END)
-            gameApplet.mouseScroll(false, evt.key);
+            gameApplet.keyUp(evt, evt.key);
         return true;
     }
 

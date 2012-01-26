@@ -1,4 +1,4 @@
-package client;
+package mudclient;
 
 public class ChatMessage {
 
