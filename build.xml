@@ -36,7 +36,7 @@
     <target name="archive-project">
         <jar destfile="mpc-client.jar" basedir="bin">
         	<manifest>
-        		<attribute name="Main-Class" value="client.mudclient"/>
+                <attribute name="Main-Class" value="mudclient.mudclient"/>
         	</manifest>
         </jar>
     </target>
@@ -67,7 +67,7 @@
         </java>
     </target>
     <target name="client">
-        <java classname="client.mudclient" failonerror="true" fork="yes">
+        <java classname="mudclient.mudclient" failonerror="true" fork="yes">
             <classpath refid="mpc-client.classpath"/>
         </java>
     </target>
