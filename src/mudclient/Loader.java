@@ -1,7 +1,6 @@
 package mudclient;
 
 import java.applet.Applet;
-import java.awt.AWTEvent;
 import java.awt.Event;
 import java.awt.Graphics;
 import java.io.DataInputStream;
