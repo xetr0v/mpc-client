@@ -307,8 +307,6 @@ public class GameApplet extends Applet
     }
 
     private final void drawLoadingScreen(int percentage, String fileTitle) {
-        if(bgImage != null)
-            graphics.drawImage(bgImage, 0, 0, null);
         try {
             int i = (appletWidth - 281) / 2;
             int k = (appletHeight - 148) / 2;
@@ -316,6 +314,8 @@ public class GameApplet extends Applet
             graphics.fillRect(0, 0, appletWidth, appletHeight);
             i += 2;
             k += 90;
+            if(bgImage != null)
+                graphics.drawImage(bgImage, 0, 0, null);
             gameLoadingPercentage = percentage;
             gameLoadingFileTitle = fileTitle;
             graphics.setColor(new Color(132, 132, 132));
