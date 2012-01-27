@@ -50,6 +50,9 @@ public class Loader extends Applet implements Runnable {
             client = new mudclient();
             client.init();
             client.start();
+            this.addKeyListener(client);
+            this.addMouseListener(client);
+            this.addMouseMotionListener(client);
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -154,41 +157,5 @@ public class Loader extends Applet implements Runnable {
     public void destroy() {
         if(client != null)
             client.destroy();
-    }
-    
-    public boolean mouseDown(Event evt, int x, int y) {
-        if(client != null)
-            return client.mouseDown(x, y, evt.metaDown());
-        return true;
-    }
-    
-    public boolean mouseDrag(Event evt, int x, int y) {
-        if(client != null)
-            return client.mouseDrag(x, y, evt.metaDown());
-        return true;
-    }
-    
-    public boolean mouseUp(Event evt, int x, int y) {
-        if(client != null)
-            return client.mouseUp(x, y);
-        return true;
-    }
-    
-    public boolean mouseMove(Event evt, int x, int y) {
-        if(client != null)
-            return client.mouseMove(x, y);
-        return true;
-    }
-    
-    public boolean keyDown(Event evt, int key) {
-        if(client != null)
-            client.keyDown(key, (char)key);
-        return true;
-    }
-    
-    public boolean keyUp(Event evt, int key) {
-        if(client != null)
-            client.keyUp(key, (char)key);
-        return true;
     }
 }

@@ -2305,7 +2305,6 @@ boolean print = false;
             l += l1;
             experienceList[i1] = l & 0xffffffc;
         }
-        super.mouseYOffset = 0;
         loadChatFilter();
         if(errorLoading)
             return;

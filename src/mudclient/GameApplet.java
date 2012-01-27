@@ -3,13 +3,18 @@ package mudclient;
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 
+import javax.swing.event.MouseInputListener;
+
 @SuppressWarnings("serial")
 public class GameApplet extends Applet
-    implements Runnable {
+    implements Runnable, KeyListener, MouseInputListener, MouseMotionListener {
 
     protected void loadGame() {
     }
@@ -47,6 +52,46 @@ public class GameApplet extends Applet
         for(int i = 0; i < 10; i++)
             timeArray[i] = 0L;
 
+    }
+    
+    public void keyTyped(KeyEvent e) {
+        //ignore
+    }
+    
+    public void mouseClicked(MouseEvent e) {
+        //ignore
+    }
+    
+    public void keyPressed(KeyEvent evt) {
+        this.keyDown(evt.getKeyCode(), evt.getKeyChar());
+    }
+    
+    public void keyReleased(KeyEvent evt) {
+        this.keyUp(evt.getKeyCode(), evt.getKeyChar());
+    }
+    
+    public void mouseEntered(MouseEvent evt) {
+        this.mouseMove(evt.getX(), evt.getY());
+    }
+    
+    public void mouseExited(MouseEvent evt) {
+        this.mouseMove(evt.getX(), evt.getY());
+    }
+    
+    public void mousePressed(MouseEvent evt) {
+        this.mouseDown(evt.getX(), evt.getY(), evt.isMetaDown());
+    }
+    
+    public void mouseReleased(MouseEvent evt) {
+        this.mouseUp(evt.getX(), evt.getY());
+    }
+    
+    public void mouseDragged(MouseEvent evt) {
+        this.mouseDrag(evt.getX(), evt.getY(), evt.isMetaDown());
+    }
+    
+    public void mouseMoved(MouseEvent evt) {
+        this.mouseMove(evt.getX(), evt.getY());
     }
     
     public void keyDown(int key, char c) {
@@ -106,21 +151,21 @@ public class GameApplet extends Applet
 
     public final synchronized boolean mouseMove(int x, int y) {
         mouseX = x;
-        mouseY = y + mouseYOffset;
+        mouseY = y - mouseYOffset;
         mouseButton = 0;
         return true;
     }
 
     public final synchronized boolean mouseUp(int x, int y) {
         mouseX = x;
-        mouseY = y + mouseYOffset;
+        mouseY = y - mouseYOffset;
         mouseButton = 0;
         return true;
     }
 
     public final synchronized boolean mouseDown(int x, int y, boolean metaDown) {
         mouseX = x;
-        mouseY = y + mouseYOffset;
+        mouseY = y - mouseYOffset;
         mouseButton = metaDown ? 2 : 1;
         lastMouseButton = mouseButton;
         handleMouseDown(mouseButton, x, y);
@@ -132,7 +177,7 @@ public class GameApplet extends Applet
 
     public final synchronized boolean mouseDrag(int x, int y, boolean metaDown) {
         mouseX = x;
-        mouseY = y + mouseYOffset;
+        mouseY = y - mouseYOffset;
         mouseButton = metaDown ? 2 : 1;
         return true;
     }
@@ -187,8 +232,18 @@ public class GameApplet extends Applet
         if(!inBrowser)
             System.exit(0);
     }
+    
+    Component getGameComponent() {
+        if(gameFrame != null)
+            return gameFrame;
+        else
+            return this;
+    }
 
     public final void run() {
+        getGameComponent().addKeyListener(this);
+        getGameComponent().addMouseListener(this);
+        getGameComponent().addMouseMotionListener(this);
         if(gameLoadingScreen == 1) {
             gameLoadingScreen = 2;
             graphics = getGraphics();
@@ -467,7 +522,7 @@ public class GameApplet extends Applet
     private boolean inBrowser;
     public int runStatus;
     private int fij;
-    public int mouseYOffset;
+    public int mouseYOffset = 0;
     public int gameLoadingScreen;
     private int gameLoadingPercentage;
     private String gameLoadingFileTitle;

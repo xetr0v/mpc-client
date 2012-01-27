@@ -11,7 +11,7 @@ import java.awt.event.WindowListener;
 import javax.swing.event.MouseInputListener;
 
 @SuppressWarnings({ "deprecation", "serial" })
-public class GameFrame extends Frame implements KeyListener, MouseInputListener, MouseMotionListener, WindowListener {
+public class GameFrame extends Frame implements WindowListener {
 
     public GameFrame(GameApplet arg0, int width, int height, String title, boolean resizable, boolean translate) {
         yOffset = 28;
@@ -22,15 +22,13 @@ public class GameFrame extends Frame implements KeyListener, MouseInputListener,
             yOffset = 48;
         else
             yOffset = 28;
+        gameApplet.mouseYOffset = 24;
         setTitle(title);
         setResizable(resizable);
         show();
         toFront();
         resize(frameWidth, frameHeight);
         
-        addKeyListener(this);
-        addMouseListener(this);
-        addMouseMotionListener(this);
         addWindowListener(this);
     }
 
@@ -49,38 +47,6 @@ public class GameFrame extends Frame implements KeyListener, MouseInputListener,
 
     public final void paint(Graphics g) {
         gameApplet.paint(g);
-    }
-    
-    public void keyPressed(KeyEvent evt) {
-        gameApplet.keyDown(evt.getKeyCode(), evt.getKeyChar());
-    }
-
-    public void keyReleased(KeyEvent evt) {
-        gameApplet.keyUp(evt.getKeyCode(), evt.getKeyChar());
-    }
-
-    public void mouseEntered(MouseEvent evt) {
-        gameApplet.mouseMove(evt.getX(), evt.getY() - 24);
-    }
-
-    public void mouseExited(MouseEvent evt) {
-        gameApplet.mouseMove(evt.getX(), evt.getY() - 24);
-    }
-
-    public void mousePressed(MouseEvent evt) {
-        gameApplet.mouseDown(evt.getX(), evt.getY() - 24, evt.isMetaDown());
-    }
-
-    public void mouseReleased(MouseEvent evt) {
-        gameApplet.mouseUp(evt.getX(), evt.getY() - 24);
-    }
-
-    public void mouseDragged(MouseEvent evt) {
-        gameApplet.mouseDrag(evt.getX(), evt.getY() - 24, evt.isMetaDown());
-    }
-
-    public void mouseMoved(MouseEvent evt) {
-        gameApplet.mouseMove(evt.getX(), evt.getY() - 24);
     }
 
     public void windowClosed(WindowEvent evt) {
@@ -106,12 +72,6 @@ public class GameFrame extends Frame implements KeyListener, MouseInputListener,
     }
 
     public void windowOpened(WindowEvent evt) {
-    }
-    
-    public void keyTyped(KeyEvent evt) {
-    }
-
-    public void mouseClicked(MouseEvent evt) {
     }
 
     int frameWidth;
