@@ -34,7 +34,7 @@ public class Camera {
         bgd = false;
         bfg = arg0;
         bcj = arg0.gameWidth / 2;
-        bck = arg0.blh / 2;
+        bck = arg0.gameHeight / 2;
         bfh = arg0.pixels;
         bdh = 0;
         bdi = arg1;

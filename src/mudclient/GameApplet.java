@@ -1,14 +1,22 @@
 package mudclient;
 
 import java.applet.Applet;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.*;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.URL;
 
 import javax.swing.event.MouseInputListener;
 
@@ -29,7 +37,6 @@ public class GameApplet extends Applet
     }
 
     protected final void flc(int width, int height, String title, boolean resizable) {
-        inBrowser = false;
         System.out.println("Started application");
         appletWidth = width;
         appletHeight = height;
@@ -38,10 +45,6 @@ public class GameApplet extends Applet
         gameWindowThread = new Thread(this);
         gameWindowThread.start();
         gameWindowThread.setPriority(1);
-    }
-
-    protected final boolean inBrowser() {
-        return inBrowser;
     }
 
     protected final void setRefreshRate(int i) {
@@ -183,7 +186,6 @@ public class GameApplet extends Applet
     }
 
     public final void init() {
-        inBrowser = true;
         System.out.println("Started applet");
         appletWidth = 512;
         appletHeight = 344;
@@ -227,10 +229,10 @@ public class GameApplet extends Applet
             Thread.sleep(1000L);
         }
         catch(Exception _ex) { }
-        if(gameFrame != null)
+        if(gameFrame != null) {
             gameFrame.dispose();
-        if(!inBrowser)
             System.exit(0);
+        }
     }
     
     Component getGameComponent() {
@@ -467,13 +469,9 @@ public class GameApplet extends Applet
         return super.getParameter(s);
     }
 
-    protected Socket makeSocket(String arg0, int arg1)
+    protected Socket makeSocket(String address, int port)
         throws IOException {
-        Socket socket;
-        if(inBrowser())
-            socket = new Socket(InetAddress.getByName(getCodeBase().getHost()), arg1);
-        else
-            socket = new Socket(InetAddress.getByName(arg0), arg1);
+        Socket socket = new Socket(InetAddress.getByName(address), port);
         socket.setSoTimeout(30000);
         socket.setTcpNoDelay(true);
         return socket;
@@ -519,7 +517,6 @@ public class GameApplet extends Applet
     private int fie;
     private long timeArray[];
     public static GameFrame gameFrame = null;
-    private boolean inBrowser;
     public int runStatus;
     private int fij;
     public int mouseYOffset = 0;

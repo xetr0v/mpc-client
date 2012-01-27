@@ -1,6 +1,8 @@
 package mudclient;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.io.IOException;
 
 @SuppressWarnings("serial")

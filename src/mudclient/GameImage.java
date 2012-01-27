@@ -1,7 +1,17 @@
 package mudclient;
 
-import java.awt.*;
-import java.awt.image.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.ColorModel;
+import java.awt.image.DirectColorModel;
+import java.awt.image.ImageConsumer;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
+import java.awt.image.PixelGrabber;
 
 public class GameImage
     implements ImageProducer, ImageObserver {
@@ -9,10 +19,10 @@ public class GameImage
     public GameImage(int arg0, int arg1, int arg2, Component arg3) {
         interlace = false;
         loggedIn = false;
-        bmn = arg1;
-        bnb = arg0;
+        height = arg1;
+        width = arg0;
         blj = gameWidth = arg0;
-        blk = blh = arg1;
+        blk = gameHeight = arg1;
         bli = arg0 * arg1;
         pixels = new int[arg0 * arg1];
         pictureColors = new int[arg2][];
@@ -26,36 +36,36 @@ public class GameImage
         pictureOffsetX = new int[arg2];
         pictureOffsetY = new int[arg2];
         if(arg0 > 1 && arg1 > 1 && arg3 != null) {
-            bll = new DirectColorModel(32, 0xff0000, 65280, 255);
-            int i = gameWidth * blh;
+            colorModel = new DirectColorModel(32, 0xff0000, 65280, 255);
+            int i = gameWidth * gameHeight;
             for(int k = 0; k < i; k++)
                 pixels[k] = 0;
 
-            bmb = arg3.createImage(this);
+            image = arg3.createImage(this);
             cag();
-            arg3.prepareImage(bmb, arg3);
+            arg3.prepareImage(image, arg3);
             cag();
-            arg3.prepareImage(bmb, arg3);
+            arg3.prepareImage(image, arg3);
             cag();
-            arg3.prepareImage(bmb, arg3);
+            arg3.prepareImage(image, arg3);
         }
     }
 
     public synchronized void addConsumer(ImageConsumer imageconsumer) {
-        bln = imageconsumer;
-        imageconsumer.setDimensions(gameWidth, blh);
+        imageConsumer = imageconsumer;
+        imageconsumer.setDimensions(gameWidth, gameHeight);
         imageconsumer.setProperties(null);
-        imageconsumer.setColorModel(bll);
+        imageconsumer.setColorModel(colorModel);
         imageconsumer.setHints(14);
     }
 
     public synchronized boolean isConsumer(ImageConsumer imageconsumer) {
-        return bln == imageconsumer;
+        return imageConsumer == imageconsumer;
     }
 
     public synchronized void removeConsumer(ImageConsumer imageconsumer) {
-        if(bln == imageconsumer)
-            bln = null;
+        if(imageConsumer == imageconsumer)
+            imageConsumer = null;
     }
 
     public void startProduction(ImageConsumer imageconsumer) {
@@ -67,11 +77,11 @@ public class GameImage
     }
 
     public synchronized void cag() {
-        if(bln == null) {
+        if(imageConsumer == null) {
             return;
         } else {
-            bln.setPixels(0, 0, gameWidth, blh, bll, pixels, 0, gameWidth);
-            bln.imageComplete(2);
+            imageConsumer.setPixels(0, 0, gameWidth, gameHeight, colorModel, pixels, 0, gameWidth);
+            imageConsumer.imageComplete(2);
             return;
         }
     }
@@ -83,28 +93,28 @@ public class GameImage
             k = 0;
         if(l > gameWidth)
             l = gameWidth;
-        if(i1 > blh)
-            i1 = blh;
+        if(i1 > gameHeight)
+            i1 = gameHeight;
         bna = i;
         bmm = k;
-        bnb = l;
-        bmn = i1;
+        width = l;
+        height = i1;
     }
 
     public void cai() {
         bna = 0;
         bmm = 0;
-        bnb = gameWidth;
-        bmn = blh;
+        width = gameWidth;
+        height = gameHeight;
     }
 
     public void drawImage(Graphics g, int i, int k) {
         cag();
-        g.drawImage(bmb, i, k, this);
+        g.drawImage(image, i, k, this);
     }
 
     public void clearScreen() {
-        int i = gameWidth * blh;
+        int i = gameWidth * gameHeight;
         if(!interlace) {
             for(int k = 0; k < i; k++)
                 pixels[k] = 0;
@@ -112,7 +122,7 @@ public class GameImage
             return;
         }
         int l = 0;
-        for(int i1 = -blh; i1 < 0; i1 += 2) {
+        for(int i1 = -gameHeight; i1 < 0; i1 += 2) {
             for(int j1 = -gameWidth; j1 < 0; j1++)
                 pixels[l++] = 0;
 
@@ -130,8 +140,8 @@ public class GameImage
         if(i2 < 0)
             i2 = 0;
         int j2 = arg1 + arg2;
-        if(j2 >= blh)
-            j2 = blh - 1;
+        if(j2 >= gameHeight)
+            j2 = gameHeight - 1;
         byte byte0 = 1;
         if(interlace) {
             byte0 = 2;
@@ -169,10 +179,10 @@ public class GameImage
             arg3 -= bmm - arg1;
             arg1 = bmm;
         }
-        if(arg0 + arg2 > bnb)
-            arg2 = bnb - arg0;
-        if(arg1 + arg3 > bmn)
-            arg3 = bmn - arg1;
+        if(arg0 + arg2 > width)
+            arg2 = width - arg0;
+        if(arg1 + arg3 > height)
+            arg3 = height - arg1;
         int i = 256 - arg5;
         int k = (arg4 >> 16 & 0xff) * arg5;
         int l = (arg4 >> 8 & 0xff) * arg5;
@@ -207,8 +217,8 @@ public class GameImage
             arg2 -= bna - arg0;
             arg0 = bna;
         }
-        if(arg0 + arg2 > bnb)
-            arg2 = bnb - arg0;
+        if(arg0 + arg2 > width)
+            arg2 = width - arg0;
         int i = arg5 >> 16 & 0xff;
         int k = arg5 >> 8 & 0xff;
         int l = arg5 & 0xff;
@@ -227,7 +237,7 @@ public class GameImage
         }
         int i2 = arg0 + arg1 * gameWidth;
         for(int j2 = 0; j2 < arg3; j2 += byte0)
-            if(j2 + arg1 >= bmm && j2 + arg1 < bmn) {
+            if(j2 + arg1 >= bmm && j2 + arg1 < height) {
                 int k2 = ((i * j2 + i1 * (arg3 - j2)) / arg3 << 16) + ((k * j2 + j1 * (arg3 - j2)) / arg3 << 8) + (l * j2 + k1 * (arg3 - j2)) / arg3;
                 for(int l2 = -arg2; l2 < 0; l2++)
                     pixels[i2++] = k2;
@@ -248,10 +258,10 @@ public class GameImage
             arg3 -= bmm - arg1;
             arg1 = bmm;
         }
-        if(arg0 + arg2 > bnb)
-            arg2 = bnb - arg0;
-        if(arg1 + arg3 > bmn)
-            arg3 = bmn - arg1;
+        if(arg0 + arg2 > width)
+            arg2 = width - arg0;
+        if(arg1 + arg3 > height)
+            arg3 = height - arg1;
         int i = gameWidth - arg2;
         byte byte0 = 1;
         if(interlace) {
@@ -280,14 +290,14 @@ public class GameImage
     }
 
     public void drawLineX(int arg0, int arg1, int arg2, int arg3) {
-        if(arg1 < bmm || arg1 >= bmn)
+        if(arg1 < bmm || arg1 >= height)
             return;
         if(arg0 < bna) {
             arg2 -= bna - arg0;
             arg0 = bna;
         }
-        if(arg0 + arg2 > bnb)
-            arg2 = bnb - arg0;
+        if(arg0 + arg2 > width)
+            arg2 = width - arg0;
         int i = arg0 + arg1 * gameWidth;
         for(int k = 0; k < arg2; k++)
             pixels[i + k] = arg3;
@@ -295,14 +305,14 @@ public class GameImage
     }
 
     public void drawLineY(int arg0, int arg1, int arg2, int arg3) {
-        if(arg0 < bna || arg0 >= bnb)
+        if(arg0 < bna || arg0 >= width)
             return;
         if(arg1 < bmm) {
             arg2 -= bmm - arg1;
             arg1 = bmm;
         }
-        if(arg1 + arg2 > bnb)
-            arg2 = bmn - arg1;
+        if(arg1 + arg2 > width)
+            arg2 = height - arg1;
         int i = arg0 + arg1 * gameWidth;
         for(int k = 0; k < arg2; k++)
             pixels[i + k * gameWidth] = arg3;
@@ -310,7 +320,7 @@ public class GameImage
     }
 
     public void drawMinimapPixel(int i, int k, int l) {
-        if(i < bna || k < bmm || i >= bnb || k >= bmn) {
+        if(i < bna || k < bmm || i >= width || k >= height) {
             return;
         } else {
             pixels[i + k * gameWidth] = l;
@@ -319,7 +329,7 @@ public class GameImage
     }
 
     public void screenFadeToBlack() {
-        int l = gameWidth * blh;
+        int l = gameWidth * gameHeight;
         for(int k = 0; k < l; k++) {
             int i = pixels[k] & 0xffffff;
             pixels[k] = (i >>> 1 & 0x7f7f7f) + (i >>> 2 & 0x3f3f3f) + (i >>> 3 & 0x1f1f1f) + (i >>> 4 & 0xf0f0f);
@@ -337,7 +347,7 @@ public class GameImage
                 for(int l1 = i - arg0; l1 <= i + arg0; l1++)
                     if(l1 >= 0 && l1 < gameWidth) {
                         for(int i2 = k - arg1; i2 <= k + arg1; i2++)
-                            if(i2 >= 0 && i2 < blh) {
+                            if(i2 >= 0 && i2 < gameHeight) {
                                 int j2 = pixels[l1 + gameWidth * i2];
                                 l += j2 >> 16 & 0xff;
                                 i1 += j2 >> 8 & 0xff;
@@ -611,8 +621,8 @@ public class GameImage
             j1 += k2 * l1;
             i1 += k2 * gameWidth;
         }
-        if(k + k1 >= bmn)
-            k1 -= ((k + k1) - bmn) + 1;
+        if(k + k1 >= height)
+            k1 -= ((k + k1) - height) + 1;
         if(i < bna) {
             int l2 = bna - i;
             l1 -= l2;
@@ -622,8 +632,8 @@ public class GameImage
             j2 += l2;
             i2 += l2;
         }
-        if(i + l1 >= bnb) {
-            int i3 = ((i + l1) - bnb) + 1;
+        if(i + l1 >= width) {
+            int i3 = ((i + l1) - width) + 1;
             l1 -= i3;
             j2 += i3;
             i2 += i3;
@@ -680,8 +690,8 @@ public class GameImage
                 j3 += i4 * gameWidth;
                 j2 += l2 * i4;
             }
-            if(k + i1 >= bmn)
-                i1 -= ((k + i1) - bmn) + 1;
+            if(k + i1 >= height)
+                i1 -= ((k + i1) - height) + 1;
             if(i < bna) {
                 int j4 = bna - i;
                 l -= j4;
@@ -690,8 +700,8 @@ public class GameImage
                 i2 += k2 * j4;
                 l3 += j4;
             }
-            if(i + l >= bnb) {
-                int k4 = ((i + l) - bnb) + 1;
+            if(i + l >= width) {
+                int k4 = ((i + l) - width) + 1;
                 l -= k4;
                 l3 += k4;
             }
@@ -731,8 +741,8 @@ public class GameImage
             k1 += l2 * i2;
             j1 += l2 * gameWidth;
         }
-        if(k + l1 >= bmn)
-            l1 -= ((k + l1) - bmn) + 1;
+        if(k + l1 >= height)
+            l1 -= ((k + l1) - height) + 1;
         if(i < bna) {
             int i3 = bna - i;
             i2 -= i3;
@@ -742,8 +752,8 @@ public class GameImage
             k2 += i3;
             j2 += i3;
         }
-        if(i + i2 >= bnb) {
-            int j3 = ((i + i2) - bnb) + 1;
+        if(i + i2 >= width) {
+            int j3 = ((i + i2) - width) + 1;
             i2 -= j3;
             k2 += j3;
             j2 += j3;
@@ -800,8 +810,8 @@ public class GameImage
                 k3 += j4 * gameWidth;
                 k2 += i3 * j4;
             }
-            if(k + i1 >= bmn)
-                i1 -= ((k + i1) - bmn) + 1;
+            if(k + i1 >= height)
+                i1 -= ((k + i1) - height) + 1;
             if(i < bna) {
                 int k4 = bna - i;
                 l -= k4;
@@ -810,8 +820,8 @@ public class GameImage
                 j2 += l2 * k4;
                 i4 += k4;
             }
-            if(i + l >= bnb) {
-                int l4 = ((i + l) - bnb) + 1;
+            if(i + l >= width) {
+                int l4 = ((i + l) - width) + 1;
                 l -= l4;
                 i4 += l4;
             }
@@ -864,8 +874,8 @@ public class GameImage
                 k3 += j4 * gameWidth;
                 k2 += i3 * j4;
             }
-            if(k + i1 >= bmn)
-                i1 -= ((k + i1) - bmn) + 1;
+            if(k + i1 >= height)
+                i1 -= ((k + i1) - height) + 1;
             if(i < bna) {
                 int k4 = bna - i;
                 l -= k4;
@@ -874,8 +884,8 @@ public class GameImage
                 j2 += l2 * k4;
                 i4 += k4;
             }
-            if(i + l >= bnb) {
-                int l4 = ((i + l) - bnb) + 1;
+            if(i + l >= width) {
+                int l4 = ((i + l) - width) + 1;
                 l -= l4;
                 i4 += l4;
             }
@@ -1118,7 +1128,7 @@ public class GameImage
 
     public void drawMinimapPic(int arg0, int arg1, int arg2, int arg3, int arg4) {
         int i = gameWidth;
-        int k = blh;
+        int k = gameHeight;
         if(bng == null) {
             bng = new int[512];
             for(int l = 0; l < 256; l++) {
@@ -1176,8 +1186,8 @@ public class GameImage
             l5 = j5;
         if(k5 < bmm)
             k5 = bmm;
-        if(l5 > bmn)
-            l5 = bmn;
+        if(l5 > height)
+            l5 = height;
         if(bnh == null || bnh.length != k + 1) {
             bnh = new int[k + 1];
             bni = new int[k + 1];
@@ -1371,8 +1381,8 @@ public class GameImage
                     j11 += (bna - j10) * k11;
                     j10 = bna;
                 }
-                if(k10 > bnb)
-                    k10 = bnb;
+                if(k10 > width)
+                    k10 = width;
                 if(!interlace || (i10 & 1) == 0)
                     if(!pictureRequiresShift[arg2])
                         cda(pixels, ai, 0, l9 + j10, l10, j11, i11, k11, j10 - k10, j8);
@@ -1457,8 +1467,8 @@ public class GameImage
                 i3 += l3 * i5;
                 j3 += i4 * i5;
             }
-            if(k + i1 >= bmn)
-                i1 -= ((k + i1) - bmn) + 1;
+            if(k + i1 >= height)
+                i1 -= ((k + i1) - height) + 1;
             int j5 = k4 / gameWidth & 1;
             if(!interlace)
                 j5 = 2;
@@ -1518,8 +1528,8 @@ public class GameImage
                     k2 = bna;
                     arg3 += arg8 * i3;
                 }
-                if(k2 + l2 >= bnb) {
-                    int j3 = (k2 + l2) - bnb;
+                if(k2 + l2 >= width) {
+                    int j3 = (k2 + l2) - width;
                     l2 -= j3;
                 }
                 arg14 = 1 - arg14;
@@ -1573,8 +1583,8 @@ public class GameImage
                     j3 = bna;
                     arg3 += arg8 * l3;
                 }
-                if(j3 + k3 >= bnb) {
-                    int i4 = (j3 + k3) - bnb;
+                if(j3 + k3 >= width) {
+                    int i4 = (j3 + k3) - width;
                     k3 -= i4;
                 }
                 arg15 = 1 - arg15;
@@ -1628,8 +1638,8 @@ public class GameImage
                     k2 = bna;
                     arg4 += arg9 * i3;
                 }
-                if(k2 + l2 >= bnb) {
-                    int j3 = (k2 + l2) - bnb;
+                if(k2 + l2 >= width) {
+                    int j3 = (k2 + l2) - width;
                     l2 -= j3;
                 }
                 arg15 = 1 - arg15;
@@ -1684,8 +1694,8 @@ public class GameImage
                     j3 = bna;
                     arg4 += arg9 * l3;
                 }
-                if(j3 + k3 >= bnb) {
-                    int i4 = (j3 + k3) - bnb;
+                if(j3 + k3 >= width) {
+                    int i4 = (j3 + k3) - width;
                     k3 -= i4;
                 }
                 arg16 = 1 - arg16;
@@ -1979,8 +1989,8 @@ label3:
             j2 += j3 * l1;
             k2 += j3 * gameWidth;
         }
-        if(k1 + i2 >= bmn)
-            i2 -= ((k1 + i2) - bmn) + 1;
+        if(k1 + i2 >= height)
+            i2 -= ((k1 + i2) - height) + 1;
         if(j1 < bna) {
             int k3 = bna - j1;
             l1 -= k3;
@@ -1990,8 +2000,8 @@ label3:
             i3 += k3;
             l2 += k3;
         }
-        if(j1 + l1 >= bnb) {
-            int l3 = ((j1 + l1) - bnb) + 1;
+        if(j1 + l1 >= width) {
+            int l3 = ((j1 + l1) - width) + 1;
             l1 -= l3;
             i3 += l3;
             l2 += l3;
@@ -2131,14 +2141,14 @@ label3:
     }
 
     public int gameWidth;
-    public int blh;
+    public int gameHeight;
     public int bli;
     public int blj;
     public int blk;
-    ColorModel bll;
+    ColorModel colorModel;
     public int pixels[];
-    ImageConsumer bln;
-    public Image bmb;
+    ImageConsumer imageConsumer;
+    public Image image;
     public int pictureColors[][];
     public byte bmd[][];
     public int bme[][];
@@ -2150,9 +2160,9 @@ label3:
     public int pictureAssumedHeight[];
     public boolean pictureRequiresShift[];
     private int bmm;
-    private int bmn;
+    private int height;
     private int bna;
-    private int bnb;
+    private int width;
     public boolean interlace;
     static byte bnd[][] = new byte[50][];
     static int bne[];

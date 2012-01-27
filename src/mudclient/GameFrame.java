@@ -1,14 +1,9 @@
 package mudclient;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+import java.awt.Frame;
+import java.awt.Graphics;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-
-import javax.swing.event.MouseInputListener;
 
 @SuppressWarnings({ "deprecation", "serial" })
 public class GameFrame extends Frame implements WindowListener {

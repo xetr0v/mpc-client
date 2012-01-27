@@ -1,12 +1,18 @@
 package mudclient;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 
@@ -15,7 +21,6 @@ public class mudclient extends GameAppletMiddleMan {
     
     public static final void main(String args[]) {
         mudclient mud = new mudclient();
-        mud.appletMode = false;
         mud.flc(mud.windowWidth, mud.windowHeight + 11, "MoparClassic", false);
         mud.gameMinThreadSleepTime = 10;
     }
@@ -468,51 +473,43 @@ public class mudclient extends GameAppletMiddleMan {
             objectArray[l] = j2;
         }
     }
-boolean print = false;
-    final void drawPlayer(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6) {
+    
+    final void drawPlayer(int x, int y, int width, int height, int arg4, int arg5, int arg6) {
         Mob f1 = playerArray[arg4];
-        if(f1.bottomColour == 255)
+        if(f1.bottomColour == 255)// TODO this checks if the player is an invisible moderator
             return;
-        int spriteId = f1.currentSprite + (cameraRotation + 16) / 32 & 7;
-        if(f1.serverIndex == ourPlayer.serverIndex && print) {
-            System.out.println("spriteId: " + spriteId);// facing east: if camera is fucked = 1, normally 0
-        }
+        int direction = f1.currentSprite + (cameraRotation + 16) / 32 & 7;
         boolean flag = false;
-        int i1 = spriteId;
-        if(i1 == 5) {
-            i1 = 3;
+        int direction2 = direction;
+        if(direction2 == 5) {
+            direction2 = 3;
             flag = true;
         } else
-        if(i1 == 6) {
-            i1 = 2;
+        if(direction2 == 6) {
+            direction2 = 2;
             flag = true;
         } else
-        if(i1 == 7) {
-            i1 = 1;
+        if(direction2 == 7) {
+            direction2 = 1;
             flag = true;
         }
-        int j1 = i1 * 3 + walkModel[(f1.stepCount / 6) % 4];
+        int j1 = direction2 * 3 + walkModel[(f1.stepCount / 6) % 4];
         if(f1.currentSprite == 8) {
-            i1 = 5;
-            spriteId = 2;
+            direction2 = 5;
+            direction = 2;
             flag = false;
-            arg0 -= (5 * arg6) / 100;
-            j1 = i1 * 3 + combatModelArray1[(tick / 5) % 8];
+            x -= (5 * arg6) / 100;
+            j1 = direction2 * 3 + combatModelArray1[(tick / 5) % 8];
         } else
         if(f1.currentSprite == 9) {
-            i1 = 5;
-            spriteId = 2;
+            direction2 = 5;
+            direction = 2;
             flag = true;
-            arg0 += (5 * arg6) / 100;
-            j1 = i1 * 3 + combatModelArray2[(tick / 6) % 8];
-        }
-        if(f1.serverIndex == ourPlayer.serverIndex && print) {
-            System.out.println("i1: " + i1);// facing east: if camera is fucked = 1, normally 0
-            System.out.println("j1: " + j1);// facing east: if camera is fucked = 5 or 4, normally 1
-            print = false;
+            x += (5 * arg6) / 100;
+            j1 = direction2 * 3 + combatModelArray2[(tick / 6) % 8];
         }
         for(int k1 = 0; k1 < 12; k1++) {
-            int l1 = animationModelArray[spriteId][k1];
+            int l1 = animationModelArray[direction][k1];
             int l2 = f1.appearanceItems[l1] - 1;
             if(l2 > Data.animationCount - 1)// TODO fixes the crash with custom animations
                 continue;
@@ -520,46 +517,46 @@ boolean print = false;
                 int k3 = 0;
                 int i4 = 0;
                 int j4 = j1;
-                if(flag && i1 >= 1 && i1 <= 3)
+                if(flag && direction2 >= 1 && direction2 <= 3)
                     if(Data.animationHasF[l2] == 1)
                         j4 += 15;
                     else
-                    if(l1 == 4 && i1 == 1) {
+                    if(l1 == 4 && direction2 == 1) {
                         k3 = -22;
                         i4 = -3;
-                        j4 = i1 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
+                        j4 = direction2 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
                     } else
-                    if(l1 == 4 && i1 == 2) {
+                    if(l1 == 4 && direction2 == 2) {
                         k3 = 0;
                         i4 = -8;
-                        j4 = i1 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
+                        j4 = direction2 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
                     } else
-                    if(l1 == 4 && i1 == 3) {
+                    if(l1 == 4 && direction2 == 3) {
                         k3 = 26;
                         i4 = -5;
-                        j4 = i1 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
+                        j4 = direction2 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
                     } else
-                    if(l1 == 3 && i1 == 1) {
+                    if(l1 == 3 && direction2 == 1) {
                         k3 = 22;
                         i4 = 3;
-                        j4 = i1 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
+                        j4 = direction2 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
                     } else
-                    if(l1 == 3 && i1 == 2) {
+                    if(l1 == 3 && direction2 == 2) {
                         k3 = 0;
                         i4 = 8;
-                        j4 = i1 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
+                        j4 = direction2 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
                     } else
-                    if(l1 == 3 && i1 == 3) {
+                    if(l1 == 3 && direction2 == 3) {
                         k3 = -26;
                         i4 = 5;
-                        j4 = i1 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
+                        j4 = direction2 * 3 + walkModel[(2 + f1.stepCount / 6) % 4];
                     }
-                if(i1 != 5 || Data.animationHasA[l2] == 1) {
+                if(direction2 != 5 || Data.animationHasA[l2] == 1) {
                     int k4 = j4 + Data.animationNumber[l2];
-                    k3 = (k3 * arg2) / ((GameImage) (gameGraphics)).pictureAssumedWidth[k4];
-                    i4 = (i4 * arg3) / ((GameImage) (gameGraphics)).pictureAssumedHeight[k4];
-                    int l4 = (arg2 * ((GameImage) (gameGraphics)).pictureAssumedWidth[k4]) / ((GameImage) (gameGraphics)).pictureAssumedWidth[Data.animationNumber[l2]];
-                    k3 -= (l4 - arg2) / 2;
+                    k3 = (k3 * width) / ((GameImage) (gameGraphics)).pictureAssumedWidth[k4];
+                    i4 = (i4 * height) / ((GameImage) (gameGraphics)).pictureAssumedHeight[k4];
+                    int l4 = (width * ((GameImage) (gameGraphics)).pictureAssumedWidth[k4]) / ((GameImage) (gameGraphics)).pictureAssumedWidth[Data.animationNumber[l2]];
+                    k3 -= (l4 - width) / 2;
                     int i5 = Data.animationCharacterColor[l2];
                     int j5 = appearanceSkinColours[f1.skinColour];
                     if(i5 == 1)
@@ -570,7 +567,7 @@ boolean print = false;
                     else
                     if(i5 == 3)
                         i5 = appearanceTopBottomColours[f1.bottomColour];
-                    gameGraphics.drawImage(arg0 + k3, arg1 + i4, l4, arg3, k4, i5, j5, arg5, flag);
+                    gameGraphics.drawImage(x + k3, y + i4, l4, height, k4, i5, j5, arg5, flag);
                 }
             }
         }
@@ -580,42 +577,42 @@ boolean print = false;
             if(receivedMessageMidPoint[receivedMessagesCount] > 150)
                 receivedMessageMidPoint[receivedMessagesCount] = 150;
             receivedMessageHeight[receivedMessagesCount] = (gameGraphics.textWidth(f1.lastMessage, 1) / 300) * gameGraphics.textHeightNumber(1);
-            receivedMessageX[receivedMessagesCount] = arg0 + arg2 / 2;
-            receivedMessageY[receivedMessagesCount] = arg1;
+            receivedMessageX[receivedMessagesCount] = x + width / 2;
+            receivedMessageY[receivedMessagesCount] = y;
             receivedMessages[receivedMessagesCount++] = f1.lastMessage;
         }
         if(f1.itemAboveHeadTimeout > 0) {
-            itemAboveHeadX[itemsAboveHeadCount] = arg0 + arg2 / 2;
-            itemAboveHeadY[itemsAboveHeadCount] = arg1;
+            itemAboveHeadX[itemsAboveHeadCount] = x + width / 2;
+            itemAboveHeadY[itemsAboveHeadCount] = y;
             itemAboveHeadScale[itemsAboveHeadCount] = arg6;
             itemAboveHeadID[itemsAboveHeadCount++] = f1.itemAboveHeadID;
         }
         if(f1.currentSprite == 8 || f1.currentSprite == 9 || f1.combatTimer != 0) {
             if(f1.combatTimer > 0) {
-                int i2 = arg0;
+                int i2 = x;
                 if(f1.currentSprite == 8)
                     i2 -= (20 * arg6) / 100;
                 else
                 if(f1.currentSprite == 9)
                     i2 += (20 * arg6) / 100;
                 int i3 = (f1.currentHits * 30) / f1.baseHits;
-                healthBarX[healthBarVisibleCount] = i2 + arg2 / 2;
-                healthBarY[healthBarVisibleCount] = arg1;
+                healthBarX[healthBarVisibleCount] = i2 + width / 2;
+                healthBarY[healthBarVisibleCount] = y;
                 healthBarMissing[healthBarVisibleCount++] = i3;
             }
             if(f1.combatTimer > 150) {
-                int j2 = arg0;
+                int j2 = x;
                 if(f1.currentSprite == 8)
                     j2 -= (10 * arg6) / 100;
                 else
                 if(f1.currentSprite == 9)
                     j2 += (10 * arg6) / 100;
-                gameGraphics.drawPicture((j2 + arg2 / 2) - 12, (arg1 + arg3 / 2) - 12, baseInventoryPic + 11);
-                gameGraphics.drawText(String.valueOf(f1.lastDamageCount), (j2 + arg2 / 2) - 1, arg1 + arg3 / 2 + 5, 3, 0xffffff);
+                gameGraphics.drawPicture((j2 + width / 2) - 12, (y + height / 2) - 12, baseInventoryPic + 11);
+                gameGraphics.drawText(String.valueOf(f1.lastDamageCount), (j2 + width / 2) - 1, y + height / 2 + 5, 3, 0xffffff);
             }
         }
         if(f1.itemAboveHeadVisible == 1 && f1.itemAboveHeadTimeout == 0) {
-            int k2 = arg5 + arg0 + arg2 / 2;
+            int k2 = arg5 + x + width / 2;
             if(f1.currentSprite == 8)
                 k2 -= (20 * arg6) / 100;
             else
@@ -623,7 +620,7 @@ boolean print = false;
                 k2 += (20 * arg6) / 100;
             int j3 = (16 * arg6) / 100;
             int l3 = (16 * arg6) / 100;
-            gameGraphics.ccc(k2 - j3 / 2, arg1 - l3 / 2 - (10 * arg6) / 100, j3, l3, baseInventoryPic + 13);
+            gameGraphics.ccc(k2 - j3 / 2, y - l3 / 2 - (10 * arg6) / 100, j3, l3, baseInventoryPic + 13);
         }
     }
 
@@ -729,20 +726,16 @@ boolean print = false;
             audioPlayer.stop();
     }
 
-    protected final Socket makeSocket(String arg0, int arg1)
+    protected final Socket makeSocket(String address, int port)
         throws IOException {
         if(link.gameApplet != null) {
-            Socket socket = link.getSocket(arg1);
+            Socket socket = link.getSocket(port);
             if(socket == null)
                 throw new IOException();
             else
                 return socket;
         }
-        Socket socket1;
-        if(inBrowser())
-            socket1 = new Socket(InetAddress.getByName(getCodeBase().getHost()), arg1);
-        else
-            socket1 = new Socket(InetAddress.getByName(arg0), arg1);
+        Socket socket1 = new Socket(InetAddress.getByName(address), port);
         socket1.setSoTimeout(30000);
         socket1.setTcpNoDelay(true);
         return socket1;
@@ -2365,6 +2358,7 @@ boolean print = false;
             createAppearanceWindow();
             setLoginVars();
             createLoginScreenBackgrounds();
+            members = false;
             return;
         }
     }
@@ -2372,7 +2366,7 @@ boolean print = false;
     private final void createLoginMenus() {
         loginMenuFirst = new Menu(gameGraphics, 50);
         int l = 40;
-        /*if(!members) {*/
+        if(!members) {
             loginMenuFirst.drawText(256, 200 + l, "Click on an option", 5, true);
             loginMenuFirst.drawButton(156, 240 + l, 120, 35);
             loginMenuFirst.drawButton(356, 240 + l, 120, 35);
@@ -2380,13 +2374,13 @@ boolean print = false;
             loginMenuFirst.drawText(356, 240 + l, "Existing User", 5, false);
             loginButtonNewUser = loginMenuFirst.createButton(156, 240 + l, 120, 35);
             loginMenuLoginButton = loginMenuFirst.createButton(356, 240 + l, 120, 35);
-        /*} else {
+        } else {
             loginMenuFirst.drawText(256, 200 + l, "Welcome to RuneScape", 4, true);
             loginMenuFirst.drawText(256, 215 + l, "You need a member account to use this server", 4, true);
             loginMenuFirst.drawButton(256, 250 + l, 200, 35);
             loginMenuFirst.drawText(256, 250 + l, "Click here to login", 5, false);
             loginMenuLoginButton = loginMenuFirst.createButton(256, 250 + l, 200, 35);
-        }*/
+        }
         loginNewUser = new Menu(gameGraphics, 50);
         l = 230;
         loginNewUser.drawText(256, l + 8, "To create an account please go back to the", 4, true);
@@ -4212,7 +4206,7 @@ label0:
                 int i4 = j2 - cameraRotation;
                 byte byte0 = 1;
                 if(i4 != 0) {
-                    cameraAutoRotationAmoun++;
+                    cameraAutoRotationAmount++;
                     if(i4 > 128) {
                         byte0 = -1;
                         i4 = 256 - i4;
@@ -4228,10 +4222,10 @@ label0:
                         byte0 = -1;
                         i4 = -i4;
                     }
-                    cameraRotation += ((cameraAutoRotationAmoun * i4 + 255) / 256) * byte0;
+                    cameraRotation += ((cameraAutoRotationAmount * i4 + 255) / 256) * byte0;
                     cameraRotation &= 0xff;
                 } else {
-                    cameraAutoRotationAmoun = 0;
+                    cameraAutoRotationAmount = 0;
                 }
             }
         }
@@ -4241,10 +4235,10 @@ label0:
         }
         if(isSleeping) {
             if(super.enteredInputText.length() > 0)
-                if(super.enteredInputText.equalsIgnoreCase("::lostcon") && !appletMode)
+                if(super.enteredInputText.equalsIgnoreCase("::lostcon"))
                     super.streamClass.closeStream();
                 else
-                if(super.enteredInputText.equalsIgnoreCase("::closecon") && !appletMode) {
+                if(super.enteredInputText.equalsIgnoreCase("::closecon")) {
                     requestLogout();
                 } else {
                     super.streamClass.createPacket(200);
@@ -4304,13 +4298,13 @@ label0:
             String s1 = chatInputMenu.getText(chatInputBox);
             chatInputMenu.updateText(chatInputBox, "");
             if(s1.startsWith("::")) {
-                if(s1.equalsIgnoreCase("::closecon") && !appletMode)
+                if(s1.equalsIgnoreCase("::closecon"))
                     super.streamClass.closeStream();
                 else
-                if(s1.equalsIgnoreCase("::logout") && !appletMode)
+                if(s1.equalsIgnoreCase("::logout"))
                     requestLogout();
                 else
-                if(s1.equalsIgnoreCase("::lostcon") && !appletMode)
+                if(s1.equalsIgnoreCase("::lostcon"))
                     lostConnection();
                 else if(!handleCommand(s1.substring(2)))
                     sendCommand(s1.substring(2));
@@ -4370,7 +4364,7 @@ label0:
         gameCamera.setMousePosition(super.mouseX, super.mouseY);
         super.lastMouseButton = 0;
         if(configCameraAutoAngle) {
-            if(cameraAutoRotationAmoun == 0 || cameraAutoAngleDebug) {
+            if(cameraAutoRotationAmount == 0 || cameraAutoAngleDebug) {
                 if(super.keyLeftDown) {
                     cameraAutoAngle = cameraAutoAngle + 1 & 7;
                     super.keyLeftDown = false;
@@ -4400,10 +4394,10 @@ label0:
             }
         } else
         if(super.keyLeftDown)
-            cameraRotation += 2 & 0xff;
+            cameraRotation = cameraRotation + 2 & 0xff;
         else
         if(super.keyRightDown)
-            cameraRotation -= 2 & 0xff;
+            cameraRotation = cameraRotation - 2 & 0xff;
         if(super.keyUpDown && cameraDistance > 550)
             cameraDistance -= 4;
         else if(super.keyDownDown && cameraDistance < 1250)
@@ -4513,9 +4507,6 @@ label0:
     }
 
     protected final void handleKeyDown(int key, char c) {
-        if(key == KeyEvent.VK_F3) {
-            print = true;
-        }
         if(loggedIn == 0) {
             if(loginScreen == 0 && loginMenuFirst != null)
                 loginMenuFirst.keyPress(key, c);
@@ -5201,14 +5192,15 @@ label0:
                 gameCamera.removeModel(engineHandle.gih[2][l]);
             }
             cameraZoom = true;
-            if(/*showRoofs && */lastLayerIndex == 0 && (engineHandle.tiles[ourPlayer.currentX / 128][ourPlayer.currentY / 128] & 0x80) == 0) {
-                gameCamera.addModel(engineHandle.gih[lastLayerIndex][l]);
-                if(lastLayerIndex == 0) {
-                    gameCamera.addModel(engineHandle.gim[1][l]);
-                    gameCamera.addModel(engineHandle.gih[1][l]);
-                    gameCamera.addModel(engineHandle.gim[2][l]);
-                    gameCamera.addModel(engineHandle.gih[2][l]);
-                
+            if(lastLayerIndex == 0 && (engineHandle.tiles[ourPlayer.currentX / 128][ourPlayer.currentY / 128] & 0x80) == 0) {
+                if(showRoofs) {
+                    gameCamera.addModel(engineHandle.gih[lastLayerIndex][l]);
+                    if(lastLayerIndex == 0) {
+                        gameCamera.addModel(engineHandle.gim[1][l]);
+                        gameCamera.addModel(engineHandle.gih[1][l]);
+                        gameCamera.addModel(engineHandle.gim[2][l]);
+                        gameCamera.addModel(engineHandle.gih[2][l]);
+                    }
                 }
                 cameraZoom = false;
             }
@@ -6968,7 +6960,7 @@ label0:
                 file = new File(folder + "screenshot" + count + ".png");
             BufferedImage bi = new BufferedImage(windowWidth, windowHeight + 11, BufferedImage.TYPE_INT_RGB);
             Graphics2D g2d = bi.createGraphics();
-            g2d.drawImage(gameGraphics.bmb, 0, 0, this);
+            g2d.drawImage(gameGraphics.image, 0, 0, this);
             g2d.dispose();
             ImageIO.write(bi, "png", file);
             if(verb)
@@ -7015,12 +7007,12 @@ label0:
                 Object value = field.get(this);
                 displayMessage(args[0] + ": " + value, 5);
                 System.out.println(args[0] + ": " + value);
+                return true;
             }
-            return true;
         } catch(Exception e) {
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
 
     public mudclient() {
@@ -7030,7 +7022,6 @@ label0:
         cameraFieldOfView = 9;
         showQuestionMenu = false;
         loginScreenShown = false;
-        appletMode = true;
         questionMenuAnswer = new String[5];
         appearanceBodyGender = 1;
         appearance2Colour = 2;
@@ -7212,7 +7203,6 @@ label0:
     private int cameraFieldOfView;
     private boolean showQuestionMenu;
     private boolean loginScreenShown;
-    private boolean appletMode;
     private String questionMenuAnswer[];
     private int appearanceHeadType;
     private int appearanceBodyGender;
@@ -7574,7 +7564,7 @@ label0:
     private int serverBankItemsCount;
     private int teleBubbleY[];
     private int cameraAutoAngle;
-    private int cameraAutoRotationAmoun;
+    private int cameraAutoRotationAmount;
     private boolean loadArea;
     private int teleBubbleX[];
     private int bankItemsCount;

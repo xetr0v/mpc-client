@@ -1,10 +1,8 @@
 package mudclient;
 
 import java.applet.Applet;
-import java.awt.Event;
 import java.awt.Graphics;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;

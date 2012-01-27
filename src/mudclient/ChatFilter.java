@@ -3,13 +3,13 @@ package mudclient;
 public class ChatFilter {
 
     public static void addFilterData(DataEncryption q1, DataEncryption q2, DataEncryption q3, DataEncryption q4) {
-        ffn(q2);
-        fga(q3);
-        fgb(q1);
-        ffm(q4);
+        loadBadEnc(q2);
+        loadHostsEnc(q3);
+        loadFragmentsEnc(q1);
+        loadTldList(q4);
     }
 
-    public static void ffm(DataEncryption arg0) {
+    public static void loadTldList(DataEncryption arg0) {
         int i = arg0.getInt();
         ffi = new char[i][];
         ffj = new int[i];
@@ -24,21 +24,21 @@ public class ChatFilter {
 
     }
 
-    public static void ffn(DataEncryption q1) {
+    public static void loadBadEnc(DataEncryption q1) {
         int i = q1.getInt();
         ffe = new char[i][];
         fff = new byte[i][][];
         fgc(q1, ffe, fff);
     }
 
-    public static void fga(DataEncryption q1) {
+    public static void loadHostsEnc(DataEncryption q1) {
         int i = q1.getInt();
         ffg = new char[i][];
         ffh = new byte[i][][];
         fgc(q1, ffg, ffh);
     }
 
-    public static void fgb(DataEncryption arg0) {
+    public static void loadFragmentsEnc(DataEncryption arg0) {
         ffd = new int[arg0.getInt()];
         for(int i = 0; i < ffd.length; i++)
             ffd[i] = arg0.getShort();
