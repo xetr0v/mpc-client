@@ -1,6 +1,7 @@
 package mudclient;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -3315,7 +3316,7 @@ label0:
     }
 
     protected final void loginScreenPrint(String s1, String s2) {
-        if(loginScreen == 2)
+        if(loginScreen == 2 && loginMenuLogin != null)
             loginMenuLogin.updateText(loginMenuStatusText, s1 + " " + s2);
         drawLoginScreens();
         resetTimings();
@@ -3552,6 +3553,8 @@ label0:
 
     private final void drawLoginScreens() {
         loginScreenShown = false;
+        if(gameGraphics == null)
+            return;
         gameGraphics.interlace = false;
         gameGraphics.clearScreen();
         if(loginScreen == 0 || loginScreen == 1 || loginScreen == 2 || loginScreen == 3) {
@@ -4510,25 +4513,25 @@ label0:
         appearanceAcceptButton = appearanceMenu.createButton(l, i1, 200, 30);
     }
 
-    protected final void handleKeyDown(int key) {
-        if(key == 1010) {
+    protected final void handleKeyDown(int key, char c) {
+        if(key == KeyEvent.VK_F3) {
             print = true;
         }
         if(loggedIn == 0) {
             if(loginScreen == 0 && loginMenuFirst != null)
-                loginMenuFirst.keyPress(key);
+                loginMenuFirst.keyPress(key, c);
             if(loginScreen == 1 && loginNewUser != null)
-                loginNewUser.keyPress(key);
+                loginNewUser.keyPress(key, c);
             if(loginScreen == 2 && loginMenuLogin != null)
-                loginMenuLogin.keyPress(key);
+                loginMenuLogin.keyPress(key, c);
         }
         if(loggedIn == 1) {
             if(showAppearanceWindow && appearanceMenu != null) {
-                appearanceMenu.keyPress(key);
+                appearanceMenu.keyPress(key, c);
                 return;
             }
             if(showFriendsBox == 0 && showAbuseBox == 0 && !isSleeping && chatInputMenu != null)
-                chatInputMenu.keyPress(key);
+                chatInputMenu.keyPress(key, c);
         }
     }
 
@@ -7184,7 +7187,7 @@ label0:
         showAppearanceWindow = false;
         cameraZoom = false;
         
-        fogOfWar = false;
+        fogOfWar = true;
         showCombatWindow = false;
         showRoofs = true;
         autoScreenshot = false;

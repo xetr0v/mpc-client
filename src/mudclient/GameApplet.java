@@ -2,6 +2,7 @@ package mudclient;
 
 import java.applet.Applet;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
@@ -47,95 +48,80 @@ public class GameApplet extends Applet
             timeArray[i] = 0L;
 
     }
-
-    public final synchronized boolean keyDown(Event evt, int key) {
-        handleKeyDown(key);
-        if(key == 1006)
+    
+    public void keyDown(int key, char c) {
+        handleKeyDown(key, c);
+        if(key == KeyEvent.VK_LEFT)
             keyLeftDown = true;
-        if(key == 1007)
+        if(key == KeyEvent.VK_RIGHT)
             keyRightDown = true;
-        if(key == 1004)
+        if(key == KeyEvent.VK_UP)
             keyUpDown = true;
-        if(key == 1005)
+        if(key == KeyEvent.VK_DOWN)
             keyDownDown = true;
-        if((char)key == ' ')
+        if(key == KeyEvent.VK_SPACE)
             keySpaceDown = true;
-        if((char)key == 'n' || (char)key == 'm')
+        if(key == KeyEvent.VK_N || key == KeyEvent.VK_M)
             keyNMDown = true;
-        if((char)key == 'N' || (char)key == 'M')
-            keyNMDown = true;
-        if((char)key == '{')
-            keyLeftBraceDown = true;
-        if((char)key == '}')
-            keyRightBraceDown = true;
-        if((char)key == '\u03F0')
+        if(key == KeyEvent.VK_F1)
             keyF1Toggle = !keyF1Toggle;
         boolean flag = false;
         for(int i = 0; i < allowedChars.length(); i++) {
-            if(key != allowedChars.charAt(i))
+            if(c != allowedChars.charAt(i))
                 continue;
             flag = true;
             break;
         }
-
         if(flag && inputText.length() < 20)
-            inputText += (char)key;
+            inputText += c;
         if(flag && pmText.length() < 80)
-            pmText += (char)key;
-        if(key == 8 && inputText.length() > 0)
+            pmText += c;
+        if(key == KeyEvent.VK_BACK_SPACE && inputText.length() > 0)
             inputText = inputText.substring(0, inputText.length() - 1);
-        if(key == 8 && pmText.length() > 0)
+        if(key == KeyEvent.VK_BACK_SPACE && pmText.length() > 0)
             pmText = pmText.substring(0, pmText.length() - 1);
-        if(key == 10 || key == 13) {
+        if(key == KeyEvent.VK_ENTER) {
             enteredInputText = inputText;
             enteredPMText = pmText;
         }
-        return true;
     }
 
-    protected void handleKeyDown(int i) {
+    protected void handleKeyDown(int key, char c) {
     }
-
-    public final synchronized boolean keyUp(Event evt, int key) {
-        if(key == 1006)
+    
+    public void keyUp(int key, char c) {
+        if(key == KeyEvent.VK_LEFT)
             keyLeftDown = false;
-        if(key == 1007)
+        if(key == KeyEvent.VK_RIGHT)
             keyRightDown = false;
-        if(key == 1004)
+        if(key == KeyEvent.VK_UP)
             keyUpDown = false;
-        if(key == 1005)
+        if(key == KeyEvent.VK_DOWN)
             keyDownDown = false;
-        if((char)key == ' ')
+        if(key == KeyEvent.VK_SPACE)
             keySpaceDown = false;
-        if((char)key == 'n' || (char)key == 'm')
+        if(key == KeyEvent.VK_N || key == KeyEvent.VK_M)
             keyNMDown = false;
-        if((char)key == 'N' || (char)key == 'M')
-            keyNMDown = false;
-        if((char)key == '{')
-            keyLeftBraceDown = false;
-        if((char)key == '}')
-            keyRightBraceDown = false;
-        return true;
     }
 
-    public final synchronized boolean mouseMove(Event evt, int i, int k) {
-        mouseX = i;
-        mouseY = k + mouseYOffset;
-        mouseButton = 0;
-        return true;
-    }
-
-    public final synchronized boolean mouseUp(Event evt, int i, int k) {
-        mouseX = i;
-        mouseY = k + mouseYOffset;
-        mouseButton = 0;
-        return true;
-    }
-
-    public final synchronized boolean mouseDown(Event evt, int x, int y) {
+    public final synchronized boolean mouseMove(int x, int y) {
         mouseX = x;
         mouseY = y + mouseYOffset;
-        mouseButton = evt.metaDown() ? 2 : 1;
+        mouseButton = 0;
+        return true;
+    }
+
+    public final synchronized boolean mouseUp(int x, int y) {
+        mouseX = x;
+        mouseY = y + mouseYOffset;
+        mouseButton = 0;
+        return true;
+    }
+
+    public final synchronized boolean mouseDown(int x, int y, boolean metaDown) {
+        mouseX = x;
+        mouseY = y + mouseYOffset;
+        mouseButton = metaDown ? 2 : 1;
         lastMouseButton = mouseButton;
         handleMouseDown(mouseButton, x, y);
         return true;
@@ -144,10 +130,10 @@ public class GameApplet extends Applet
     protected void handleMouseDown(int i, int k, int l) {
     }
 
-    public final synchronized boolean mouseDrag(Event evt, int x, int y) {
+    public final synchronized boolean mouseDrag(int x, int y, boolean metaDown) {
         mouseX = x;
         mouseY = y + mouseYOffset;
-        mouseButton = evt.metaDown() ? 2 : 1;
+        mouseButton = metaDown ? 2 : 1;
         return true;
     }
 
@@ -175,7 +161,7 @@ public class GameApplet extends Applet
     public final void destroy() {
         runStatus = -1;
         try {
-            Thread.sleep(1000L);
+            Thread.sleep(2000L);
         }
         catch(Exception _ex) { }
         if(runStatus == -1) {
@@ -365,29 +351,31 @@ public class GameApplet extends Applet
         System.out.println("Using default load");
         int i = 0;
         int k = 0;
-        byte abyte0[] = null;
-        try {
-            drawLoadingBarText(startPercentage, "Loading " + fileTitle + " - 0%");
-            java.io.InputStream inputstream = DataOperations.openInputStream(filename);
-            DataInputStream datainputstream = new DataInputStream(inputstream);
-            byte abyte2[] = new byte[6];
-            datainputstream.readFully(abyte2, 0, 6);
-            i = ((abyte2[0] & 0xff) << 16) + ((abyte2[1] & 0xff) << 8) + (abyte2[2] & 0xff);
-            k = ((abyte2[3] & 0xff) << 16) + ((abyte2[4] & 0xff) << 8) + (abyte2[5] & 0xff);
-            drawLoadingBarText(startPercentage, "Loading " + fileTitle + " - 5%");
-            int l = 0;
-            abyte0 = new byte[k];
-            while(l < k)  {
-                int i1 = k - l;
-                if(i1 > 1000)
-                    i1 = 1000;
-                datainputstream.readFully(abyte0, l, i1);
-                l += i1;
-                drawLoadingBarText(startPercentage, "Loading " + fileTitle + " - " + (5 + (l * 95) / k) + "%");
+        byte abyte0[] = link.getFile(filename);
+        if(abyte0 == null) {
+            try {
+                drawLoadingBarText(startPercentage, "Loading " + fileTitle + " - 0%");
+                java.io.InputStream inputstream = DataOperations.openInputStream(filename);
+                DataInputStream datainputstream = new DataInputStream(inputstream);
+                byte abyte2[] = new byte[6];
+                datainputstream.readFully(abyte2, 0, 6);
+                i = ((abyte2[0] & 0xff) << 16) + ((abyte2[1] & 0xff) << 8) + (abyte2[2] & 0xff);
+                k = ((abyte2[3] & 0xff) << 16) + ((abyte2[4] & 0xff) << 8) + (abyte2[5] & 0xff);
+                drawLoadingBarText(startPercentage, "Loading " + fileTitle + " - 5%");
+                int l = 0;
+                abyte0 = new byte[k];
+                while(l < k)  {
+                    int i1 = k - l;
+                    if(i1 > 1000)
+                        i1 = 1000;
+                    datainputstream.readFully(abyte0, l, i1);
+                    l += i1;
+                    drawLoadingBarText(startPercentage, "Loading " + fileTitle + " - " + (5 + (l * 95) / k) + "%");
+                }
+                datainputstream.close();
             }
-            datainputstream.close();
+            catch(IOException _ex) { }
         }
-        catch(IOException _ex) { }
         drawLoadingBarText(startPercentage, "Unpacking " + fileTitle);
         if(k != i) {
             byte abyte1[] = new byte[i];
@@ -455,8 +443,6 @@ public class GameApplet extends Applet
         gameLoadingScreen = 1;
         gameLoadingFileTitle = "Loading";
         gameLoadingFont = new Font("TimesRoman", 0, 15);
-        keyLeftBraceDown = false;
-        keyRightBraceDown = false;
         keyLeftDown = false;
         keyRightDown = false;
         keyUpDown = false;
@@ -479,7 +465,7 @@ public class GameApplet extends Applet
     private long timeArray[];
     public static GameFrame gameFrame = null;
     private boolean inBrowser;
-    private int runStatus;
+    public int runStatus;
     private int fij;
     public int mouseYOffset;
     public int gameLoadingScreen;
@@ -488,8 +474,6 @@ public class GameApplet extends Applet
     private Font gameLoadingFont;
     private Graphics graphics;
     private static String allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
-    public boolean keyLeftBraceDown;
-    public boolean keyRightBraceDown;
     public boolean keyLeftDown;
     public boolean keyRightDown;
     public boolean keyUpDown;

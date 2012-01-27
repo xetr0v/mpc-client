@@ -3,16 +3,19 @@ package mudclient;
 import java.applet.Applet;
 import java.awt.Event;
 import java.awt.Graphics;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.URL;
 
 @SuppressWarnings("serial")
 public class Loader extends Applet implements Runnable {
 
-    private Applet applet;
+    private mudclient client;
     private boolean running;
     private String files[];
     
@@ -21,7 +24,7 @@ public class Loader extends Applet implements Runnable {
         files = new String[] {
                 "config.jag", "entity.jag", "entity.mem", "filter.jag", "fonts.jag",
                 "land.jag", "land.mem", "maps.jag", "maps.mem", "media.jag", "models.jag",
-                "sonuds.mem", "textures.jag"
+                "sounds.mem", "textures.jag"
         };
         new Thread(this).start();
         while(!running)
@@ -44,26 +47,55 @@ public class Loader extends Applet implements Runnable {
                 byte bytes[] = load(files[i]);
                 link.addFile(files[i], bytes);
             }
-            applet = new mudclient();
-            applet.init();
-            applet.start();
+            client = new mudclient();
+            client.init();
+            client.start();
         } catch(Exception e) {
             e.printStackTrace();
         }
     }
     
     private byte[] load(String file) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte buffer[] = new byte[4096];
+        int read = 0;
         try {
-            System.out.println("load: " + file);
-            File f = new File(Config.CONF_DIR, file);
-            DataInputStream in = new DataInputStream(new FileInputStream(f));
-            byte bytes[] = new byte[(int)f.length()];
-            in.readFully(bytes);
+            InputStream in = getClass().getResourceAsStream("/" + file);
+            while((read = in.read(buffer)) > 0) {
+                baos.write(buffer, 0, read);
+                buffer = new byte[4096];
+            }
             in.close();
-            return bytes;
-        } catch(Exception e) {
-            return null;
-        }
+            baos.close();
+            return baos.toByteArray();
+        } catch(Exception e) { }
+        baos.reset();
+        buffer = new byte[4096];
+        read = 0;
+        try {
+            InputStream in = new FileInputStream(new File(Config.CONF_DIR, file));
+            while((read = in.read(buffer)) > 0) {
+                baos.write(buffer, 0, read);
+                buffer = new byte[4096];
+            }
+            in.close();
+            baos.close();
+            return baos.toByteArray();
+        } catch(Exception e) { }
+        baos.reset();
+        buffer = new byte[4096];
+        read = 0;
+        try {
+            InputStream in = (new URL(Config.CACHE_URL)).openStream();
+            while((read = in.read(buffer)) > 0) {
+                baos.write(buffer, 0, read);
+                buffer = new byte[4096];
+            }
+            in.close();
+            baos.close();
+            return baos.toByteArray();
+        } catch(Exception e) { }
+        return null;
     }
     
     private void runGame() {
@@ -105,58 +137,58 @@ public class Loader extends Applet implements Runnable {
     }
     
     public void paint(Graphics g) {
-        if(applet != null)
-            applet.paint(g);
+        if(client != null)
+            client.paint(g);
     }
     
     public void start() {
-        if(applet != null)
-            applet.start();
+        if(client != null)
+            client.start();
     }
     
     public void stop() {
-        if(applet != null)
-            applet.stop();
+        if(client != null)
+            client.stop();
     }
     
     public void destroy() {
-        if(applet != null)
-            applet.destroy();
+        if(client != null)
+            client.destroy();
     }
     
     public boolean mouseDown(Event evt, int x, int y) {
-        if(applet != null)
-            return applet.mouseDown(evt, x, y);
+        if(client != null)
+            return client.mouseDown(x, y, evt.metaDown());
         return true;
     }
     
     public boolean mouseDrag(Event evt, int x, int y) {
-        if(applet != null)
-            return applet.mouseDrag(evt, x, y);
+        if(client != null)
+            return client.mouseDrag(x, y, evt.metaDown());
         return true;
     }
     
     public boolean mouseUp(Event evt, int x, int y) {
-        if(applet != null)
-            return applet.mouseUp(evt, x, y);
+        if(client != null)
+            return client.mouseUp(x, y);
         return true;
     }
     
     public boolean mouseMove(Event evt, int x, int y) {
-        if(applet != null)
-            return applet.mouseMove(evt, x, y);
+        if(client != null)
+            return client.mouseMove(x, y);
         return true;
     }
     
     public boolean keyDown(Event evt, int key) {
-        if(applet != null)
-            return applet.keyDown(evt, key);
+        if(client != null)
+            client.keyDown(key, (char)key);
         return true;
     }
     
     public boolean keyUp(Event evt, int key) {
-        if(applet != null)
-            return applet.keyDown(evt, key);
+        if(client != null)
+            client.keyUp(key, (char)key);
         return true;
     }
 }

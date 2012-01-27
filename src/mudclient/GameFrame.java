@@ -1,9 +1,17 @@
 package mudclient;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
+import javax.swing.event.MouseInputListener;
 
 @SuppressWarnings({ "deprecation", "serial" })
-public class GameFrame extends Frame {
+public class GameFrame extends Frame implements KeyListener, MouseInputListener, MouseMotionListener, WindowListener {
 
     public GameFrame(GameApplet arg0, int width, int height, String title, boolean resizable, boolean translate) {
         yOffset = 28;
@@ -19,6 +27,11 @@ public class GameFrame extends Frame {
         show();
         toFront();
         resize(frameWidth, frameHeight);
+        
+        addKeyListener(this);
+        addMouseListener(this);
+        addMouseMotionListener(this);
+        addWindowListener(this);
     }
 
     public Graphics getGraphics() {
@@ -34,41 +47,71 @@ public class GameFrame extends Frame {
         super.resize(i, j + yOffset);
     }
 
-    public boolean handleEvent(Event evt) {
-        if(evt.id == Event.KEY_PRESS)
-            gameApplet.keyDown(evt, evt.key);
-        else
-        if(evt.id == Event.KEY_RELEASE)
-            gameApplet.keyUp(evt, evt.key);
-        else
-        if(evt.id == Event.MOUSE_DOWN)
-            gameApplet.mouseDown(evt, evt.x, evt.y - 24);
-        else
-        if(evt.id == Event.MOUSE_DRAG)
-            gameApplet.mouseDrag(evt, evt.x, evt.y - 24);
-        else
-        if(evt.id == Event.MOUSE_UP)
-            gameApplet.mouseUp(evt, evt.x, evt.y - 24);
-        else
-        if(evt.id == Event.MOUSE_MOVE)
-            gameApplet.mouseMove(evt, evt.x, evt.y - 24);
-        else
-        if(evt.id == Event.WINDOW_DESTROY)
-            gameApplet.destroy();
-        else
-        if(evt.id == Event.END)
-            gameApplet.action(evt, evt.target);
-        else
-        if(evt.id == Event.KEY_ACTION)
-            gameApplet.keyDown(evt, evt.key);
-        else
-        if(evt.id == Event.KEY_ACTION_RELEASE)
-            gameApplet.keyUp(evt, evt.key);
-        return true;
-    }
-
     public final void paint(Graphics g) {
         gameApplet.paint(g);
+    }
+    
+    public void keyPressed(KeyEvent evt) {
+        gameApplet.keyDown(evt.getKeyCode(), evt.getKeyChar());
+    }
+
+    public void keyReleased(KeyEvent evt) {
+        gameApplet.keyUp(evt.getKeyCode(), evt.getKeyChar());
+    }
+
+    public void mouseEntered(MouseEvent evt) {
+        gameApplet.mouseMove(evt.getX(), evt.getY() - 24);
+    }
+
+    public void mouseExited(MouseEvent evt) {
+        gameApplet.mouseMove(evt.getX(), evt.getY() - 24);
+    }
+
+    public void mousePressed(MouseEvent evt) {
+        gameApplet.mouseDown(evt.getX(), evt.getY() - 24, evt.isMetaDown());
+    }
+
+    public void mouseReleased(MouseEvent evt) {
+        gameApplet.mouseUp(evt.getX(), evt.getY() - 24);
+    }
+
+    public void mouseDragged(MouseEvent evt) {
+        gameApplet.mouseDrag(evt.getX(), evt.getY() - 24, evt.isMetaDown());
+    }
+
+    public void mouseMoved(MouseEvent evt) {
+        gameApplet.mouseMove(evt.getX(), evt.getY() - 24);
+    }
+
+    public void windowClosed(WindowEvent evt) {
+        if(gameApplet.runStatus != -1)
+            gameApplet.destroy();
+    }
+
+    public void windowClosing(WindowEvent evt) {
+        if(gameApplet.runStatus != -1)
+            gameApplet.destroy();
+    }
+
+    public void windowActivated(WindowEvent evt) {
+    }
+
+    public void windowDeactivated(WindowEvent evt) {
+    }
+
+    public void windowDeiconified(WindowEvent evt) {
+    }
+
+    public void windowIconified(WindowEvent evt) {
+    }
+
+    public void windowOpened(WindowEvent evt) {
+    }
+    
+    public void keyTyped(KeyEvent evt) {
+    }
+
+    public void mouseClicked(MouseEvent evt) {
     }
 
     int frameWidth;

@@ -1,5 +1,7 @@
 package mudclient;
 
+import java.awt.event.KeyEvent;
+
 public class Menu {
 
     public Menu(GameImage j1, int i) {
@@ -80,23 +82,23 @@ public class Menu {
         }
     }
 
-    public void keyPress(int arg0) {
-        if(arg0 == 0)
+    public void keyPress(int key, char c) {
+        if(key == 0)
             return;
         if(selectedComponent != -1 && componentText[selectedComponent] != null && componentAcceptsInput[selectedComponent]) {
             int i = componentText[selectedComponent].length();
-            if(arg0 == 8 && i > 0)
+            if(key == KeyEvent.VK_BACK_SPACE && i > 0)
                 componentText[selectedComponent] = componentText[selectedComponent].substring(0, i - 1);
-            if((arg0 == 10 || arg0 == 13) && i > 0)
+            if((key == KeyEvent.VK_ENTER) && i > 0)
                 componentSkip[selectedComponent] = true;
             String s = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
             if(i < copmonentInputMaxLength[selectedComponent]) {
                 for(int k = 0; k < s.length(); k++)
-                    if(arg0 == s.charAt(k))
-                        componentText[selectedComponent] += (char)arg0;
+                    if(c == s.charAt(k))
+                        componentText[selectedComponent] += c;
 
             }
-            if(arg0 == 9) {
+            if(key == KeyEvent.VK_TAB) {
                 do
                     selectedComponent = (selectedComponent + 1) % gak;
                 while(componentType[selectedComponent] != 5 && componentType[selectedComponent] != 6);
