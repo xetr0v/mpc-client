@@ -35,7 +35,7 @@ public class EngineHandle {
             arg0 -= 48;
             arg1 -= 48;
         }
-        return ghl[byte0][arg0 * 48 + arg1] & 0xff;
+        return tileGroundTexture[byte0][arg0 * 48 + arg1] & 0xff;
     }
 
     public int getAveragedElevation(int arg0, int arg1) {
@@ -71,21 +71,21 @@ public class EngineHandle {
         String filename = "m" + height + sectionX / 10 + sectionX % 10 + sectionY / 10 + sectionY % 10;
         try {
             if(landscapeFree != null) {
-                byte abyte0[] = DataOperations.loadData(filename + ".hei", 0, landscapeFree);
-                if(abyte0 == null && landscapeMembers != null)
-                    abyte0 = DataOperations.loadData(filename + ".hei", 0, landscapeMembers);
-                if(abyte0 != null && abyte0.length > 0) {
-                    int l = 0;
+                byte data[] = DataOperations.loadData(filename + ".hei", 0, landscapeFree);
+                if(data == null && landscapeMembers != null)
+                    data = DataOperations.loadData(filename + ".hei", 0, landscapeMembers);
+                if(data != null && data.length > 0) {
+                    int off = 0;
                     int i2 = 0;
                     for(int tile = 0; tile < 2304;) {
-                        int k3 = abyte0[l++] & 0xff;
+                        int k3 = data[off++] & 0xff;
                         if(k3 < 128) {
-                            gig[sector][tile++] = (byte)k3;
+                            tileGroundElevation[sector][tile++] = (byte)k3;
                             i2 = k3;
                         }
                         if(k3 >= 128) {
                             for(int k4 = 0; k4 < k3 - 128; k4++)
-                                gig[sector][tile++] = (byte)i2;
+                                tileGroundElevation[sector][tile++] = (byte)i2;
 
                         }
                     }
@@ -93,22 +93,22 @@ public class EngineHandle {
                     i2 = 64;
                     for(int tile = 0; tile < 48; tile++) {
                         for(int l4 = 0; l4 < 48; l4++) {
-                            i2 = gig[sector][l4 * 48 + tile] + i2 & 0x7f;
-                            gig[sector][l4 * 48 + tile] = (byte)(i2 * 2);
+                            i2 = tileGroundElevation[sector][l4 * 48 + tile] + i2 & 0x7f;
+                            tileGroundElevation[sector][l4 * 48 + tile] = (byte)(i2 * 2);
                         }
 
                     }
 
                     i2 = 0;
                     for(int tile = 0; tile < 2304;) {
-                        int l5 = abyte0[l++] & 0xff;
+                        int l5 = data[off++] & 0xff;
                         if(l5 < 128) {
-                            ghl[sector][tile++] = (byte)l5;
+                            tileGroundTexture[sector][tile++] = (byte)l5;
                             i2 = l5;
                         }
                         if(l5 >= 128) {
                             for(int i7 = 0; i7 < l5 - 128; i7++)
-                                ghl[sector][tile++] = (byte)i2;
+                                tileGroundTexture[sector][tile++] = (byte)i2;
 
                         }
                     }
@@ -116,82 +116,81 @@ public class EngineHandle {
                     i2 = 35;
                     for(int i6 = 0; i6 < 48; i6++) {
                         for(int j7 = 0; j7 < 48; j7++) {
-                            i2 = ghl[sector][j7 * 48 + i6] + i2 & 0x7f;
-                            ghl[sector][j7 * 48 + i6] = (byte)(i2 * 2);
+                            i2 = tileGroundTexture[sector][j7 * 48 + i6] + i2 & 0x7f;
+                            tileGroundTexture[sector][j7 * 48 + i6] = (byte)(i2 * 2);
                         }
 
                     }
 
                 } else {
                     for(int tile = 0; tile < 2304; tile++) {
-                        gig[sector][tile] = 0;
-                        ghl[sector][tile] = 0;
+                        tileGroundElevation[sector][tile] = 0;
+                        tileGroundTexture[sector][tile] = 0;
                     }
 
                 }
-                abyte0 = DataOperations.loadData(filename + ".dat", 0, mapsFree);
-                if(abyte0 == null && mapsMembers != null)
-                    abyte0 = DataOperations.loadData(filename + ".dat", 0, mapsMembers);
-                if(abyte0 == null || abyte0.length == 0)
+                data = DataOperations.loadData(filename + ".dat", 0, mapsFree);
+                if(data == null && mapsMembers != null)
+                    data = DataOperations.loadData(filename + ".dat", 0, mapsMembers);
+                if(data == null || data.length == 0)
                     throw new IOException();
-                int j1 = 0;
+                int off = 0;
                 for(int tile = 0; tile < 2304; tile++)
-                    gic[sector][tile] = abyte0[j1++];
+                    tileVerticalWall[sector][tile] = data[off++];
 
                 for(int tile = 0; tile < 2304; tile++)
-                    ghb[sector][tile] = abyte0[j1++];
+                    tileHorizontalWall[sector][tile] = data[off++];
 
                 for(int tile = 0; tile < 2304; tile++)
-                    ghe[sector][tile] = abyte0[j1++] & 0xff;
+                    tileDiagonalWall[sector][tile] = data[off++] & 0xff;
 
                 for(int tile = 0; tile < 2304; tile++) {
-                    int j6 = abyte0[j1++] & 0xff;
+                    int j6 = data[off++] & 0xff;
                     if(j6 > 0)
-                        ghe[sector][tile] = j6 + 12000;
+                        tileDiagonalWall[sector][tile] = j6 + 12000;
                 }
-
                 for(int tile = 0; tile < 2304;) {
-                    int k7 = abyte0[j1++] & 0xff;
+                    int k7 = data[off++] & 0xff;
                     if(k7 < 128) {
-                        gja[sector][tile++] = (byte)k7;
+                        tileRoofType[sector][tile++] = (byte)k7;
                     } else {
                         for(int j8 = 0; j8 < k7 - 128; j8++)
-                            gja[sector][tile++] = 0;
+                            tileRoofType[sector][tile++] = 0;
 
                     }
                 }
 
                 int l7 = 0;
                 for(int tile = 0; tile < 2304;) {
-                    int i9 = abyte0[j1++] & 0xff;
+                    int i9 = data[off++] & 0xff;
                     if(i9 < 128) {
-                        ghf[sector][tile++] = (byte)i9;
+                        tileGroundOverlay[sector][tile++] = (byte)i9;
                         l7 = i9;
                     } else {
                         for(int l9 = 0; l9 < i9 - 128; l9++)
-                            ghf[sector][tile++] = (byte)l7;
+                            tileGroundOverlay[sector][tile++] = (byte)l7;
 
                     }
                 }
 
                 for(int j9 = 0; j9 < 2304;) {
-                    int i10 = abyte0[j1++] & 0xff;
+                    int i10 = data[off++] & 0xff;
                     if(i10 < 128) {
-                        ghg[sector][j9++] = (byte)i10;
+                        tileObjectRotation[sector][j9++] = (byte)i10;
                     } else {
                         for(int l10 = 0; l10 < i10 - 128; l10++)
-                            ghg[sector][j9++] = 0;
+                            tileObjectRotation[sector][j9++] = 0;
 
                     }
                 }
 
-                abyte0 = DataOperations.loadData(filename + ".loc", 0, mapsFree);
-                if(abyte0 != null && abyte0.length > 0) {
+                data = DataOperations.loadData(filename + ".loc", 0, mapsFree);
+                if(data != null && data.length > 0) {
                     int k1 = 0;
                     for(int j10 = 0; j10 < 2304;) {
-                        int i11 = abyte0[k1++] & 0xff;
+                        int i11 = data[k1++] & 0xff;
                         if(i11 < 128)
-                            ghe[sector][j10++] = i11 + 48000;
+                            tileDiagonalWall[sector][j10++] = i11 + 48000;
                         else
                             j10 += i11 - 128;
                     }
@@ -205,34 +204,34 @@ public class EngineHandle {
                 int k2 = 0;
                 for(int j3 = 0; j3 < 2304; j3++) {
                     l1 = l1 + abyte1[k2++] & 0xff;
-                    gig[sector][j3] = (byte)l1;
+                    tileGroundElevation[sector][j3] = (byte)l1;
                 }
 
                 l1 = 0;
                 for(int j4 = 0; j4 < 2304; j4++) {
                     l1 = l1 + abyte1[k2++] & 0xff;
-                    ghl[sector][j4] = (byte)l1;
+                    tileGroundTexture[sector][j4] = (byte)l1;
                 }
 
                 for(int k5 = 0; k5 < 2304; k5++)
-                    gic[sector][k5] = abyte1[k2++];
+                    tileVerticalWall[sector][k5] = abyte1[k2++];
 
                 for(int l6 = 0; l6 < 2304; l6++)
-                    ghb[sector][l6] = abyte1[k2++];
+                    tileHorizontalWall[sector][l6] = abyte1[k2++];
 
                 for(int i8 = 0; i8 < 2304; i8++) {
-                    ghe[sector][i8] = (abyte1[k2] & 0xff) * 256 + (abyte1[k2 + 1] & 0xff);
+                    tileDiagonalWall[sector][i8] = (abyte1[k2] & 0xff) * 256 + (abyte1[k2 + 1] & 0xff);
                     k2 += 2;
                 }
 
                 for(int l8 = 0; l8 < 2304; l8++)
-                    gja[sector][l8] = abyte1[k2++];
+                    tileRoofType[sector][l8] = abyte1[k2++];
 
                 for(int k9 = 0; k9 < 2304; k9++)
-                    ghf[sector][k9] = abyte1[k2++];
+                    tileGroundOverlay[sector][k9] = abyte1[k2++];
 
                 for(int k10 = 0; k10 < 2304; k10++)
-                    ghg[sector][k10] = abyte1[k2++];
+                    tileObjectRotation[sector][k10] = abyte1[k2++];
 
             }
             return;
@@ -240,18 +239,18 @@ public class EngineHandle {
         catch(IOException _ex) {
         }
         for(int k = 0; k < 2304; k++) {
-            gig[sector][k] = 0;
-            ghl[sector][k] = 0;
-            gic[sector][k] = 0;
-            ghb[sector][k] = 0;
-            ghe[sector][k] = 0;
-            gja[sector][k] = 0;
-            ghf[sector][k] = 0;
+            tileGroundElevation[sector][k] = 0;
+            tileGroundTexture[sector][k] = 0;
+            tileVerticalWall[sector][k] = 0;
+            tileHorizontalWall[sector][k] = 0;
+            tileDiagonalWall[sector][k] = 0;
+            tileRoofType[sector][k] = 0;
+            tileGroundOverlay[sector][k] = 0;
             if(height == 0)
-                ghf[sector][k] = -6;
+                tileGroundOverlay[sector][k] = -6;
             if(height == 3)
-                ghf[sector][k] = 8;
-            ghg[sector][k] = 0;
+                tileGroundOverlay[sector][k] = 8;
+            tileObjectRotation[sector][k] = 0;
         }
 
     }
@@ -859,123 +858,123 @@ public class EngineHandle {
 
     }
 
-    public int generatePath(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6[], 
-            int arg7[], boolean arg8) {
+    public int generatePath(int curX, int curY, int bottomDestX, int bottomDestY, int upperDestX, int upperDestY, int pathX[], 
+            int pathY[], boolean checkForObjects) {
         for(int k = 0; k < 96; k++) {
             for(int l = 0; l < 96; l++)
-                gid[k][l] = 0;
+                steps[k][l] = 0;
 
         }
 
-        int i1 = 0;
-        int j1 = 0;
-        int k1 = arg0;
-        int l1 = arg1;
-        gid[arg0][arg1] = 99;
-        arg6[i1] = arg0;
-        arg7[i1++] = arg1;
-        int i2 = arg6.length;
-        boolean flag = false;
-        while(j1 != i1)  {
-            k1 = arg6[j1];
-            l1 = arg7[j1];
-            j1 = (j1 + 1) % i2;
-            if(k1 >= arg2 && k1 <= arg4 && l1 >= arg3 && l1 <= arg5) {
-                flag = true;
+        int requiredSteps = 0;
+        int stepCount = 0;
+        int x = curX;
+        int y = curY;
+        steps[curX][curY] = 99;
+        pathX[requiredSteps] = curX;
+        pathY[requiredSteps++] = curY;
+        int i2 = pathX.length;
+        boolean foundPath = false;
+        while(stepCount != requiredSteps)  {
+            x = pathX[stepCount];
+            y = pathY[stepCount];
+            stepCount = (stepCount + 1) % i2;
+            if(x >= bottomDestX && x <= upperDestX && y >= bottomDestY && y <= upperDestY) {
+                foundPath = true;
                 break;
             }
-            if(arg8) {
-                if(k1 > 0 && k1 - 1 >= arg2 && k1 - 1 <= arg4 && l1 >= arg3 && l1 <= arg5 && (tiles[k1 - 1][l1] & 8) == 0) {
-                    flag = true;
+            if(checkForObjects) {
+                if(x > 0 && x - 1 >= bottomDestX && x - 1 <= upperDestX && y >= bottomDestY && y <= upperDestY && (tiles[x - 1][y] & 8) == 0) {
+                    foundPath = true;
                     break;
                 }
-                if(k1 < 95 && k1 + 1 >= arg2 && k1 + 1 <= arg4 && l1 >= arg3 && l1 <= arg5 && (tiles[k1 + 1][l1] & 2) == 0) {
-                    flag = true;
+                if(x < 95 && x + 1 >= bottomDestX && x + 1 <= upperDestX && y >= bottomDestY && y <= upperDestY && (tiles[x + 1][y] & 2) == 0) {
+                    foundPath = true;
                     break;
                 }
-                if(l1 > 0 && k1 >= arg2 && k1 <= arg4 && l1 - 1 >= arg3 && l1 - 1 <= arg5 && (tiles[k1][l1 - 1] & 4) == 0) {
-                    flag = true;
+                if(y > 0 && x >= bottomDestX && x <= upperDestX && y - 1 >= bottomDestY && y - 1 <= upperDestY && (tiles[x][y - 1] & 4) == 0) {
+                    foundPath = true;
                     break;
                 }
-                if(l1 < 95 && k1 >= arg2 && k1 <= arg4 && l1 + 1 >= arg3 && l1 + 1 <= arg5 && (tiles[k1][l1 + 1] & 1) == 0) {
-                    flag = true;
+                if(y < 95 && x >= bottomDestX && x <= upperDestX && y + 1 >= bottomDestY && y + 1 <= upperDestY && (tiles[x][y + 1] & 1) == 0) {
+                    foundPath = true;
                     break;
                 }
             }
-            if(k1 > 0 && gid[k1 - 1][l1] == 0 && (tiles[k1 - 1][l1] & 0x78) == 0) {
-                arg6[i1] = k1 - 1;
-                arg7[i1] = l1;
-                i1 = (i1 + 1) % i2;
-                gid[k1 - 1][l1] = 2;
+            if(x > 0 && steps[x - 1][y] == 0 && (tiles[x - 1][y] & 0x78) == 0) {
+                pathX[requiredSteps] = x - 1;
+                pathY[requiredSteps] = y;
+                requiredSteps = (requiredSteps + 1) % i2;
+                steps[x - 1][y] = 2;
             }
-            if(k1 < 95 && gid[k1 + 1][l1] == 0 && (tiles[k1 + 1][l1] & 0x72) == 0) {
-                arg6[i1] = k1 + 1;
-                arg7[i1] = l1;
-                i1 = (i1 + 1) % i2;
-                gid[k1 + 1][l1] = 8;
+            if(x < 95 && steps[x + 1][y] == 0 && (tiles[x + 1][y] & 0x72) == 0) {
+                pathX[requiredSteps] = x + 1;
+                pathY[requiredSteps] = y;
+                requiredSteps = (requiredSteps + 1) % i2;
+                steps[x + 1][y] = 8;
             }
-            if(l1 > 0 && gid[k1][l1 - 1] == 0 && (tiles[k1][l1 - 1] & 0x74) == 0) {
-                arg6[i1] = k1;
-                arg7[i1] = l1 - 1;
-                i1 = (i1 + 1) % i2;
-                gid[k1][l1 - 1] = 1;
+            if(y > 0 && steps[x][y - 1] == 0 && (tiles[x][y - 1] & 0x74) == 0) {
+                pathX[requiredSteps] = x;
+                pathY[requiredSteps] = y - 1;
+                requiredSteps = (requiredSteps + 1) % i2;
+                steps[x][y - 1] = 1;
             }
-            if(l1 < 95 && gid[k1][l1 + 1] == 0 && (tiles[k1][l1 + 1] & 0x71) == 0) {
-                arg6[i1] = k1;
-                arg7[i1] = l1 + 1;
-                i1 = (i1 + 1) % i2;
-                gid[k1][l1 + 1] = 4;
+            if(y < 95 && steps[x][y + 1] == 0 && (tiles[x][y + 1] & 0x71) == 0) {
+                pathX[requiredSteps] = x;
+                pathY[requiredSteps] = y + 1;
+                requiredSteps = (requiredSteps + 1) % i2;
+                steps[x][y + 1] = 4;
             }
-            if(k1 > 0 && l1 > 0 && (tiles[k1][l1 - 1] & 0x74) == 0 && (tiles[k1 - 1][l1] & 0x78) == 0 && (tiles[k1 - 1][l1 - 1] & 0x7c) == 0 && gid[k1 - 1][l1 - 1] == 0) {
-                arg6[i1] = k1 - 1;
-                arg7[i1] = l1 - 1;
-                i1 = (i1 + 1) % i2;
-                gid[k1 - 1][l1 - 1] = 3;
+            if(x > 0 && y > 0 && (tiles[x][y - 1] & 0x74) == 0 && (tiles[x - 1][y] & 0x78) == 0 && (tiles[x - 1][y - 1] & 0x7c) == 0 && steps[x - 1][y - 1] == 0) {
+                pathX[requiredSteps] = x - 1;
+                pathY[requiredSteps] = y - 1;
+                requiredSteps = (requiredSteps + 1) % i2;
+                steps[x - 1][y - 1] = 3;
             }
-            if(k1 < 95 && l1 > 0 && (tiles[k1][l1 - 1] & 0x74) == 0 && (tiles[k1 + 1][l1] & 0x72) == 0 && (tiles[k1 + 1][l1 - 1] & 0x76) == 0 && gid[k1 + 1][l1 - 1] == 0) {
-                arg6[i1] = k1 + 1;
-                arg7[i1] = l1 - 1;
-                i1 = (i1 + 1) % i2;
-                gid[k1 + 1][l1 - 1] = 9;
+            if(x < 95 && y > 0 && (tiles[x][y - 1] & 0x74) == 0 && (tiles[x + 1][y] & 0x72) == 0 && (tiles[x + 1][y - 1] & 0x76) == 0 && steps[x + 1][y - 1] == 0) {
+                pathX[requiredSteps] = x + 1;
+                pathY[requiredSteps] = y - 1;
+                requiredSteps = (requiredSteps + 1) % i2;
+                steps[x + 1][y - 1] = 9;
             }
-            if(k1 > 0 && l1 < 95 && (tiles[k1][l1 + 1] & 0x71) == 0 && (tiles[k1 - 1][l1] & 0x78) == 0 && (tiles[k1 - 1][l1 + 1] & 0x79) == 0 && gid[k1 - 1][l1 + 1] == 0) {
-                arg6[i1] = k1 - 1;
-                arg7[i1] = l1 + 1;
-                i1 = (i1 + 1) % i2;
-                gid[k1 - 1][l1 + 1] = 6;
+            if(x > 0 && y < 95 && (tiles[x][y + 1] & 0x71) == 0 && (tiles[x - 1][y] & 0x78) == 0 && (tiles[x - 1][y + 1] & 0x79) == 0 && steps[x - 1][y + 1] == 0) {
+                pathX[requiredSteps] = x - 1;
+                pathY[requiredSteps] = y + 1;
+                requiredSteps = (requiredSteps + 1) % i2;
+                steps[x - 1][y + 1] = 6;
             }
-            if(k1 < 95 && l1 < 95 && (tiles[k1][l1 + 1] & 0x71) == 0 && (tiles[k1 + 1][l1] & 0x72) == 0 && (tiles[k1 + 1][l1 + 1] & 0x73) == 0 && gid[k1 + 1][l1 + 1] == 0) {
-                arg6[i1] = k1 + 1;
-                arg7[i1] = l1 + 1;
-                i1 = (i1 + 1) % i2;
-                gid[k1 + 1][l1 + 1] = 12;
+            if(x < 95 && y < 95 && (tiles[x][y + 1] & 0x71) == 0 && (tiles[x + 1][y] & 0x72) == 0 && (tiles[x + 1][y + 1] & 0x73) == 0 && steps[x + 1][y + 1] == 0) {
+                pathX[requiredSteps] = x + 1;
+                pathY[requiredSteps] = y + 1;
+                requiredSteps = (requiredSteps + 1) % i2;
+                steps[x + 1][y + 1] = 12;
             }
         }
-        if(!flag)
+        if(!foundPath)
             return -1;
-        j1 = 0;
-        arg6[j1] = k1;
-        arg7[j1++] = l1;
+        stepCount = 0;
+        pathX[stepCount] = x;
+        pathY[stepCount++] = y;
         int k2;
-        for(int j2 = k2 = gid[k1][l1]; k1 != arg0 || l1 != arg1; j2 = gid[k1][l1]) {
+        for(int j2 = k2 = steps[x][y]; x != curX || y != curY; j2 = steps[x][y]) {
             if(j2 != k2) {
                 k2 = j2;
-                arg6[j1] = k1;
-                arg7[j1++] = l1;
+                pathX[stepCount] = x;
+                pathY[stepCount++] = y;
             }
             if((j2 & 2) != 0)
-                k1++;
+                x++;
             else
             if((j2 & 8) != 0)
-                k1--;
+                x--;
             if((j2 & 1) != 0)
-                l1++;
+                y++;
             else
             if((j2 & 4) != 0)
-                l1--;
+                y--;
         }
 
-        return j1;
+        return stepCount;
     }
 
     public void gjm(int k, int l, int i1) {
@@ -1075,7 +1074,7 @@ public class EngineHandle {
             arg0 -= 48;
             arg1 -= 48;
         }
-        return ghg[byte0][arg0 * 48 + arg1];
+        return tileObjectRotation[byte0][arg0 * 48 + arg1];
     }
     
     public void registerObjectDir(int x, int y, int dir) {
@@ -1179,7 +1178,7 @@ public class EngineHandle {
             arg0 -= 48;
             arg1 -= 48;
         }
-        return ghf[byte0][arg0 * 48 + arg1] & 0xff;
+        return tileGroundOverlay[byte0][arg0 * 48 + arg1] & 0xff;
     }
 
     public int gkj(int k, int l) {
@@ -1210,25 +1209,25 @@ public class EngineHandle {
     }
 
     public EngineHandle(Camera arg0, GameImage arg1) {
-        ghb = new byte[4][2304];
-        ghe = new int[4][2304];
-        ghf = new byte[4][2304];
-        ghg = new byte[4][2304];
+        tileHorizontalWall = new byte[4][2304];
+        tileDiagonalWall = new int[4][2304];
+        tileGroundOverlay = new byte[4][2304];
+        tileObjectRotation = new byte[4][2304];
         ghh = false;
         selectedY = new int[18432];
-        ghl = new byte[4][2304];
+        tileGroundTexture = new byte[4][2304];
         ghm = new int[256];
         ghn = new GameObject[64];
         gib = new int[96][96];
-        gic = new byte[4][2304];
-        gid = new int[96][96];
-        gig = new byte[4][2304];
+        tileVerticalWall = new byte[4][2304];
+        steps = new int[96][96];
+        tileGroundElevation = new byte[4][2304];
         gih = new GameObject[4][64];
         playerIsAlive = false;
         tiles = new int[96][96];
         gim = new GameObject[4][64];
         selectedX = new int[18432];
-        gja = new byte[4][2304];
+        tileRoofType = new byte[4][2304];
         gjb = true;
         gjc = 750;
         ghj = arg0;
@@ -1270,7 +1269,7 @@ public class EngineHandle {
             arg0 -= 48;
             arg1 -= 48;
         }
-        return (gig[byte0][arg0 * 48 + arg1] & 0xff) * 3;
+        return (tileGroundElevation[byte0][arg0 * 48 + arg1] & 0xff) * 3;
     }
 
     public void gla(int arg0, int arg1, int arg2, int k) {
@@ -1336,7 +1335,7 @@ public class EngineHandle {
             arg0 -= 48;
             arg1 -= 48;
         }
-        return gja[byte0][arg0 * 48 + arg1];
+        return tileRoofType[byte0][arg0 * 48 + arg1];
     }
 
     public void glc(int arg0, int arg1, int arg2) {
@@ -1356,7 +1355,7 @@ public class EngineHandle {
             arg0 -= 48;
             arg1 -= 48;
         }
-        ghf[byte0][arg0 * 48 + arg1] = (byte)arg2;
+        tileGroundOverlay[byte0][arg0 * 48 + arg1] = (byte)arg2;
     }
 
     public int gld(int arg0, int arg1) {
@@ -1376,7 +1375,7 @@ public class EngineHandle {
             arg0 -= 48;
             arg1 -= 48;
         }
-        return gic[byte0][arg0 * 48 + arg1] & 0xff;
+        return tileVerticalWall[byte0][arg0 * 48 + arg1] & 0xff;
     }
 
     public int gle(int arg0, int arg1) {
@@ -1396,7 +1395,7 @@ public class EngineHandle {
             arg0 -= 48;
             arg1 -= 48;
         }
-        return ghb[byte0][arg0 * 48 + arg1] & 0xff;
+        return tileHorizontalWall[byte0][arg0 * 48 + arg1] & 0xff;
     }
 
     public int glf(int arg0, int arg1) {
@@ -1416,7 +1415,7 @@ public class EngineHandle {
             arg0 -= 48;
             arg1 -= 48;
         }
-        return ghe[byte0][arg0 * 48 + arg1];
+        return tileDiagonalWall[byte0][arg0 * 48 + arg1];
     }
 
     public void glg(GameObject arg0[]) {
@@ -1463,7 +1462,7 @@ public class EngineHandle {
                                         k2 -= 48;
                                         i3 -= 48;
                                     }
-                                    ghe[byte0][k2 * 48 + i3] = 0;
+                                    tileDiagonalWall[byte0][k2 * 48 + i3] = 0;
                                 }
 
                         }
@@ -1514,26 +1513,26 @@ public class EngineHandle {
 
     final int ggn = 96;
     final int gha = 96;
-    byte ghb[][];
+    byte tileHorizontalWall[][];
     final int ghc = 0xbc614e;
     final int ghd = 128;
-    int ghe[][];
-    byte ghf[][];
-    byte ghg[][];
+    int tileDiagonalWall[][];
+    byte tileGroundOverlay[][];
+    byte tileObjectRotation[][];
     boolean ghh;
     GameImage ghi;
     Camera ghj;
     int selectedY[];
-    byte ghl[][];
+    byte tileGroundTexture[][];
     int ghm[];
     GameObject ghn[];
     GameObject gia;
     int gib[][];
-    byte gic[][];
-    int gid[][];
+    byte tileVerticalWall[][];
+    int steps[][];
     byte landscapeFree[];
     byte mapsFree[];
-    byte gig[][];
+    byte tileGroundElevation[][];
     GameObject gih[][];
     boolean playerIsAlive;
     int tiles[][];
@@ -1541,7 +1540,7 @@ public class EngineHandle {
     byte mapsMembers[];
     GameObject gim[][];
     int selectedX[];
-    byte gja[][];
+    byte tileRoofType[][];
     boolean gjb;
     int gjc;
     

@@ -40,7 +40,7 @@ public class Data {
         return s;
     }
 
-    public static void load(byte arg0[], boolean arg1) {
+    public static void load(byte arg0[]) {
         stringData = DataOperations.loadData("string.dat", 0, arg0);
         stringDataIndex = 0;
         integerData = DataOperations.loadData("integer.dat", 0, arg0);
@@ -92,32 +92,9 @@ public class Data {
 
         for(int k2 = 0; k2 < itemCount; k2++)
             itemMembers[k2] = readByte();
-        
-        /*try {
-            java.io.BufferedWriter out = new java.io.BufferedWriter(new java.io.FileWriter("ItemDef.xml"));
-            out.write("<ItemDef-array>\r\n");
-            for(int i = 0; i < itemCount; i++) {
-                out.write("    <ItemDef>\r\n");
-                out.write("        <name>" + itemName[i] + "</name>\r\n");
-                out.write("        <command>" + itemCommand[i] + "</command>\r\n");
-                out.write("        <stackable>" + (itemStackable[i] == 0) + "</stackable>\r\n");
-                out.write("        <members>" + (itemMembers[i] == 1) + "</members>\r\n");
-                out.write("        <trade>" + (itemSpecial[i] == 0) + "</trade>\r\n");
-                out.write("        <basePrice>" + itemBasePrice[i] + "</basePrice>\r\n");
-                out.write("        <wieldable>" + (itemIsEquippable[i]) + "</wieldable>\r\n");
-                out.write("        <description>" + itemDescription[i] + "</description>\r\n");
-                out.write("        <sprite>" + itemInventoryPicture[i] + "</sprite>\r\n");
-                out.write("        <mask>" + itemPictureMask[i] + "</mask>\r\n");
-                out.write("    </ItemDef>\r\n");
-            }
-            out.write("</ItemDef-array>\r\n");
-            out.close();
-        } catch(Exception e) {
-            e.printStackTrace();
-        }*/
 
         for(int l2 = 0; l2 < itemCount; l2++)
-            if(!arg1 && itemMembers[l2] == 1) {
+            if(!Config.MEMBERS && itemMembers[l2] == 1) {
                 itemName[l2] = "Members object";
                 itemDescription[l2] = "You need to be a member to use this object";
                 itemBasePrice[l2] = 0;
@@ -322,6 +299,11 @@ public class Data {
 
         for(int k14 = 0; k14 < akd; k14++)
             aln[k14] = readByte();
+        
+        /*System.out.println("akd:");
+        for(int i = 0; i < akd; i++) {
+            System.out.println(i + ": " + alm[i] + " " + aln[i]);
+        }*/
 
         ajg = readShort();
         akg = new int[ajg];
@@ -335,6 +317,11 @@ public class Data {
 
         for(int j15 = 0; j15 < ajg; j15++)
             aki[j15] = readByte();
+        
+        /*System.out.println("ajg:");
+        for(int i = 0; i < ajg; i++) {
+            System.out.println(i + ": " + akg[i] + " " + akh[i] + " " + aki[i]);
+        }*/
 
         spellProjectileCount = readShort();
         spellCount = readShort();

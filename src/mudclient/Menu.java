@@ -52,7 +52,7 @@ public class Menu {
         if(lastMouseButton != 0)
             this.lastMouseButton = lastMouseButton;
         if(lastMouseButton == 1) {
-            for(int i = 0; i < gak; i++) {
+            for(int i = 0; i < menuItemsCount; i++) {
                 if(componentAcceptsInput[i] && componentType[i] == 10 && this.mouseX >= componentX[i] && this.mouseY >= componentY[i] && this.mouseX <= componentX[i] + componentWidth[i] && this.mouseY <= componentY[i] + componentHeight[i])
                     componentSkip[i] = true;
                 if(componentAcceptsInput[i] && componentType[i] == 14 && this.mouseX >= componentX[i] && this.mouseY >= componentY[i] && this.mouseX <= componentX[i] + componentWidth[i] && this.mouseY <= componentY[i] + componentHeight[i])
@@ -65,7 +65,7 @@ public class Menu {
         else
             gch = 0;
         if(lastMouseButton == 1 || gch > 20) {
-            for(int k = 0; k < gak; k++)
+            for(int k = 0; k < menuItemsCount; k++)
                 if(componentAcceptsInput[k] && componentType[k] == 15 && this.mouseX >= componentX[k] && this.mouseY >= componentY[k] && this.mouseX <= componentX[k] + componentWidth[k] && this.mouseY <= componentY[k] + componentHeight[k])
                     componentSkip[k] = true;
 
@@ -100,7 +100,7 @@ public class Menu {
             }
             if(key == KeyEvent.VK_TAB) {
                 do
-                    selectedComponent = (selectedComponent + 1) % gak;
+                    selectedComponent = (selectedComponent + 1) % menuItemsCount;
                 while(componentType[selectedComponent] != 5 && componentType[selectedComponent] != 6);
                 return;
             }
@@ -108,7 +108,7 @@ public class Menu {
     }
 
     public void drawMenu() {
-        for(int i = 0; i < gak; i++)
+        for(int i = 0; i < menuItemsCount; i++)
             if(componentAcceptsInput[i])
                 if(componentType[i] == 0)
                     gef(i, componentX[i], componentY[i], componentText[i], componentTextSize[i]);
@@ -444,132 +444,132 @@ public class Menu {
     }
 
     public int drawText(int i, int k, String s, int l, boolean flag) {
-        componentType[gak] = 1;
-        componentAcceptsInput[gak] = true;
-        componentSkip[gak] = false;
-        componentTextSize[gak] = l;
-        componentWhiteText[gak] = flag;
-        componentX[gak] = i;
-        componentY[gak] = k;
-        componentText[gak] = s;
-        return gak++;
+        componentType[menuItemsCount] = 1;
+        componentAcceptsInput[menuItemsCount] = true;
+        componentSkip[menuItemsCount] = false;
+        componentTextSize[menuItemsCount] = l;
+        componentWhiteText[menuItemsCount] = flag;
+        componentX[menuItemsCount] = i;
+        componentY[menuItemsCount] = k;
+        componentText[menuItemsCount] = s;
+        return menuItemsCount++;
     }
 
     public int drawButton(int i, int k, int l, int i1) {
-        componentType[gak] = 2;
-        componentAcceptsInput[gak] = true;
-        componentSkip[gak] = false;
-        componentX[gak] = i - l / 2;
-        componentY[gak] = k - i1 / 2;
-        componentWidth[gak] = l;
-        componentHeight[gak] = i1;
-        return gak++;
+        componentType[menuItemsCount] = 2;
+        componentAcceptsInput[menuItemsCount] = true;
+        componentSkip[menuItemsCount] = false;
+        componentX[menuItemsCount] = i - l / 2;
+        componentY[menuItemsCount] = k - i1 / 2;
+        componentWidth[menuItemsCount] = l;
+        componentHeight[menuItemsCount] = i1;
+        return menuItemsCount++;
     }
 
     public int drawCurvedBox(int i, int k, int l, int i1) {
-        componentType[gak] = 11;
-        componentAcceptsInput[gak] = true;
-        componentSkip[gak] = false;
-        componentX[gak] = i - l / 2;
-        componentY[gak] = k - i1 / 2;
-        componentWidth[gak] = l;
-        componentHeight[gak] = i1;
-        return gak++;
+        componentType[menuItemsCount] = 11;
+        componentAcceptsInput[menuItemsCount] = true;
+        componentSkip[menuItemsCount] = false;
+        componentX[menuItemsCount] = i - l / 2;
+        componentY[menuItemsCount] = k - i1 / 2;
+        componentWidth[menuItemsCount] = l;
+        componentHeight[menuItemsCount] = i1;
+        return menuItemsCount++;
     }
 
     public int drawArrow(int i, int k, int l) {
         int i1 = gaj.pictureWidth[l];
         int j1 = gaj.pictureHeight[l];
-        componentType[gak] = 12;
-        componentAcceptsInput[gak] = true;
-        componentSkip[gak] = false;
-        componentX[gak] = i - i1 / 2;
-        componentY[gak] = k - j1 / 2;
-        componentWidth[gak] = i1;
-        componentHeight[gak] = j1;
-        componentTextSize[gak] = l;
-        return gak++;
+        componentType[menuItemsCount] = 12;
+        componentAcceptsInput[menuItemsCount] = true;
+        componentSkip[menuItemsCount] = false;
+        componentX[menuItemsCount] = i - i1 / 2;
+        componentY[menuItemsCount] = k - j1 / 2;
+        componentWidth[menuItemsCount] = i1;
+        componentHeight[menuItemsCount] = j1;
+        componentTextSize[menuItemsCount] = l;
+        return menuItemsCount++;
     }
 
     public int gfh(int i, int k, int l, int i1, int j1, int k1, boolean flag) {
-        componentType[gak] = 4;
-        componentAcceptsInput[gak] = true;
-        componentSkip[gak] = false;
-        componentX[gak] = i;
-        componentY[gak] = k;
-        componentWidth[gak] = l;
-        componentHeight[gak] = i1;
-        componentWhiteText[gak] = flag;
-        componentTextSize[gak] = j1;
-        copmonentInputMaxLength[gak] = k1;
-        listLength[gak] = 0;
-        listShownEntries[gak] = 0;
-        componentTextList[gak] = new String[k1];
-        return gak++;
+        componentType[menuItemsCount] = 4;
+        componentAcceptsInput[menuItemsCount] = true;
+        componentSkip[menuItemsCount] = false;
+        componentX[menuItemsCount] = i;
+        componentY[menuItemsCount] = k;
+        componentWidth[menuItemsCount] = l;
+        componentHeight[menuItemsCount] = i1;
+        componentWhiteText[menuItemsCount] = flag;
+        componentTextSize[menuItemsCount] = j1;
+        copmonentInputMaxLength[menuItemsCount] = k1;
+        listLength[menuItemsCount] = 0;
+        listShownEntries[menuItemsCount] = 0;
+        componentTextList[menuItemsCount] = new String[k1];
+        return menuItemsCount++;
     }
 
     public int gfi(int i, int k, int l, int i1, int j1, int k1, boolean flag, 
             boolean flag1) {
-        componentType[gak] = 5;
-        componentAcceptsInput[gak] = true;
-        componentIsPasswordField[gak] = flag;
-        componentSkip[gak] = false;
-        componentTextSize[gak] = j1;
-        componentWhiteText[gak] = flag1;
-        componentX[gak] = i;
-        componentY[gak] = k;
-        componentWidth[gak] = l;
-        componentHeight[gak] = i1;
-        copmonentInputMaxLength[gak] = k1;
-        componentText[gak] = "";
-        return gak++;
+        componentType[menuItemsCount] = 5;
+        componentAcceptsInput[menuItemsCount] = true;
+        componentIsPasswordField[menuItemsCount] = flag;
+        componentSkip[menuItemsCount] = false;
+        componentTextSize[menuItemsCount] = j1;
+        componentWhiteText[menuItemsCount] = flag1;
+        componentX[menuItemsCount] = i;
+        componentY[menuItemsCount] = k;
+        componentWidth[menuItemsCount] = l;
+        componentHeight[menuItemsCount] = i1;
+        copmonentInputMaxLength[menuItemsCount] = k1;
+        componentText[menuItemsCount] = "";
+        return menuItemsCount++;
     }
 
     public int createInput(int i, int k, int l, int i1, int j1, int k1, boolean flag, 
             boolean flag1) {
-        componentType[gak] = 6;
-        componentAcceptsInput[gak] = true;
-        componentIsPasswordField[gak] = flag;
-        componentSkip[gak] = false;
-        componentTextSize[gak] = j1;
-        componentWhiteText[gak] = flag1;
-        componentX[gak] = i;
-        componentY[gak] = k;
-        componentWidth[gak] = l;
-        componentHeight[gak] = i1;
-        copmonentInputMaxLength[gak] = k1;
-        componentText[gak] = "";
-        return gak++;
+        componentType[menuItemsCount] = 6;
+        componentAcceptsInput[menuItemsCount] = true;
+        componentIsPasswordField[menuItemsCount] = flag;
+        componentSkip[menuItemsCount] = false;
+        componentTextSize[menuItemsCount] = j1;
+        componentWhiteText[menuItemsCount] = flag1;
+        componentX[menuItemsCount] = i;
+        componentY[menuItemsCount] = k;
+        componentWidth[menuItemsCount] = l;
+        componentHeight[menuItemsCount] = i1;
+        copmonentInputMaxLength[menuItemsCount] = k1;
+        componentText[menuItemsCount] = "";
+        return menuItemsCount++;
     }
 
     public int createList(int i, int k, int l, int i1, int j1, int k1, boolean flag) {
-        componentType[gak] = 9;
-        componentAcceptsInput[gak] = true;
-        componentSkip[gak] = false;
-        componentTextSize[gak] = j1;
-        componentWhiteText[gak] = flag;
-        componentX[gak] = i;
-        componentY[gak] = k;
-        componentWidth[gak] = l;
-        componentHeight[gak] = i1;
-        copmonentInputMaxLength[gak] = k1;
-        componentTextList[gak] = new String[k1];
-        listLength[gak] = 0;
-        listShownEntries[gak] = 0;
-        gbe[gak] = -1;
-        gbf[gak] = -1;
-        return gak++;
+        componentType[menuItemsCount] = 9;
+        componentAcceptsInput[menuItemsCount] = true;
+        componentSkip[menuItemsCount] = false;
+        componentTextSize[menuItemsCount] = j1;
+        componentWhiteText[menuItemsCount] = flag;
+        componentX[menuItemsCount] = i;
+        componentY[menuItemsCount] = k;
+        componentWidth[menuItemsCount] = l;
+        componentHeight[menuItemsCount] = i1;
+        copmonentInputMaxLength[menuItemsCount] = k1;
+        componentTextList[menuItemsCount] = new String[k1];
+        listLength[menuItemsCount] = 0;
+        listShownEntries[menuItemsCount] = 0;
+        gbe[menuItemsCount] = -1;
+        gbf[menuItemsCount] = -1;
+        return menuItemsCount++;
     }
 
     public int createButton(int i, int k, int l, int i1) {
-        componentType[gak] = 10;
-        componentAcceptsInput[gak] = true;
-        componentSkip[gak] = false;
-        componentX[gak] = i - l / 2;
-        componentY[gak] = k - i1 / 2;
-        componentWidth[gak] = l;
-        componentHeight[gak] = i1;
-        return gak++;
+        componentType[menuItemsCount] = 10;
+        componentAcceptsInput[menuItemsCount] = true;
+        componentSkip[menuItemsCount] = false;
+        componentX[menuItemsCount] = i - l / 2;
+        componentY[menuItemsCount] = k - i1 / 2;
+        componentWidth[menuItemsCount] = l;
+        componentHeight[menuItemsCount] = i1;
+        return menuItemsCount++;
     }
 
     public void clearList(int i) {
@@ -630,7 +630,7 @@ public class Menu {
     }
 
     protected GameImage gaj;
-    int gak;
+    int menuItemsCount;
     int gal;
     public boolean componentAcceptsInput[];
     public boolean gan[];

@@ -25,12 +25,6 @@ public class DataEncryption {
         data[offset++] = 10;
     }
 
-    public void dbc(byte arg0[], int arg1, int arg2) {
-        for (int i = arg1; i < arg1 + arg2; i++)
-            data[offset++] = arg0[i];
-
-    }
-
     public int getByte() {
         return data[offset++] & 0xff;
     }

@@ -537,8 +537,6 @@ public class GameApplet extends Applet
     public int mouseY;
     public int mouseButton;
     public int lastMouseButton;
-    public int fki;
-    public int fkj;
     public boolean keyF1Toggle;
     public String inputText;
     public String enteredInputText;

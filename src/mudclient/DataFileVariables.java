@@ -20,15 +20,6 @@ class DataFileVariables {
         agn = new int[6];
     }
 
-    final int adj = 4096;
-    final int adk = 16;
-    final int adl = 258;
-    final int adm = 23;
-    final int adn = 1;
-    final int aea = 6;
-    final int aeb = 50;
-    final int aec = 4;
-    final int aed = 18002;
     byte aee[];
     int aef;
     int aeg;

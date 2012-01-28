@@ -36,10 +36,10 @@ public class Camera {
         bcj = arg0.gameWidth / 2;
         bck = arg0.gameHeight / 2;
         bfh = arg0.pixels;
-        bdh = 0;
-        bdi = arg1;
-        bdj = new GameObject[bdi];
-        bdk = new int[bdi];
+        currentModelCount = 0;
+        maxModelCount = arg1;
+        bdj = new GameObject[maxModelCount];
+        bdk = new int[maxModelCount];
         bdl = 0;
         bdm = new CameraModel[arg2];
         for(int k = 0; k < arg2; k++)
@@ -77,17 +77,17 @@ public class Camera {
     public void addModel(GameObject k) {
         if(k == null)
             System.out.println("Warning tried to add null object!");
-        if(bdh < bdi) {
-            bdk[bdh] = 0;
-            bdj[bdh++] = k;
+        if(currentModelCount < maxModelCount) {
+            bdk[currentModelCount] = 0;
+            bdj[currentModelCount++] = k;
         }
     }
 
     public void removeModel(GameObject arg0) {
-        for(int k = 0; k < bdh; k++)
+        for(int k = 0; k < currentModelCount; k++)
             if(bdj[k] == arg0) {
-                bdh--;
-                for(int i1 = k; i1 < bdh; i1++) {
+                currentModelCount--;
+                for(int i1 = k; i1 < currentModelCount; i1++) {
                     bdj[i1] = bdj[i1 + 1];
                     bdk[i1] = bdk[i1 + 1];
                 }
@@ -98,10 +98,10 @@ public class Camera {
 
     public void cleanUp() {
         bhb();
-        for(int k = 0; k < bdh; k++)
+        for(int k = 0; k < currentModelCount; k++)
             bdj[k] = null;
 
-        bdh = 0;
+        currentModelCount = 0;
     }
 
     public void bhb() {
@@ -343,14 +343,14 @@ public class Camera {
         bgh += bdc;
         bgi += bdd;
         bgj += bdd;
-        bdj[bdh] = highlightedObject;
+        bdj[currentModelCount] = highlightedObject;
         highlightedObject.cgn = 2;
-        for(int k1 = 0; k1 < bdh; k1++)
+        for(int k1 = 0; k1 < currentModelCount; k1++)
             bdj[k1].cnh(bdb, bdc, bdd, bde, bdf, bdg, bcn, bbf);
 
-        bdj[bdh].cnh(bdb, bdc, bdd, bde, bdf, bdg, bcn, bbf);
+        bdj[currentModelCount].cnh(bdb, bdc, bdd, bde, bdf, bdg, bcn, bbf);
         bdl = 0;
-        for(int i5 = 0; i5 < bdh; i5++) {
+        for(int i5 = 0; i5 < currentModelCount; i5++) {
             GameObject k = bdj[i5];
             if(k.cha) {
                 for(int l1 = 0; l1 < k.cgb; l1++) {
@@ -461,7 +461,7 @@ public class Camera {
                 k13 = j1.cfl[ai2[1]] - i9;
                 int i14 = i9 - i12 / 2;
                 int k14 = (bcm + j10) - k12;
-                bfg.cdc(i14 + bcl, k14, i12, k12, bea[j2], k13, (256 << bcn) / j11);
+                bfg.drawVisibleEntity(i14 + bcl, k14, i12, k12, bea[j2], k13, (256 << bcn) / j11);
                 if(bcb && bce < bcf) {
                     i14 += (beg[j2] << bcn) / j11;
                     if(bcd >= k14 && bcd <= k14 + k12 && bcc >= i14 && bcc <= i14 + i12 && !j1.cic && j1.chm[j2] == 0) {
@@ -2779,7 +2779,7 @@ public class Camera {
     public void bjk(int arg0, int arg1, int arg2) {
         if(arg0 == 0 && arg1 == 0 && arg2 == 0)
             arg0 = 32;
-        for(int k = 0; k < bdh; k++)
+        for(int k = 0; k < currentModelCount; k++)
             bdj[k].cmg(arg0, arg1, arg2);
 
     }
@@ -2787,7 +2787,7 @@ public class Camera {
     public void bjl(int arg0, int arg1, int arg2, int arg3, int arg4) {
         if(arg2 == 0 && arg3 == 0 && arg4 == 0)
             arg2 = 32;
-        for(int k = 0; k < bdh; k++)
+        for(int k = 0; k < currentModelCount; k++)
             bdj[k].cmf(arg0, arg1, arg2, arg3, arg4);
 
     }
@@ -3111,8 +3111,8 @@ public class Camera {
     private int bde;
     private int bdf;
     private int bdg;
-    public int bdh;
-    public int bdi;
+    public int currentModelCount;
+    public int maxModelCount;
     public GameObject bdj[];
     private int bdk[];
     private int bdl;

@@ -189,43 +189,10 @@ public class PacketConstruction {
     private int packetOffset;
     private int skipOffset;
     public byte packetData[];
-    final int hbe = 61;
-    final int hbf = 59;
-    final int hbg = 42;
-    final int hbh = 43;
-    final int hbi = 44;
-    final int hbj = 45;
-    final int hbk = 46;
-    final int hbl = 47;
-    final int hbm = 92;
-    final int hbn = 32;
-    final int hca = 124;
-    final int hcb = 34;
-    static char hce[];
     public static int packetCommandCount[] = new int[256];
     protected int maxPacketLength;
     public static int packetLengthCount[] = new int[256];
     protected int packetCount;
     protected String errorText;
     protected boolean error;
-    public static int hcl;
-
-    static  {
-        hce = new char[256];
-        for(int i = 0; i < 256; i++)
-            hce[i] = (char)i;
-
-        hce[61] = '=';
-        hce[59] = ';';
-        hce[42] = '*';
-        hce[43] = '+';
-        hce[44] = ',';
-        hce[45] = '-';
-        hce[46] = '.';
-        hce[47] = '/';
-        hce[92] = '\\';
-        hce[124] = '|';
-        hce[33] = '!';
-        hce[34] = '"';
-    }
 }

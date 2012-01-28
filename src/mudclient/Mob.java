@@ -7,8 +7,6 @@ final class Mob {
         waypointsY = new int[10];
         appearanceItems = new int[12];
         level = -1;
-        hah = false;
-        hai = -1;
     }
 
     public long nameHash;
@@ -29,7 +27,7 @@ final class Mob {
     public String lastMessage;
     public int lastMessageTimeout;
     public int itemAboveHeadID;
-    public int itemAboveHeadTimeout;
+    public int playerSkullTimeout;
     public int lastDamageCount;
     public int currentHits;
     public int baseHits;
@@ -43,7 +41,5 @@ final class Mob {
     public int attackingPlayerIndex;
     public int attackingNpcIndex;
     public int projectileDistance;
-    public boolean hah;
-    public int hai;
-    public int itemAboveHeadVisible;
+    public int playerSkulled;
 }

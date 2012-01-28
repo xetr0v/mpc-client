@@ -449,11 +449,9 @@ public class mudclient extends GameAppletMiddleMan {
 
     private final void loadMap() {
         engineHandle.mapsFree = unpackData("maps.jag", "map", 70);
-        if(members)
-            engineHandle.mapsMembers = unpackData("maps.mem", "members map", 75);
+        engineHandle.mapsMembers = unpackData("maps.mem", "members map", 75);
         engineHandle.landscapeFree = unpackData("land.jag", "landscape", 80);
-        if(members)
-            engineHandle.landscapeMembers = unpackData("land.mem", "members landscape", 85);
+        engineHandle.landscapeMembers = unpackData("land.mem", "members landscape", 85);
     }
 
     private final void drawModel(int l, String s1) {
@@ -511,7 +509,7 @@ public class mudclient extends GameAppletMiddleMan {
         for(int k1 = 0; k1 < 12; k1++) {
             int l1 = animationModelArray[direction][k1];
             int l2 = f1.appearanceItems[l1] - 1;
-            if(l2 > Data.animationCount - 1)// TODO fixes the crash with custom animations
+            if(l2 > Data.animationCount - 1)
                 continue;
             if(l2 >= 0) {
                 int k3 = 0;
@@ -581,7 +579,7 @@ public class mudclient extends GameAppletMiddleMan {
             receivedMessageY[receivedMessagesCount] = y;
             receivedMessages[receivedMessagesCount++] = f1.lastMessage;
         }
-        if(f1.itemAboveHeadTimeout > 0) {
+        if(f1.playerSkullTimeout > 0) {
             itemAboveHeadX[itemsAboveHeadCount] = x + width / 2;
             itemAboveHeadY[itemsAboveHeadCount] = y;
             itemAboveHeadScale[itemsAboveHeadCount] = arg6;
@@ -611,7 +609,7 @@ public class mudclient extends GameAppletMiddleMan {
                 gameGraphics.drawText(String.valueOf(f1.lastDamageCount), (j2 + width / 2) - 1, y + height / 2 + 5, 3, 0xffffff);
             }
         }
-        if(f1.itemAboveHeadVisible == 1 && f1.itemAboveHeadTimeout == 0) {
+        if(f1.playerSkulled == 1 && f1.playerSkullTimeout == 0) {
             int k2 = arg5 + x + width / 2;
             if(f1.currentSprite == 8)
                 k2 -= (20 * arg6) / 100;
@@ -1227,7 +1225,7 @@ public class mudclient extends GameAppletMiddleMan {
                         int j30 = DataOperations.getShort(packetData, off);
                         off += 2;
                         if(mob != null) {
-                            mob.itemAboveHeadTimeout = 150;
+                            mob.playerSkullTimeout = 150;
                             mob.itemAboveHeadID = j30;
                         }
                     } else
@@ -1317,7 +1315,7 @@ public class mudclient extends GameAppletMiddleMan {
                             mob.bottomColour = packetData[off++] & 0xff;
                             mob.skinColour = packetData[off++] & 0xff;
                             mob.level = packetData[off++] & 0xff;
-                            mob.itemAboveHeadVisible = packetData[off++] & 0xff;
+                            mob.playerSkulled = packetData[off++] & 0xff;// skulled?
                             off++;// TODO to skip the admin flag
                         } else {
                             off += 14;
@@ -2298,10 +2296,9 @@ public class mudclient extends GameAppletMiddleMan {
             l += l1;
             experienceList[i1] = l & 0xffffffc;
         }
-        loadChatFilter();
+        loadConfig();
         if(errorLoading)
             return;
-        members = true;
         GameAppletMiddleMan.maxPacketReadCount = 500;
         baseInventoryPic = 2000;
         baseScrollPic = baseInventoryPic + 100;
@@ -2349,8 +2346,7 @@ public class mudclient extends GameAppletMiddleMan {
         loadMap();
         if(errorLoading)
             return;
-        if(members)
-            loadSounds();
+        loadSounds();
         if(!errorLoading) {
             drawLoadingBarText(100, "Starting game...");
             createChatInputMenu();
@@ -2358,7 +2354,6 @@ public class mudclient extends GameAppletMiddleMan {
             createAppearanceWindow();
             setLoginVars();
             createLoginScreenBackgrounds();
-            members = false;
             return;
         }
     }
@@ -2366,7 +2361,7 @@ public class mudclient extends GameAppletMiddleMan {
     private final void createLoginMenus() {
         loginMenuFirst = new Menu(gameGraphics, 50);
         int l = 40;
-        if(!members) {
+        if(!Config.MEMBERS) {
             loginMenuFirst.drawText(256, 200 + l, "Click on an option", 5, true);
             loginMenuFirst.drawButton(156, 240 + l, 120, 35);
             loginMenuFirst.drawButton(356, 240 + l, 120, 35);
@@ -2524,14 +2519,12 @@ public class mudclient extends GameAppletMiddleMan {
         abyte1 = DataOperations.loadData("index.dat", 0, abyte0);
         byte abyte2[] = null;
         byte abyte3[] = null;
-        if(members) {
-            abyte2 = unpackData("entity.mem", "member graphics", 45);
-            if(abyte2 == null) {
-                errorLoading = true;
-                return;
-            }
-            abyte3 = DataOperations.loadData("index.dat", 0, abyte2);
+        abyte2 = unpackData("entity.mem", "member graphics", 45);
+        if(abyte2 == null) {
+            errorLoading = true;
+            return;
         }
+        abyte3 = DataOperations.loadData("index.dat", 0, abyte2);
         int l = 0;
         animationNumber = 0;
 label0:
@@ -2546,7 +2539,7 @@ label0:
 
             byte abyte7[] = DataOperations.loadData(s1 + ".dat", 0, abyte0);
             byte abyte4[] = abyte1;
-            if(abyte7 == null && members) {
+            if(abyte7 == null) {
                 abyte7 = DataOperations.loadData(s1 + ".dat", 0, abyte2);
                 abyte4 = abyte3;
             }
@@ -2556,7 +2549,7 @@ label0:
                 if(Data.animationHasA[i1] == 1) {
                     byte abyte8[] = DataOperations.loadData(s1 + "a.dat", 0, abyte0);
                     byte abyte5[] = abyte1;
-                    if(abyte8 == null && members) {
+                    if(abyte8 == null) {
                         abyte8 = DataOperations.loadData(s1 + "a.dat", 0, abyte2);
                         abyte5 = abyte3;
                     }
@@ -2566,7 +2559,7 @@ label0:
                 if(Data.animationHasF[i1] == 1) {
                     byte abyte9[] = DataOperations.loadData(s1 + "f.dat", 0, abyte0);
                     byte abyte6[] = abyte1;
-                    if(abyte9 == null && members) {
+                    if(abyte9 == null) {
                         abyte9 = DataOperations.loadData(s1 + "f.dat", 0, abyte2);
                         abyte6 = abyte3;
                     }
@@ -2841,7 +2834,7 @@ label0:
         else
             gameGraphics.drawString("Mouse buttons - @gre@Two", j1, l1, 1, 0xffffff);
         l1 += 15;
-        if(members)
+        if(Config.MEMBERS)
             if(configSoundOff)
                 gameGraphics.drawString("Sound effects - @red@off", j1, l1, 1, 0xffffff);
             else
@@ -2893,7 +2886,7 @@ label0:
         else
             gameGraphics.drawString("Block trade requests: @gre@<on>", l + 3, l1, 1, 0xffffff);
         l1 += 15;
-        if(members)
+        if(Config.MEMBERS)
             if(super.blockDuel == 0)
                 gameGraphics.drawString("Block duel requests: @red@<off>", l + 3, l1, 1, 0xffffff);
             else
@@ -2932,7 +2925,7 @@ label0:
                 super.streamClass.formatPacket();
             }
             i2 += 15;
-            if(members && super.mouseX > k1 && super.mouseX < k1 + c2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && mouseButtonClick == 1) {
+            if(Config.MEMBERS && super.mouseX > k1 && super.mouseX < k1 + c2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && mouseButtonClick == 1) {
                 configSoundOff = !configSoundOff;
                 super.streamClass.createPacket(157);
                 super.streamClass.addByte(3);
@@ -2991,7 +2984,7 @@ label0:
                 flag = true;
             }
             i2 += 15;
-            if(members && super.mouseX > k1 && super.mouseX < k1 + c2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && mouseButtonClick == 1) {
+            if(Config.MEMBERS && super.mouseX > k1 && super.mouseX < k1 + c2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && mouseButtonClick == 1) {
                 super.blockDuel = 1 - super.blockDuel;
                 flag = true;
             }
@@ -3623,13 +3616,13 @@ label0:
         walkTo(l, i1, j1, k1, j1, k1, false, flag);
     }
 
-    private final void loadChatFilter() {
+    private final void loadConfig() {
         byte abyte0[] = unpackData("config.jag", "Configuration", 10);
         if(abyte0 == null) {
             errorLoading = true;
             return;
         }
-        Data.load(abyte0, members);
+        Data.load(abyte0);
         byte abyte1[] = unpackData("filter.jag", "Chat system", 15);
         if(abyte1 == null) {
             errorLoading = true;
@@ -4088,8 +4081,8 @@ label0:
             }
             if(player.lastMessageTimeout > 0)
                 player.lastMessageTimeout--;
-            if(player.itemAboveHeadTimeout > 0)
-                player.itemAboveHeadTimeout--;
+            if(player.playerSkullTimeout > 0)
+                player.playerSkullTimeout--;
             if(player.combatTimer > 0)
                 player.combatTimer--;
             if(playerAliveTimeout > 0) {
@@ -4167,8 +4160,8 @@ label0:
             }
             if(f2.lastMessageTimeout > 0)
                 f2.lastMessageTimeout--;
-            if(f2.itemAboveHeadTimeout > 0)
-                f2.itemAboveHeadTimeout--;
+            if(f2.playerSkullTimeout > 0)
+                f2.playerSkullTimeout--;
             if(f2.combatTimer > 0)
                 f2.combatTimer--;
         }
@@ -4403,7 +4396,7 @@ label0:
         else if(super.keyDownDown && cameraDistance < 1250)
             cameraDistance += 4;
         if(fogOfWar) {
-            if(cameraZoom && cameraDistance > 550)
+            if((cameraZoom && cameraDistance > 550) || cameraDistance > 750)
                 cameraDistance -= 4;
             if(!cameraZoom && cameraDistance < 750)
                 cameraDistance += 4;
@@ -4516,11 +4509,11 @@ label0:
                 loginMenuLogin.keyPress(key, c);
         }
         if(loggedIn == 1) {
-            if(showAppearanceWindow && appearanceMenu != null) {
+            if(key == KeyEvent.VK_F12)
+                takeScreenshot(true);
+            else if(showAppearanceWindow && appearanceMenu != null)
                 appearanceMenu.keyPress(key, c);
-                return;
-            }
-            if(showFriendsBox == 0 && showAbuseBox == 0 && !isSleeping && chatInputMenu != null)
+            else if(showFriendsBox == 0 && showAbuseBox == 0 && !isSleeping && chatInputMenu != null)
                 chatInputMenu.keyPress(key, c);
         }
     }
@@ -4604,7 +4597,7 @@ label0:
                                 menuActionType[menuOptionsCount] = playerArray[index].serverIndex;
                                 menuOptionsCount++;
                             } else
-                            if(members) {
+                            if(Config.MEMBERS) {
                                 menuText1[menuOptionsCount] = "Duel with";
                                 menuText2[menuOptionsCount] = "@whi@" + playerArray[index].username + s1;
                                 menuActionX[menuOptionsCount] = playerArray[index].currentX;
@@ -6865,7 +6858,7 @@ label0:
     }
 
     private final void playSound(String s1) {
-        if(audioPlayer == null)
+        if(audioPlayer == null || !Config.MEMBERS)
             return;
         if(!configSoundOff)
             audioPlayer.play(soundData, DataOperations.getSoundOffset(s1 + ".pcm", soundData), DataOperations.getSoundLength(s1 + ".pcm", soundData));
@@ -7078,7 +7071,7 @@ label0:
         sleepWordDelay = true;
         configCameraAutoAngle = true;
         cameraRotation = 128;
-        configSoundOff = true;
+        configSoundOff = false;
         menuShow = false;
         duelOpponentItems = new int[8];
         duelOpponentItemsCount = new int[8];
@@ -7142,7 +7135,6 @@ label0:
         duelOutStakeItemCount = new int[8];
         equipmentStatus = new int[5];
         receivedMessages = new String[50];
-        members = false;
         cameraRotationXIncrement = 2;
         teleBubbleTime = new int[50];
         magicLoc = 128;
@@ -7490,7 +7482,6 @@ label0:
     private int drawMenuTab;
     private int receivedMessagesCount;
     String receivedMessages[];
-    private boolean members;
     private int cameraRotateTime;
     private int questionMenuCount;
     private int cameraRotationXAmount;
