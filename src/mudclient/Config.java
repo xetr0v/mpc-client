@@ -6,7 +6,7 @@ public class Config {
     public static String MEDIA_DIR = "./data/";
     
     public static int CLIENT_VERSION = 40;
-    public static boolean MEMBERS = false;
+    public static boolean MEMBERS_FEATURES = false;
     
     public static String SERVER_IP = "216.24.201.81";
     public static int SERVER_PORT = 43595;

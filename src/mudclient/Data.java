@@ -94,7 +94,7 @@ public class Data {
             itemMembers[k2] = readByte();
 
         for(int l2 = 0; l2 < itemCount; l2++)
-            if(!Config.MEMBERS && itemMembers[l2] == 1) {
+            if(!Config.MEMBERS_FEATURES && itemMembers[l2] == 1) {
                 itemName[l2] = "Members object";
                 itemDescription[l2] = "You need to be a member to use this object";
                 itemBasePrice[l2] = 0;

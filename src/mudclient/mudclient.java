@@ -1232,20 +1232,18 @@ public class mudclient extends GameAppletMiddleMan {
                     if(mobUpdateType == 1) {
                         byte byte7 = packetData[off];
                         off++;
-                        if(mob != null) {
-                            String s3 = ChatMessage.bytesToString(packetData, off, byte7);
-                            if(useChatFilter)
-                                s3 = ChatFilter.filterChat(s3);
-                            boolean ignore = false;
-                            for(int i41 = 0; i41 < super.ignoresCount; i41++)
-                                if(super.ignoresList[i41] == mob.nameHash)
-                                    ignore = true;
+                        String s3 = ChatMessage.bytesToString(packetData, off, byte7);
+                        if(useChatFilter)
+                            s3 = ChatFilter.filterChat(s3);
+                        boolean ignore = false;
+                        for(int i41 = 0; i41 < super.ignoresCount; i41++)
+                            if(super.ignoresList[i41] == mob.nameHash)
+                                ignore = true;
 
-                            if(!ignore) {
-                                mob.lastMessageTimeout = 150;
-                                mob.lastMessage = s3;
-                                displayMessage(mob.username + ": " + mob.lastMessage, 2);
-                            }
+                        if(!ignore) {
+                            mob.lastMessageTimeout = 150;
+                            mob.lastMessage = s3;
+                            displayMessage(mob.username + ": " + mob.lastMessage, 2);
                         }
                         off += byte7;
                     } else
@@ -1256,17 +1254,15 @@ public class mudclient extends GameAppletMiddleMan {
                         off++;
                         int baseHits = DataOperations.getByte(packetData[off]);
                         off++;
-                        if(mob != null) {
-                            mob.lastDamageCount = lastDamageCount;
-                            mob.currentHits = currentHits;
-                            mob.baseHits = baseHits;
-                            mob.combatTimer = 200;
-                            if(mob == ourPlayer) {
-                                playerStatCurrent[3] = currentHits;
-                                playerStatBase[3] = baseHits;
-                                showWelcomeBox = false;
-                                showServerMessageBox = false;
-                            }
+                        mob.lastDamageCount = lastDamageCount;
+                        mob.currentHits = currentHits;
+                        mob.baseHits = baseHits;
+                        mob.combatTimer = 200;
+                        if(mob == ourPlayer) {
+                            playerStatCurrent[3] = currentHits;
+                            playerStatBase[3] = baseHits;
+                            showWelcomeBox = false;
+                            showServerMessageBox = false;
                         }
                     } else
                     if(mobUpdateType == 3) {
@@ -1274,65 +1270,53 @@ public class mudclient extends GameAppletMiddleMan {
                         off += 2;
                         int l34 = DataOperations.getShort(packetData, off);
                         off += 2;
-                        if(mob != null) {
-                            mob.projectileType = l30;
-                            mob.attackingNpcIndex = l34;
-                            mob.attackingPlayerIndex = -1;
-                            mob.projectileDistance = projectileRange;
-                        }
+                        mob.projectileType = l30;
+                        mob.attackingNpcIndex = l34;
+                        mob.attackingPlayerIndex = -1;
+                        mob.projectileDistance = projectileRange;
                     } else
                     if(mobUpdateType == 4) {
                         int i31 = DataOperations.getShort(packetData, off);
                         off += 2;
                         int i35 = DataOperations.getShort(packetData, off);
                         off += 2;
-                        if(mob != null) {
-                            mob.projectileType = i31;
-                            mob.attackingPlayerIndex = i35;
-                            mob.attackingNpcIndex = -1;
-                            mob.projectileDistance = projectileRange;
-                        }
+                        mob.projectileType = i31;
+                        mob.attackingPlayerIndex = i35;
+                        mob.attackingNpcIndex = -1;
+                        mob.projectileDistance = projectileRange;
                     } else
                     if(mobUpdateType == 5) {
-                        if(mob != null) {
-                            mob.serverID = DataOperations.getShort(packetData, off);
-                            off += 2;
-                            mob.nameHash = DataOperations.getLong(packetData, off);
-                            off += 8;
-                            mob.username = DataOperations.hashToName(mob.nameHash);
-                            int appearanceCount = DataOperations.getByte(packetData[off]);
+                        mob.serverID = DataOperations.getShort(packetData, off);
+                        off += 2;
+                        mob.nameHash = DataOperations.getLong(packetData, off);
+                        off += 8;
+                        mob.username = DataOperations.hashToName(mob.nameHash);
+                        int appearanceCount = DataOperations.getByte(packetData[off]);
+                        off++;
+                        for(int j35 = 0; j35 < appearanceCount; j35++) {
+                            mob.appearanceItems[j35] = DataOperations.getByte(packetData[off]);
                             off++;
-                            for(int j35 = 0; j35 < appearanceCount; j35++) {
-                                mob.appearanceItems[j35] = DataOperations.getByte(packetData[off]);
-                                off++;
-                            }
-
-                            for(int j38 = appearanceCount; j38 < 12; j38++)
-                                mob.appearanceItems[j38] = 0;
-
-                            mob.hairColour = packetData[off++] & 0xff;
-                            mob.topColour = packetData[off++] & 0xff;
-                            mob.bottomColour = packetData[off++] & 0xff;
-                            mob.skinColour = packetData[off++] & 0xff;
-                            mob.level = packetData[off++] & 0xff;
-                            mob.playerSkulled = packetData[off++] & 0xff;// skulled?
-                            off++;// TODO to skip the admin flag
-                        } else {
-                            off += 14;
-                            int k31 = DataOperations.getByte(packetData[off]);
-                            off += k31 + 1;
                         }
+
+                        for(int j38 = appearanceCount; j38 < 12; j38++)
+                            mob.appearanceItems[j38] = 0;
+
+                        mob.hairColour = packetData[off++] & 0xff;
+                        mob.topColour = packetData[off++] & 0xff;
+                        mob.bottomColour = packetData[off++] & 0xff;
+                        mob.skinColour = packetData[off++] & 0xff;
+                        mob.level = packetData[off++] & 0xff;
+                        mob.playerSkulled = packetData[off++] & 0xff;
+                        off++;// TODO to skip the admin flag (should it be removed)
                     } else
                     if(mobUpdateType == 6) {
                         byte byte8 = packetData[off];
                         off++;
-                        if(mob != null) {
-                            String s4 = ChatMessage.bytesToString(packetData, off, byte8);
-                            mob.lastMessageTimeout = 150;
-                            mob.lastMessage = s4;
-                            if(mob == ourPlayer)
-                                displayMessage(mob.username + ": " + mob.lastMessage, 5);
-                        }
+                        String s4 = ChatMessage.bytesToString(packetData, off, byte8);
+                        mob.lastMessageTimeout = 150;
+                        mob.lastMessage = s4;
+                        if(mob == ourPlayer)
+                            displayMessage(mob.username + ": " + mob.lastMessage, 5);
                         off += byte8;
                     }
                 }
@@ -2361,7 +2345,7 @@ public class mudclient extends GameAppletMiddleMan {
     private final void createLoginMenus() {
         loginMenuFirst = new Menu(gameGraphics, 50);
         int l = 40;
-        if(!Config.MEMBERS) {
+        if(!Config.MEMBERS_FEATURES) {
             loginMenuFirst.drawText(256, 200 + l, "Click on an option", 5, true);
             loginMenuFirst.drawButton(156, 240 + l, 120, 35);
             loginMenuFirst.drawButton(356, 240 + l, 120, 35);
@@ -2816,10 +2800,10 @@ label0:
         int i1 = 36;
         gameGraphics.drawPicture(l - 49, 3, baseInventoryPic + 6);
         int c1 = 196;
-        gameGraphics.drawBoxAlpha(l, 36, c1, 65, GameImage.rgbToInt(181, 181, 181), 160);
-        gameGraphics.drawBoxAlpha(l, 101, c1, 87, GameImage.rgbToInt(201, 201, 201), 160);
-        gameGraphics.drawBoxAlpha(l, 188, c1, 95, GameImage.rgbToInt(181, 181, 181), 160);
-        gameGraphics.drawBoxAlpha(l, 283, c1, 40, GameImage.rgbToInt(201, 201, 201), 160);
+        gameGraphics.drawBoxAlpha(l, 36, c1, 62, GameImage.rgbToInt(181, 181, 181), 160);
+        gameGraphics.drawBoxAlpha(l, 98, c1, 92, GameImage.rgbToInt(201, 201, 201), 160);
+        gameGraphics.drawBoxAlpha(l, 190, c1, 90, GameImage.rgbToInt(181, 181, 181), 160);
+        gameGraphics.drawBoxAlpha(l, 280, c1, 40, GameImage.rgbToInt(201, 201, 201), 160);
         int j1 = l + 3;
         int l1 = i1 + 15;
         gameGraphics.drawString("Game options - click to toggle", j1, l1, 1, 0);
@@ -2834,7 +2818,7 @@ label0:
         else
             gameGraphics.drawString("Mouse buttons - @gre@Two", j1, l1, 1, 0xffffff);
         l1 += 15;
-        if(Config.MEMBERS)
+        if(Config.MEMBERS_FEATURES)
             if(configSoundOff)
                 gameGraphics.drawString("Sound effects - @red@off", j1, l1, 1, 0xffffff);
             else
@@ -2862,14 +2846,14 @@ label0:
         else
             gameGraphics.drawString("Automatic screenshots - @red@off", j1, l1, 1, 0xffffff);
         l1 += 15;
-        gameGraphics.drawString("Privacy settings. Will be applied to", j1, l1, 1, 0);
-        l1 += 15;
-        gameGraphics.drawString("all people not on your friends list", j1, l1, 1, 0);
-        l1 += 15;
         if(useChatFilter)
             gameGraphics.drawString("Chat filter: @gre@<on>", l + 3, l1, 1, 0xffffff);
         else
             gameGraphics.drawString("Chat filter: @red@<off>", l + 3, l1, 1, 0xffffff);
+        l1 += 15;
+        gameGraphics.drawString("Privacy settings. Will be applied to", j1, l1, 1, 0);
+        l1 += 15;
+        gameGraphics.drawString("all people not on your friends list", j1, l1, 1, 0);
         l1 += 15;
         if(super.blockChat == 0)
             gameGraphics.drawString("Block chat messages: @red@<off>", l + 3, l1, 1, 0xffffff);
@@ -2886,7 +2870,7 @@ label0:
         else
             gameGraphics.drawString("Block trade requests: @gre@<on>", l + 3, l1, 1, 0xffffff);
         l1 += 15;
-        if(Config.MEMBERS)
+        if(Config.MEMBERS_FEATURES)
             if(super.blockDuel == 0)
                 gameGraphics.drawString("Block duel requests: @red@<off>", l + 3, l1, 1, 0xffffff);
             else
@@ -2925,7 +2909,7 @@ label0:
                 super.streamClass.formatPacket();
             }
             i2 += 15;
-            if(Config.MEMBERS && super.mouseX > k1 && super.mouseX < k1 + c2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && mouseButtonClick == 1) {
+            if(Config.MEMBERS_FEATURES && super.mouseX > k1 && super.mouseX < k1 + c2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && mouseButtonClick == 1) {
                 configSoundOff = !configSoundOff;
                 super.streamClass.createPacket(157);
                 super.streamClass.addByte(3);
@@ -2963,11 +2947,11 @@ label0:
             }
             boolean flag = false;
             i2 += 15;
-            i2 += 15;
-            i2 += 15;
             if(super.mouseX > k1 && super.mouseX < k1 + c2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && mouseButtonClick == 1) {
                 useChatFilter = !useChatFilter;
             }
+            i2 += 15;
+            i2 += 15;
             i2 += 15;
             if(super.mouseX > k1 && super.mouseX < k1 + c2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && mouseButtonClick == 1) {
                 super.blockChat = 1 - super.blockChat;
@@ -2984,7 +2968,7 @@ label0:
                 flag = true;
             }
             i2 += 15;
-            if(Config.MEMBERS && super.mouseX > k1 && super.mouseX < k1 + c2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && mouseButtonClick == 1) {
+            if(Config.MEMBERS_FEATURES && super.mouseX > k1 && super.mouseX < k1 + c2 && super.mouseY > i2 - 12 && super.mouseY < i2 + 4 && mouseButtonClick == 1) {
                 super.blockDuel = 1 - super.blockDuel;
                 flag = true;
             }
@@ -4589,7 +4573,7 @@ label0:
                                 menuActionType[menuOptionsCount] = playerArray[index].serverIndex;
                                 menuOptionsCount++;
                             } else
-                            if(Config.MEMBERS) {
+                            if(Config.MEMBERS_FEATURES) {
                                 menuText1[menuOptionsCount] = "Duel with";
                                 menuText2[menuOptionsCount] = "@whi@" + playerArray[index].username + s1;
                                 menuActionX[menuOptionsCount] = playerArray[index].currentX;
@@ -6850,7 +6834,7 @@ label0:
     }
 
     private final void playSound(String s1) {
-        if(audioPlayer == null || !Config.MEMBERS)
+        if(audioPlayer == null || !Config.MEMBERS_FEATURES)
             return;
         if(!configSoundOff)
             audioPlayer.play(soundData, DataOperations.getSoundOffset(s1 + ".pcm", soundData), DataOperations.getSoundLength(s1 + ".pcm", soundData));
@@ -6999,10 +6983,7 @@ label0:
             }
             if(cmd.equals("tell")) {
                 long recipient = DataOperations.nameToHash(args[0]);
-                String message = "";
-                for(int i = 1; i < args.length; i++)
-                    message += args[i] + " ";
-                message = message.trim();
+                String message = joinString(args, " ", 1).trim();
                 if(message.equals(""))
                     return true;
                 int len = ChatMessage.stringToBytes(message);
@@ -7017,6 +6998,17 @@ label0:
             e.printStackTrace();
         }
         return false;
+    }
+    
+    public String joinString(String hay[], String glue, int start) {
+        String ret = "";
+        for(int i = start; i < hay.length; i++)
+            ret += hay[i] + (i != hay.length - 1 ? glue : "");
+        return ret;
+    }
+    
+    public String joinString(String hay[], String glue) {
+        return joinString(hay, glue, 0);
     }
 
     public mudclient() {
