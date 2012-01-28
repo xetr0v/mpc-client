@@ -21,7 +21,7 @@ public class mudclient extends GameAppletMiddleMan {
     
     public static final void main(String args[]) {
         mudclient mud = new mudclient();
-        mud.flc(mud.windowWidth, mud.windowHeight + 11, "MoparClassic", false);
+        mud.createWindow(mud.windowWidth, mud.windowHeight + 11, "MoparClassic", false);
         mud.gameMinThreadSleepTime = 10;
     }
 
@@ -4288,28 +4288,20 @@ label0:
         if(messagesTab > 0 && super.mouseX >= 494 && super.mouseY >= windowHeight - 66)
             super.lastMouseButton = 0;
         if(chatInputMenu.isClicked(chatInputBox)) {
-            String s1 = chatInputMenu.getText(chatInputBox);
+            String input = chatInputMenu.getText(chatInputBox);
             chatInputMenu.updateText(chatInputBox, "");
-            if(s1.startsWith("::")) {
-                if(s1.equalsIgnoreCase("::closecon"))
-                    super.streamClass.closeStream();
-                else
-                if(s1.equalsIgnoreCase("::logout"))
-                    requestLogout();
-                else
-                if(s1.equalsIgnoreCase("::lostcon"))
-                    lostConnection();
-                else if(!handleCommand(s1.substring(2)))
-                    sendCommand(s1.substring(2));
+            if(input.startsWith("::")) {
+                if(!handleCommand(input.substring(2)))
+                    sendCommand(input.substring(2));
             } else {
-                int len = ChatMessage.stringToBytes(s1);
+                int len = ChatMessage.stringToBytes(input);
                 sendChatMessage(ChatMessage.lastChat, len);
-                s1 = ChatMessage.bytesToString(ChatMessage.lastChat, 0, len);
+                input = ChatMessage.bytesToString(ChatMessage.lastChat, 0, len);
                 if(useChatFilter)
-                    s1 = ChatFilter.filterChat(s1);
+                    input = ChatFilter.filterChat(input);
                 ourPlayer.lastMessageTimeout = 150;
-                ourPlayer.lastMessage = s1;
-                displayMessage(ourPlayer.username + ": " + s1, 2);
+                ourPlayer.lastMessage = input;
+                displayMessage(ourPlayer.username + ": " + input, 2);
             }
         }
         if(messagesTab == 0) {
@@ -6993,13 +6985,32 @@ label0:
                 cmd = command.substring(0, firstSpace).trim();
                 args = command.substring(firstSpace).trim().split(" ");
             }
-            if(cmd.equals("get")) {
-                java.lang.reflect.Field field = getClass().getDeclaredField(args[0]);
-                if(!field.isAccessible())
-                    field.setAccessible(true);
-                Object value = field.get(this);
-                displayMessage(args[0] + ": " + value, 5);
-                System.out.println(args[0] + ": " + value);
+            if(cmd.equals("closecon")) {
+                super.streamClass.closeStream();
+                return true;
+            }
+            if(cmd.equals("logout")) {
+                requestLogout();
+                return true;
+            }
+            if(cmd.equals("lostcon")) {
+                lostConnection();
+                return true;
+            }
+            if(cmd.equals("tell")) {
+                long recipient = DataOperations.nameToHash(args[0]);
+                String message = "";
+                for(int i = 1; i < args.length; i++)
+                    message += args[i] + " ";
+                message = message.trim();
+                if(message.equals(""))
+                    return true;
+                int len = ChatMessage.stringToBytes(message);
+                sendPrivateMessage(recipient, ChatMessage.lastChat, len);
+                message = ChatMessage.bytesToString(ChatMessage.lastChat, 0, len);
+                if(useChatFilter)
+                    message = ChatFilter.filterChat(message);
+                displayMessage("@pri@You tell " + DataOperations.hashToName(recipient) + ": " + message);
                 return true;
             }
         } catch(Exception e) {

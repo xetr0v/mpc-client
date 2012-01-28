@@ -36,7 +36,7 @@ public class GameApplet extends Applet
     protected synchronized void drawWindow() {
     }
 
-    protected final void flc(int width, int height, String title, boolean resizable) {
+    protected final void createWindow(int width, int height, String title, boolean resizable) {
         System.out.println("Started application");
         appletWidth = width;
         appletHeight = height;
