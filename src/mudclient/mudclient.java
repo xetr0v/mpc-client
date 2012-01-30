@@ -6974,7 +6974,7 @@ label0:
                 return true;
             }
             if(cmd.equals("logout")) {
-                requestLogout();
+                sendLogout();
                 return true;
             }
             if(cmd.equals("lostcon")) {
