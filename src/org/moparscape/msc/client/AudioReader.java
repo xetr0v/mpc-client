@@ -1,4 +1,4 @@
-package mudclient;
+package org.moparscape.msc.client;
 
 import java.io.InputStream;
 import sun.audio.AudioPlayer;

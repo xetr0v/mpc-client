@@ -1,4 +1,4 @@
-package mudclient;
+package org.moparscape.msc.client;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -4487,6 +4487,13 @@ label0:
         if(loggedIn == 1) {
             if(key == KeyEvent.VK_F12)
                 takeScreenshot(true);
+            else if(key == KeyEvent.VK_F3) {
+                String arr[] = chatInputMenu.componentTextList[messagesHandleType5];
+                for(int i = arr.length - 1; i >= 0; i--)
+                    if(arr[i] != null) {
+                        System.out.println(i + ":\t\"" + arr[i] + "\"");
+                    }
+            }
             else if(showAppearanceWindow && appearanceMenu != null)
                 appearanceMenu.keyPress(key, c);
             else if(showFriendsBox == 0 && showAbuseBox == 0 && !isSleeping && chatInputMenu != null)
@@ -5113,8 +5120,24 @@ label0:
             }
         }
     }
-    
+    long upd = 0L;
+    java.util.ArrayList<String> list = new java.util.ArrayList<String>();
+    int timefor = 1;
     private final void drawGame() {
+        long now = System.currentTimeMillis();
+        if(now - upd > 200) {
+            String arr[] = chatInputMenu.componentTextList[messagesHandleType5];
+            int idx = 0;
+            for(int i = arr.length - 1; i >= 0; i--)
+                if(arr[i] != null) {
+                    idx = i;
+                    break;
+                }
+            if(!list.get(list.size() - 1).equals(arr[idx])) {
+                
+            }
+            upd = now;
+        }
         if(playerAliveTimeout != 0) {
             gameGraphics.screenFadeToBlack();
             gameGraphics.drawText("Oh dear! You are dead...", windowWidth / 2, windowHeight / 2, 7, 0xff0000);
