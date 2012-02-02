@@ -4487,13 +4487,6 @@ label0:
         if(loggedIn == 1) {
             if(key == KeyEvent.VK_F12)
                 takeScreenshot(true);
-            else if(key == KeyEvent.VK_F3) {
-                String arr[] = chatInputMenu.componentTextList[messagesHandleType5];
-                for(int i = arr.length - 1; i >= 0; i--)
-                    if(arr[i] != null) {
-                        System.out.println(i + ":\t\"" + arr[i] + "\"");
-                    }
-            }
             else if(showAppearanceWindow && appearanceMenu != null)
                 appearanceMenu.keyPress(key, c);
             else if(showFriendsBox == 0 && showAbuseBox == 0 && !isSleeping && chatInputMenu != null)
