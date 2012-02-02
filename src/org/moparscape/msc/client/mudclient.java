@@ -5120,24 +5120,8 @@ label0:
             }
         }
     }
-    long upd = 0L;
-    java.util.ArrayList<String> list = new java.util.ArrayList<String>();
-    int timefor = 1;
+    
     private final void drawGame() {
-        long now = System.currentTimeMillis();
-        if(now - upd > 200) {
-            String arr[] = chatInputMenu.componentTextList[messagesHandleType5];
-            int idx = 0;
-            for(int i = arr.length - 1; i >= 0; i--)
-                if(arr[i] != null) {
-                    idx = i;
-                    break;
-                }
-            if(!list.get(list.size() - 1).equals(arr[idx])) {
-                
-            }
-            upd = now;
-        }
         if(playerAliveTimeout != 0) {
             gameGraphics.screenFadeToBlack();
             gameGraphics.drawText("Oh dear! You are dead...", windowWidth / 2, windowHeight / 2, 7, 0xff0000);
@@ -6859,8 +6843,11 @@ label0:
     private final void playSound(String s1) {
         if(audioPlayer == null || !Config.MEMBERS_FEATURES)
             return;
-        if(!configSoundOff)
-            audioPlayer.play(soundData, DataOperations.getSoundOffset(s1 + ".pcm", soundData), DataOperations.getSoundLength(s1 + ".pcm", soundData));
+        if(!configSoundOff) {
+            int off = DataOperations.getSoundOffset(s1 + ".pcm", soundData);
+            int len = DataOperations.getSoundLength(s1 + ".pcm", soundData);
+            audioPlayer.play(soundData, off, len);
+        }
     }
 
     private final void drawRightClickMenu() {
