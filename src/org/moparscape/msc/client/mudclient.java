@@ -1680,9 +1680,9 @@ public class mudclient extends GameAppletMiddleMan {
                     off += 2;
                     shopItemCount[item] = DataOperations.getShort(packetData, off);
                     off += 2;
-                    shopItemBuyPrice[item] = DataOperations.getInt2(packetData, off);
+                    shopItemBuyPrice[item] = DataOperations.getInt(packetData, off);
                     off += 4;
-                    shopItemSellPrice[item] = DataOperations.getInt2(packetData, off);
+                    shopItemSellPrice[item] = DataOperations.getInt(packetData, off);
                     off += 4;
                 }
 
@@ -1760,7 +1760,7 @@ public class mudclient extends GameAppletMiddleMan {
                 for(int l11 = 0; l11 < serverBankItemsCount; l11++) {
                     serverBankItems[l11] = DataOperations.getShort(packetData, off);
                     off += 2;
-                    serverBankItemCount[l11] = DataOperations.getInt2(packetData, off);
+                    serverBankItemCount[l11] = DataOperations.getInt(packetData, off);
                     off += 4;
                 }
 
@@ -1861,7 +1861,7 @@ public class mudclient extends GameAppletMiddleMan {
                 int itemSlot = packetData[off++] & 0xff;
                 int itemID = DataOperations.getShort(packetData, off);
                 off += 2;
-                int itemCount = DataOperations.getInt2(packetData, off);
+                int itemCount = DataOperations.getInt(packetData, off);
                 off += 4;
                 if(itemCount == 0) {
                     serverBankItemsCount--;

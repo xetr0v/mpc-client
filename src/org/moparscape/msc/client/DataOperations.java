@@ -56,13 +56,6 @@ public class DataOperations {
         return j;
     }
 
-    public static int getInt2(byte abyte0[], int i) {
-        if((abyte0[i] & 0xff) < 128)
-            return abyte0[i];
-        else
-            return ((abyte0[i] & 0xff) - 128 << 24) + ((abyte0[i + 1] & 0xff) << 16) + ((abyte0[i + 2] & 0xff) << 8) + (abyte0[i + 3] & 0xff);
-    }
-
     public static int getBits(byte bytes[], int off, int len) {
         int bitOff = off >> 3;
         int bitMod = 8 - (off & 7);
