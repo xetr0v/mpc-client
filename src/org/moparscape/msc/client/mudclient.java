@@ -3667,7 +3667,6 @@ label0:
         gameGraphics.drawLineX(l, (i1 + c2) - 16, c1, 0);
         gameGraphics.drawText("Friends", l + c1 / 4, i1 + 16, 4, 0);
         gameGraphics.drawText("Ignore", l + c1 / 4 + c1 / 2, i1 + 16, 4, 0);
-        friendsLastShownEntries = spellMenu.listShownEntries;
         friendsMenu.clearList(friendsMenuHandle);
         if(friendsIgnoreMenuSelected == 0) {
             for(int l1 = 0; l1 < super.friendsCount; l1++) {
@@ -3688,7 +3687,6 @@ label0:
                 friendsMenu.addListItem(friendsMenuHandle, i2, "@yel@" + DataOperations.hashToName(super.ignoresList[i2]) + "~439~@whi@Remove         WWWWWWWWWW");
 
         }
-        friendsMenu.listShownEntries = friendsLastShownEntries;
         friendsMenu.drawMenu();
         if(friendsIgnoreMenuSelected == 0) {
             int j2 = friendsMenu.getEntryHighlighted(friendsMenuHandle);
@@ -3797,7 +3795,6 @@ label0:
         gameGraphics.drawText("Magic", l + c1 / 4, i1 + 16, 4, 0);
         gameGraphics.drawText("Prayers", l + c1 / 4 + c1 / 2, i1 + 16, 4, 0);
         if(menuMagicPrayersSelected == 0) {
-            spellsLastShownEntries = spellMenu.listShownEntries;
             spellMenu.clearList(spellMenuHandle);
             int l1 = 0;
             for(int l2 = 0; l2 < Data.spellCount; l2++) {
@@ -3816,7 +3813,6 @@ label0:
                 spellMenu.addListItem(spellMenuHandle, l1++, s1 + "Level " + Data.spellRequiredLevel[l2] + ": " + Data.spellName[l2]);
             }
 
-            spellMenu.listShownEntries = spellsLastShownEntries;
             spellMenu.drawMenu();
             int l3 = spellMenu.getEntryHighlighted(spellMenuHandle);
             if(l3 != -1) {
@@ -3838,7 +3834,6 @@ label0:
             }
         }
         if(menuMagicPrayersSelected == 1) {
-            prayersLastShownEntries = spellMenu.listShownEntries;
             spellMenu.clearList(spellMenuHandle);
             int i2 = 0;
             for(int i3 = 0; i3 < Data.prayerCount; i3++) {
@@ -3850,7 +3845,6 @@ label0:
                 spellMenu.addListItem(spellMenuHandle, i2++, s2 + "Level " + Data.prayerRequiredLevel[i3] + ": " + Data.prayerName[i3]);
             }
 
-            spellMenu.listShownEntries = prayersLastShownEntries;
             spellMenu.drawMenu();
             int i4 = spellMenu.getEntryHighlighted(spellMenuHandle);
             if(i4 != -1) {
@@ -6727,13 +6721,11 @@ label0:
             }
         }
         if(questMenuSelected == 1) {
-            questsLastShownEntries = questMenu.listShownEntries;
             questMenu.clearList(questMenuHandle);
             questMenu.addListItem(questMenuHandle, 0, "@whi@Quest-list (green=completed)");
             for(int i2 = 0; i2 < usedQuestName.length; i2++)
                 questMenu.addListItem(questMenuHandle, i2 + 1, (questStage[i2] == 0 ? "@red@" : questStage[i2] == 1 ? "@yel@" : "@gre@") + usedQuestName[i2]);
 
-            questMenu.listShownEntries = questsLastShownEntries;
             questMenu.drawMenu();
         }
         if(!canClick)
@@ -7189,10 +7181,6 @@ label0:
         captchaHeight = 0;
         needsClear = false;
         hasWorldInfo = false;
-        friendsLastShownEntries = new int[5];
-        spellsLastShownEntries = new int[5];
-        prayersLastShownEntries = new int[5];
-        questsLastShownEntries = new int[5];
     }
 
     private String tradeOtherName;
@@ -7589,8 +7577,4 @@ label0:
     private int captchaHeight;
     private boolean needsClear;
     private boolean hasWorldInfo;
-    private int friendsLastShownEntries[];
-    private int spellsLastShownEntries[];
-    private int prayersLastShownEntries[];
-    private int questsLastShownEntries[];
 }
