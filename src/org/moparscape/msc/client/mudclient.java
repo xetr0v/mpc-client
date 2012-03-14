@@ -35,10 +35,10 @@ public class mudclient extends GameAppletMiddleMan {
         if(actionID == 200) {
             walkToGroundItem(sectionX, sectionY, actionX, actionY, true);
             super.streamClass.createPacket(104);
+            super.streamClass.addShort(actionVar1);
             super.streamClass.addShort(actionX + areaX);
             super.streamClass.addShort(actionY + areaY);
             super.streamClass.addShort(actionType);
-            super.streamClass.addShort(actionVar1);
             super.streamClass.formatPacket();
             selectedSpell = -1;
         }
@@ -66,10 +66,10 @@ public class mudclient extends GameAppletMiddleMan {
         if(actionID == 300) {
             walkToWallObject(actionX, actionY, actionType);
             super.streamClass.createPacket(67);
+            super.streamClass.addShort(actionVar1);
             super.streamClass.addShort(actionX + areaX);
             super.streamClass.addShort(actionY + areaY);
             super.streamClass.addByte(actionType);
-            super.streamClass.addShort(actionVar1);
             super.streamClass.formatPacket();
             selectedSpell = -1;
         }
@@ -104,9 +104,10 @@ public class mudclient extends GameAppletMiddleMan {
         if(actionID == 400) {
             walkToObject(actionX, actionY, actionType, actionVar1);
             super.streamClass.createPacket(17);
+            super.streamClass.addShort(actionVar2);
             super.streamClass.addShort(actionX + areaX);
             super.streamClass.addShort(actionY + areaY);
-            super.streamClass.addShort(actionVar2);
+            
             super.streamClass.formatPacket();
             selectedSpell = -1;
         }
@@ -137,8 +138,8 @@ public class mudclient extends GameAppletMiddleMan {
             displayMessage(Data.objectDescription[actionType], 3);
         if(actionID == 600) {
             super.streamClass.createPacket(49);
-            super.streamClass.addShort(actionType);
             super.streamClass.addShort(actionVar1);
+            super.streamClass.addShort(actionType);
             super.streamClass.formatPacket();
             selectedSpell = -1;
         }
@@ -184,8 +185,8 @@ public class mudclient extends GameAppletMiddleMan {
             int k4 = (actionY - 64) / magicLoc;
             walkTo1Tile(sectionX, sectionY, k2, k4, true);
             super.streamClass.createPacket(71);
-            super.streamClass.addShort(actionType);
             super.streamClass.addShort(actionVar1);
+            super.streamClass.addShort(actionType);
             super.streamClass.formatPacket();
             selectedSpell = -1;
         }
@@ -230,8 +231,8 @@ public class mudclient extends GameAppletMiddleMan {
             int l5 = (actionY - 64) / magicLoc;
             walkTo1Tile(sectionX, sectionY, l3, l5, true);
             super.streamClass.createPacket(55);
-            super.streamClass.addShort(actionType);
             super.streamClass.addShort(actionVar1);
+            super.streamClass.addShort(actionType);
             super.streamClass.formatPacket();
             selectedSpell = -1;
         }
@@ -271,9 +272,9 @@ public class mudclient extends GameAppletMiddleMan {
         if(actionID == 900) {
             walkTo1Tile(sectionX, sectionY, actionX, actionY, true);
             super.streamClass.createPacket(232);
+            super.streamClass.addShort(actionType);
             super.streamClass.addShort(actionX + areaX);
             super.streamClass.addShort(actionY + areaY);
-            super.streamClass.addShort(actionType);
             super.streamClass.formatPacket();
             selectedSpell = -1;
         }
