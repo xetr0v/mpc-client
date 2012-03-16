@@ -67,7 +67,7 @@
         </java>
     </target>
     <target name="client">
-        <java classname="mudclient.mudclient" failonerror="true" fork="yes">
+        <java classname="org.moparscape.msc.client.mudclient" failonerror="true" fork="yes">
             <classpath refid="mpc-client.classpath"/>
         </java>
     </target>
