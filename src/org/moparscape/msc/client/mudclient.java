@@ -7014,7 +7014,7 @@ label0:
         cameraFieldOfView = 9;
         showQuestionMenu = false;
         loginScreenShown = false;
-        questionMenuAnswer = new String[5];
+        questionMenuAnswer = new String[10];
         appearanceBodyGender = 1;
         appearance2Colour = 2;
         appearanceHairColour = 2;
