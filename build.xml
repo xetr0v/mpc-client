@@ -36,7 +36,7 @@
     <target name="archive-project">
         <jar destfile="mpc-client.jar" basedir="bin">
         	<manifest>
-                <attribute name="Main-Class" value="mudclient.mudclient"/>
+                <attribute name="Main-Class" value="org.moparscape.msc.client.mudclient"/>
         	</manifest>
         </jar>
     </target>
