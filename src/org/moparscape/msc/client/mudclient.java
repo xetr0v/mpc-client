@@ -23,7 +23,6 @@ public class mudclient extends GameAppletMiddleMan {
         mudclient mud = new mudclient();
         mud.createWindow(mud.windowWidth, mud.windowHeight + 11, "MoparClassic", false);
         mud.gameMinThreadSleepTime = 10;
-        ImageIO.setCacheDirectory(new File(Config.CONF_DIR));
     }
 
     private final void menuClick(int l) {
@@ -7183,6 +7182,7 @@ label0:
         captchaHeight = 0;
         needsClear = false;
         hasWorldInfo = false;
+        ImageIO.setCacheDirectory(new File(Config.CONF_DIR));
     }
 
     private String tradeOtherName;
