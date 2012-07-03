@@ -2279,7 +2279,7 @@ public class mudclient extends GameAppletMiddleMan {
             int j1 = i1 + 1;
             int l1 = (int)((double)j1 + 300D * Math.pow(2D, (double)j1 / 7D));
             l += l1;
-            experienceList[i1] = l & 0xffffffc;
+            experienceList[i1] = (l & 0xffffffc) / 4;
         }
         loadConfig();
         if(errorLoading)
@@ -6704,10 +6704,9 @@ label0:
                 for(int l3 = 0; l3 < 98; l3++)
                     if(playerStatExp[j2] >= experienceList[l3])
                         j3 = experienceList[l3 + 1];
-
                 gameGraphics.drawString("Total xp: " + playerStatExp[j2], l + 5, l1, 1, 0xffffff);
                 l1 += 12;
-                gameGraphics.drawString("Next level at: " + j3 / 4, l + 5, l1, 1, 0xffffff);
+                gameGraphics.drawString("Next level at: " + j3, l + 5, l1, 1, 0xffffff);
             } else {
                 gameGraphics.drawString("Overall levels", l + 5, l1, 1, 0xffff00);
                 l1 += 12;
