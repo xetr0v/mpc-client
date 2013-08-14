@@ -8,7 +8,7 @@ public class Config {
     public static int CLIENT_VERSION = 40;
     public static boolean MEMBERS_FEATURES = false;
     
-    public static String SERVER_IP = "rsc.moparscape.org";
+    public static String SERVER_IP = "localhost";
     public static int SERVER_PORT = 43595;
     
     public static String CACHE_URL = "http://216.24.201.81/cache/";
