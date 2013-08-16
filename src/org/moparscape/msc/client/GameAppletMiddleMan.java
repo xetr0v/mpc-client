@@ -147,6 +147,10 @@ public class GameAppletMiddleMan extends GameApplet {
 				loginScreenPrint("Account already in use.",
 						"You may only login to one character at a time");
 				return;
+			}
+			if (loginCode == 10) {
+				loginScreenPrint("Nonexistent account", "More info at reddit.com/MoparClassic");
+				return;
 			} else {
 				loginScreenPrint("Error unable to login.",
 						"Unrecognised response code");
