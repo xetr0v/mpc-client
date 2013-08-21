@@ -2355,18 +2355,20 @@ public class mudclient extends GameAppletMiddleMan {
             loginButtonNewUser = loginMenuFirst.createButton(156, 240 + l, 120, 35);
             loginMenuLoginButton = loginMenuFirst.createButton(356, 240 + l, 120, 35);
         } else {
-            loginMenuFirst.drawText(256, 200 + l, "Welcome to RuneScape", 4, true);
+            loginMenuFirst.drawText(256, 200 + l, "Welcome to MoparClassic", 4, true);
             loginMenuFirst.drawText(256, 215 + l, "You need a member account to use this server", 4, true);
             loginMenuFirst.drawButton(256, 250 + l, 200, 35);
             loginMenuFirst.drawText(256, 250 + l, "Click here to login", 5, false);
             loginMenuLoginButton = loginMenuFirst.createButton(256, 250 + l, 200, 35);
         }
         loginNewUser = new Menu(gameGraphics, 50);
-        l = 230;
-        loginNewUser.drawText(256, l + 8, "To create an account please go back to the", 4, true);
+        l = 220;
+        loginNewUser.drawText(256, l + 8, "To create an account please visit ", 4, true);
         l += 20;
-        loginNewUser.drawText(256, l + 8, "www.runescape.com front page, and choose 'create account'", 4, true);
-        l += 30;
+        loginNewUser.drawText(256, l + 8, "http://www.reddit.com/r/moparclassic/", 4, true);
+        l += 20;
+        loginNewUser.drawText(256, l + 8, "and read the sticky, 'creating accounts'.", 4, true);
+        l += 22;
         loginNewUser.drawButton(256, l + 17, 150, 34);
         loginNewUser.drawText(256, l + 17, "Ok", 5, false);
         loginMenuOkButton = loginNewUser.createButton(256, l + 17, 150, 34);
@@ -2622,7 +2624,7 @@ label0:
         gameGraphics.drawBox(56, 167 - l / 2, 400, l, 0);
         gameGraphics.drawBoxEdge(56, 167 - l / 2, 400, l, 0xffffff);
         i1 += 20;
-        gameGraphics.drawText("Welcome to RuneScape " + loginUsername, 256, i1, 4, 0xffff00);
+        gameGraphics.drawText("Welcome to MoparClassic " + loginUsername, 256, i1, 4, 0xffff00);
         i1 += 30;
         String s1;
         // lastLoginDays    subDaysLeft    lastLoginAddress
