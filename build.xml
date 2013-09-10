@@ -37,6 +37,8 @@
         <jar destfile="mpc-client.jar" basedir="bin">
         	<manifest>
                 <attribute name="Main-Class" value="org.moparscape.msc.client.mudclient"/>
+				<attribute name="Permissions" value="all-permissions"/>
+				<attribute name="Codebase" value="http://moparclassicclient.net78.net/"/>
         	</manifest>
         </jar>
     </target>
