@@ -3058,100 +3058,103 @@ label0:
         gameGraphics.drawText("Defensive  (+3 defense)", byte0 + c1 / 2, byte1 + 96, 3, 0);
     }
 
-    private final void drawTradeBox() {
-        if(mouseButtonClick != 0) {
-            int mx = super.mouseX - 22;
-            int my = super.mouseY - 36;
-            if(mx >= 0 && my >= 30 && mx < 462 && my < 262) {
-                if(mx > 216 && my > 30 && mx < 462 && my < 235) {
-                    int curItem = (mx - 217) / 49 + ((my - 31) / 34) * 5;
-                    if(curItem >= 0 && curItem < inventoryItemsCount) {
-                        int item = inventoryItems[curItem];
-                        mouseClickedHeldInTradeDuelBox = 1;
-                        boolean ourTradeItemsChanged = false;
-                        int someInt = 0;
-                        for(int tradeItem = 0; tradeItem < tradeItemsOurCount; tradeItem++)
-                            if(tradeItemsOur[tradeItem] == item)
-                                if(Data.itemStackable[item] == 0)
-                                    for(int i = 0; i < mouseClickedHeldInTradeDuelBox; i++) {
-                                        if(tradeItemOurCount[tradeItem] < inventoryItemCount[curItem])
-                                            tradeItemOurCount[tradeItem]++;
-                                        ourTradeItemsChanged = true;
-                                    }
-                                else
-                                    someInt++;
-                        if(getInventoryItemTotalCount(item) <= someInt)
-                            ourTradeItemsChanged = true;
-                        if(Data.itemSpecial[item] == 1) {
-                            displayMessage("This object cannot be traded with other players", 3);
-                            ourTradeItemsChanged = true;
-                        }
-                        if(!ourTradeItemsChanged && tradeItemsOurCount < 12) {
-                            tradeItemsOur[tradeItemsOurCount] = item;
-                            tradeItemOurCount[tradeItemsOurCount] = 1;
-                            tradeItemsOurCount++;
-                            ourTradeItemsChanged = true;
-                        }
-                        if(ourTradeItemsChanged) {
-                            super.streamClass.createPacket(70);
-                            super.streamClass.addByte(tradeItemsOurCount);
-                            for(int i = 0; i < tradeItemsOurCount; i++) {
-                                super.streamClass.addShort(tradeItemsOur[i]);
-                                super.streamClass.addInt(tradeItemOurCount[i]);
-                            }
-                            super.streamClass.formatPacket();
-                            tradeOtherAccepted = false;
-                            tradeWeAccepted = false;
-                        }
-                    }
-                }
-                else if(mx > 8 && my > 30 && mx < 205 && my < 133) {
-                    int curItem = (mx - 9) / 49 + ((my - 31) / 34) * 4;
-                    if(curItem >= 0 && curItem < tradeItemsOurCount) {
-                        int item = tradeItemsOur[curItem];
-                        for(int i = 0; i < mouseClickedHeldInTradeDuelBox; i++) {
-                            if(Data.itemStackable[item] == 0 && tradeItemOurCount[curItem] > 1) {
-                                tradeItemOurCount[curItem]--;
-                                continue;
-                            }
-                            tradeItemsOurCount--;
-                            mouseButtonHeldTime = 0;
-                            for(int j = curItem; j < tradeItemsOurCount; j++) {
-                                tradeItemsOur[j] = tradeItemsOur[j + 1];
-                                tradeItemOurCount[j] = tradeItemOurCount[j + 1];
-                            }
-                            break;
-                        }
-                        super.streamClass.createPacket(70);
-                        super.streamClass.addByte(tradeItemsOurCount);
-                        for(int i = 0; i < tradeItemsOurCount; i++) {
-                            super.streamClass.addShort(tradeItemsOur[i]);
-                            super.streamClass.addInt(tradeItemOurCount[i]);
-                        }
-                        super.streamClass.formatPacket();
-                        tradeOtherAccepted = false;
-                        tradeWeAccepted = false;
-                    }
-                }
-                if(mx >= 217 && my >= 238 && mx <= 286 && my <= 259) {
-                    tradeWeAccepted = true;
-                    super.streamClass.createPacket(211);
-                    super.streamClass.formatPacket();
-                }
-                if(mx >= 394 && my >= 238 && mx < 463 && my < 259) {
-                    showTradeBox = false;
-                    super.streamClass.createPacket(216);
-                    super.streamClass.formatPacket();
-                }
-            }
-            else {
-                showTradeBox = false;
-                super.streamClass.createPacket(216);
-                super.streamClass.formatPacket();
-            }
-            mouseButtonClick = 0;
-            mouseClickedHeldInTradeDuelBox = 0;
-        }
+       private final void drawTradeBox() {
+    	if(mouseButtonClick != 0 && mouseClickedHeldInTradeDuelBox == 0)
+    		mouseClickedHeldInTradeDuelBox = 1;
+    	
+    	int mx = super.mouseX - 22;
+    	int my = super.mouseY - 36;
+    	if (mouseClickedHeldInTradeDuelBox > 0) {
+    		if(mx >= 0 && my >= 30 && mx < 462 && my < 262) {
+    			if(mx > 216 && my > 30 && mx < 462 && my < 235) {
+    				int curItem = (mx - 217) / 49 + ((my - 31) / 34) * 5;
+    				if(curItem >= 0 && curItem < inventoryItemsCount) {
+    					int item = inventoryItems[curItem];
+    					boolean ourTradeItemsChanged = false;
+    					int someInt = 0;
+    					for(int tradeItem = 0; tradeItem < tradeItemsOurCount; tradeItem++)
+    						if(tradeItemsOur[tradeItem] == item)
+    							if(Data.itemStackable[item] == 0)
+    								for(int i = 0; i < mouseClickedHeldInTradeDuelBox; i++) {
+    									if(tradeItemOurCount[tradeItem] < inventoryItemCount[curItem])
+    										tradeItemOurCount[tradeItem]++;
+    									ourTradeItemsChanged = true;
+    								}
+    							else
+    								someInt++;
+    					if(getInventoryItemTotalCount(item) <= someInt)
+    						ourTradeItemsChanged = true;
+    					if(Data.itemSpecial[item] == 1) {
+    						displayMessage("This object cannot be traded with other players", 3);
+    						ourTradeItemsChanged = true;
+    					}
+    					if(!ourTradeItemsChanged && tradeItemsOurCount < 12) {
+    						tradeItemsOur[tradeItemsOurCount] = item;
+    						tradeItemOurCount[tradeItemsOurCount] = 1;
+    						tradeItemsOurCount++;
+    						ourTradeItemsChanged = true;
+    					}
+    					if(ourTradeItemsChanged) {
+    						super.streamClass.createPacket(70);
+    						super.streamClass.addByte(tradeItemsOurCount);
+    						for(int i = 0; i < tradeItemsOurCount; i++) {
+    							super.streamClass.addShort(tradeItemsOur[i]);
+    							super.streamClass.addInt(tradeItemOurCount[i]);
+    						}
+    						super.streamClass.formatPacket();
+    						tradeOtherAccepted = false;
+    						tradeWeAccepted = false;
+    					}
+    				}
+    			}
+    			if(mx > 8 && my > 30 && mx < 205 && my < 133) {
+    				int curItem = (mx - 9) / 49 + ((my - 31) / 34) * 4;
+    				if(curItem >= 0 && curItem < tradeItemsOurCount) {
+    					int item = tradeItemsOur[curItem];
+    					for(int i = 0; i < mouseClickedHeldInTradeDuelBox; i++) {
+    						if(Data.itemStackable[item] == 0 && tradeItemOurCount[curItem] > 1) {
+    							tradeItemOurCount[curItem]--;
+    							continue;
+    						}
+    						tradeItemsOurCount--;
+    						mouseButtonHeldTime = 0;
+    						for(int j = curItem; j < tradeItemsOurCount; j++) {
+    							tradeItemsOur[j] = tradeItemsOur[j + 1];
+    							tradeItemOurCount[j] = tradeItemOurCount[j + 1];
+    						}
+    						break;
+    					}
+    					super.streamClass.createPacket(70);
+    					super.streamClass.addByte(tradeItemsOurCount);
+    					for(int i = 0; i < tradeItemsOurCount; i++) {
+    						super.streamClass.addShort(tradeItemsOur[i]);
+    						super.streamClass.addInt(tradeItemOurCount[i]);
+    					}
+    					super.streamClass.formatPacket();
+    					tradeOtherAccepted = false;
+    					tradeWeAccepted = false;
+    				}
+    			}
+    			if(mx >= 217 && my >= 238 && mx <= 286 && my <= 259) {
+    				tradeWeAccepted = true;
+    				super.streamClass.createPacket(211);
+    				super.streamClass.formatPacket();
+    			}
+    			if(mx >= 394 && my >= 238 && mx < 463 && my < 259) {
+    				showTradeBox = false;
+    				super.streamClass.createPacket(216);
+    				super.streamClass.formatPacket();
+    			}
+    		}
+    		else {
+    			showTradeBox = false;
+    			super.streamClass.createPacket(216);
+    			super.streamClass.formatPacket();
+    		}
+    		mouseButtonClick = 0;
+    		mouseClickedHeldInTradeDuelBox = 0;
+    	}
+
         if(!showTradeBox)
             return;
         byte byte0 = 22;
@@ -3228,6 +3231,7 @@ label0:
             if(super.mouseX > j7 && super.mouseX < j7 + 48 && super.mouseY > k7 && super.mouseY < k7 + 32)
                 gameGraphics.drawString(Data.itemName[tradeItemsOther[l6]] + ": @whi@" + Data.itemDescription[tradeItemsOther[l6]], byte0 + 8, byte1 + 273, 1, 0xffff00);
         }
+    	
 
     }
 
